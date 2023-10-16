@@ -1,12 +1,12 @@
 
 #Datenbank erzeugen (früher oder später muss der Name der Datenbank noch angepasst werden)
-create database Diplomarbeit collate utf16_general_ci;
+create database diplomarbeit collate utf16_general_ci;
 
 #Datennbank verwenden (auch hier Namen anpassen)
-use Diplomarbeit;
+use diplomarbeit;
 
 #Datenbank löschen
-#drop database Diplomarbeit
+#drop database diplomarbeit;
 
 #Quiz Tabelle erstellen
 create table quiz(
@@ -16,7 +16,7 @@ create table quiz(
     quiz_type varchar(100) not null,
     neededProperties varchar(100),
     criteria varchar(100),
-    spespecificCriteria varchar(100),
+    specificCriteria varchar(100),
     
     constraint quizId_pk primary key (quizId)
 )engine=InnoDB;

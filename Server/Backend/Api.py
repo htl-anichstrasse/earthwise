@@ -2,17 +2,19 @@ import uvicorn
 from fastapi import FastAPI
 
 import ArrangeData as ad
+from ArrangeData import get_quiz_by_id
 
 app = FastAPI()
 
-@app.get("/hallo")
-def hello():
-    print("le go")
-    return {"Hello world!"}
+# GET QUIZ OVERVIEW - API
+@app.get("/getquizoverview")
+def getquizoverview():
+    return ad.get_quiz_overview()
 
-@app.get("/getquiz/{id}")
+# GET QUIZ BY ID - API
+@app.get("/getquizbyid/{id}")
 def getquiz(id: int):
-    return {"id": ad.getquiz(id)}
+    return ad.get_quiz_by_id(id)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="localhost", port=8080)

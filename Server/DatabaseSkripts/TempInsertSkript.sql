@@ -6,4 +6,5 @@ insert into country values(2, "Germany", "europe");
 insert into country values(3, "France", "europe");
 
 #für quiz
-insert into quiz values(1,"Testcountries","This is a discription", "mapQuiz","countryName","continent","europe");
+insert into quiz values(1,"Testcountries","This is a discription", "mapQuiz","countryId, countryName","continent","europe");
+insert into quiz values(2,"Testcountries2","This is a discription2", "mapQuiz","countryId, countryName","continent","europe");
