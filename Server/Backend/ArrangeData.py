@@ -24,3 +24,49 @@ def get_quiz_by_id(id):
         }
         return json_string
     return "quiz type not existing"
+
+#TESTEN !!!
+# CREATE NEW USER - FILTER AND ARRAGE JSON STRING
+def create_new_user(user):
+    email = user.email
+    username =  user.username
+    password = user.password
+    allusers = dbc.get_all_users()
+    if allusers.contains(email):
+        json_string = {
+            "message_type": "Error",
+            "message": "A user with this email already exists."
+        }
+        return json_string
+    if dbc.create_new_user(email, username, password):
+        json_string = {
+            "message_type": "Success",
+            "message": "User created."
+        }
+        return json_string
+    else:
+        json_string = {
+            "message_type": "Error",
+            "message": "Something went wrong try again."
+        }
+        return json_string
+
+#TESTEN !!!
+# USER LOGIN
+def user_login(logindata):
+    email = logindata.email
+    password = logindata.password
+    if dbc.get_password_by_email == password:
+        json_string = {
+            "message_type": "Success",
+            "message": "User logged in."
+        }
+        return json_string
+    else:
+        json_string = {
+            "message_type": "Error",
+            "message": "Wrong password"
+        }
+        return json_string
+    
+    # if für email existiert nicht!
