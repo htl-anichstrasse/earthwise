@@ -23,12 +23,12 @@ def get_countries_by_quiz(needed_properties, criteria, specific_criteria):
     mycursor.execute(select_statement)
     return mycursor.fetchall()
 
-#TESTEN !!!
+#TODO TESTEN !!!
 # CREATE NEW USER - INSERT
 def create_new_user(email, username, password):
     insert_statement = 'insert into user values("' + str(email) + '","' + str(username) + '","' + str(password) + '")'
     mycursor.execute(insert_statement)
-    #rückgabe wert sollte boolean sein
+    #TODO rückgabe wert sollte boolean sein
     return mycursor.fetchall()
 
 def get_all_users():

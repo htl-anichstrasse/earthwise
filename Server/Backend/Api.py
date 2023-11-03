@@ -1,6 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
-import ArrangeData as ad
+import Diplomarbeit.Server.Backend.ArrangeData as ad
 import json
 
 
@@ -16,14 +16,14 @@ def getquizoverview():
 def getquiz(id: int):
     return ad.get_quiz_by_id(id)
 
-#TESTEN !!!
+#TODO TESTEN !!!
 # CREATE NEW USER - API
 @app.get("/createnewuser/{user}")
 def getquiz(user: json):
     # user={"email": email, "username": username, "password": password}
     return ad.create_new_user(user)
 
-#TESTEN !!!
+#TODO TESTEN !!!
 # USER LOGIN - API
 @app.get("/userlogin/{logindata}")
 def getquiz(logindata: json):

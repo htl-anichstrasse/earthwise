@@ -25,7 +25,7 @@ def get_quiz_by_id(id):
         return json_string
     return "quiz type not existing"
 
-#TESTEN !!!
+#TODO TESTEN !!!
 # CREATE NEW USER - FILTER AND ARRAGE JSON STRING
 def create_new_user(user):
     email = user.email
@@ -51,7 +51,7 @@ def create_new_user(user):
         }
         return json_string
 
-#TESTEN !!!
+#TODO TESTEN !!!
 # USER LOGIN
 def user_login(logindata):
     email = logindata.email
@@ -67,6 +67,5 @@ def user_login(logindata):
             "message_type": "Error",
             "message": "Wrong password"
         }
-        return json_string
-    
-    # if für email existiert nicht!
+        return json_string   
+    #TODO if für email existiert nicht!
