@@ -2,7 +2,6 @@ import uvicorn
 from fastapi import FastAPI
 
 import ArrangeData as ad
-from ArrangeData import get_quiz_by_id
 
 app = FastAPI()
 
