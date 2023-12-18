@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>World Map</title>
+</head>
+<body>
+    <h1>World Map</h1>
+    <form method="post">
+        <label for="country">Enter a country:</label>
+        <input type="text" name="country" required>
+        <button type="submit">Submit</button>
+    </form>
+    {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+    <div>
+        <object data="{{ url_for('static', filename='world_map.svg') }}" type="image/svg+xml" width="500" height="500">
+            Your browser does not support SVG.
+        </object>
+    </div>
+</body>
+</html>
