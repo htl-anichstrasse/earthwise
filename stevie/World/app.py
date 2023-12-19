@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file, url_for
+from flask import Flask, render_template, request, send_file, url_for, jsonify
 from libr.worldmap.worldmap import plot
 #import worldmap as wm
 import libr.worldmap.worldmap.worldmap as wm
@@ -61,25 +61,42 @@ county_names = ['Andorra','United Arab Emirates','Afghanistan','Antigua and Barb
  'British Virgin Islands','US Virgin Islands','Vietnam','Vanuatu',
  'Wallis and Futuna','Samoa','Yemen','Mayotte','South Africa','Zambia',
  'Zimbabwe']
+
+
 selected_countries = ['']
 opacity = 0.5  # Apply the same opacity to all selected countries
+# Einmal Aufrufen damit es kein no URL found
+#svg_map_tuple = plot(selected_countries, opacity=[opacity] * len(selected_countries), cmap='Set1')
+# Nutzerfreundlicher -> immer den ersten Buchstaben capital
+def capitalize_first_letter(text):
+    return text.capitalize()
+
+# Function to delete the SVG file and reset selected_countries
+def delete_svg_file():
+    global selected_countries
+    try:
+        os.remove("static/custom_map.svg")
+        selected_countries = ['']
+    except OSError:
+        print('OK')
+        pass
+
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     global selected_countries
     message = ""
     map_exists = False
-
+    
     if request.method == 'POST':
-        selected_country = request.form.get('country')
+        selected_country = capitalize_first_letter(request.form.get('country'))
 
         if selected_country in county_names:
             if selected_country not in selected_countries:
                 selected_countries.append(selected_country)
                 message = f"{selected_country} added."
-                # Wurde am Anfange verwendet, wo wir noch nicht die Lib geändert haben
                 try:
-                    # Call the plot function which should generate the SVG file
                     svg_map_tuple = plot(selected_countries, opacity=[opacity] * len(selected_countries), cmap='Set1')
                 except Exception as e:
                     message = f"An error occurred while generating the map: {e}"
@@ -88,8 +105,14 @@ def index():
         else:
             message = f"{selected_country} is not a valid country."
 
-    # Render the HTML template
     return render_template('index.html', map_exists=map_exists, message=message)
+
+@app.route('/reset', methods=['GET'])
+def reset():
+    global selected_countries
+    # Call the delete_svg_file function to delete the SVG file when the reset button is clicked
+    delete_svg_file()
+    return jsonify({'success': True})
 
 if __name__ == '__main__':
     app.run(debug=True)
