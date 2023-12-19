@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, send_file, url_for
 from libr.worldmap.worldmap import plot
-#import worldmap as wm
-import libr.worldmap.worldmap.worldmap as wm
+import worldmap as wm
+#import libr.worldmap.worldmap.worldmap as wm
 import io
 import os
 import shutil
@@ -68,7 +68,6 @@ opacity = 0.5  # Apply the same opacity to all selected countries
 def index():
     global selected_countries
     message = ""
-    map_exists = False
 
     if request.method == 'POST':
         selected_country = request.form.get('country')
@@ -77,19 +76,25 @@ def index():
             if selected_country not in selected_countries:
                 selected_countries.append(selected_country)
                 message = f"{selected_country} added."
-                # Wurde am Anfange verwendet, wo wir noch nicht die Lib geändert haben
-                try:
-                    # Call the plot function which should generate the SVG file
-                    svg_map_tuple = plot(selected_countries, opacity=[opacity] * len(selected_countries), cmap='Set1')
-                except Exception as e:
-                    message = f"An error occurred while generating the map: {e}"
             else:
                 message = f"{selected_country} is already selected."
         else:
             message = f"{selected_country} is not a valid country."
 
+    # Create the SVG map
+    svg_map_tuple = wm.plot(selected_countries, opacity=opacity, map_name='world', cmap='Set1')
+    svg_map_df = svg_map_tuple[0]  # Extract the DataFrame from the tuple
+
+    # Convert the DataFrame to a string
+    svg_map_str = svg_map_df.to_string(index=False)
+
+    # Save the SVG map in the static folder
+    file_path = os.path.join('static', 'world_map.svg')
+    with open(file_path, 'w') as file:
+        file.write(svg_map_str)
+
     # Render the HTML template
-    return render_template('index.html', map_exists=map_exists, message=message)
+    return render_template('index.html', map_url=url_for('static', filename='custom_map.svg'), message=message)
 
 if __name__ == '__main__':
     app.run(debug=True)
