@@ -1,0 +1,7 @@
+data = ['INSERT INTO quiz VALUES (1, "All countries in the world", "Name all 194 independet countries in the world.", "mapquiz", "select name from country where independent = true")',
+        'INSERT INTO quiz VALUES (2, "All countries in Europe", "Name all 45 independet countries in Europe.", "mapquiz", \'select name from country where independent = true and continent = "Europe"\')',
+        'INSERT INTO quiz VALUES (3, "All countries in Asia", "Name all 45 independet countries in Asia.", "mapquiz", \'select name from country where independent = true and continent = "Asia"\')',
+        'INSERT INTO quiz VALUES (4, "All countries in North America", "Name all 23 independet countries in North America.", "mapquiz", \'select name from country where independent = true and continent = "North America"\')',
+        'INSERT INTO quiz VALUES (5, "All countries in South America", "Name all 12 independet countries in South America.", "mapquiz", \'select name from country where independent = true and continent = "South America"\')',
+        'INSERT INTO quiz VALUES (6, "All countries in Africa", "Name all 54 independet countries in Africa.", "mapquiz", \'select name from country where independent = true and continent = "Africa"\')',
+        'INSERT INTO quiz VALUES (7, "All countries in Oceania", "Name all 15 independet countries in Oceania.", "mapquiz", \'select name from country where independent = true and continent = "Oceania"\')']
