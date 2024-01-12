@@ -8,6 +8,8 @@ mydb = mysql.connector.connect(
 )
 mycursor = mydb.cursor()
 
+# ----- QUIZ -----
+
 # GET QUIZ OVERVIEW - SELECT
 def get_quiz_overview():
     mycursor.execute("select quiz_id, name from quiz")
@@ -25,21 +27,41 @@ def get_countries_by_quiz(select_statement):
     return mycursor.fetchall()
 ##TODO GEHT
 
-#TODO TESTEN !!!
+# ----- USER -----
+
 # CREATE NEW USER - INSERT
 def create_new_user(email, username, password):
-    insert_statement = 'insert into user values("' + str(email) + '","' + str(username) + '","' + str(password) + '")'
-    mycursor.execute(insert_statement)
-    #TODO rückgabe wert sollte boolean sein
-    return mycursor.fetchall()
+    insert_query = 'INSERT INTO user VALUES ("' + email + '", "' + username + '", "' + password + '")'
+    try:
+        mycursor.execute(insert_query)
+        mydb.commit()
+        json_string = {
+            "message_type": "Success",
+            "message": "User created."
+        }
+        return json_string
+    except mysql.connector.Error as error:
+        mydb.rollback()
+        json_string = {
+            "message_type": "Error",
+            "message": error.msg
+        }
+        return json_string
+##TODO GEHT
 
 def get_all_users():
     select_statement = "select email from user"
     mycursor.execute(select_statement)
-    return mycursor.fetchall()
+    results = mycursor.fetchall()
+    emails = list(sum(results, ()))
+    return emails
+##TODO GEHT
 
 # USER LOGIN - SELECT
 def get_password_by_email(email):
-    select_statement = "select password from user where email = " + str(email)
-    mycursor.execute(select_statement)
-    return mycursor.fetchall()
+    select_statement = "select password from user where email = %s"
+    mycursor.execute(select_statement, (email,))
+    results = mycursor.fetchall()
+    passwords = list(sum(results, ()))
+    return passwords[0]
+##TODO GEHT

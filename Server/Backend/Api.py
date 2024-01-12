@@ -1,38 +1,42 @@
 import uvicorn
 from fastapi import FastAPI
 import json
-
 import ArrangeDataForApi as ad
 
-
 app = FastAPI()
+
+# ----- QUIZ -----
 
 # GET QUIZ OVERVIEW - API
 @app.get("/getquizoverview")
 def getquizoverview():
-    return ad.get_quiz_overview()
+    return ad.get_quiz_overview() # {"quiz_data": quiz_data} -> quiz_data = [[quiz_id, name], ...]
 ##TODO GEHT
 
 # GET QUIZ BY ID - API
-@app.get("/getquizbyid/{id}")
+@app.get("/getquizbyid/{id}") # /getquizbyid/id
 def getquiz(id: int):
-    return ad.get_quiz_by_id(id)
+    return ad.get_quiz_by_id(id) # {"quiz_id": quiz_id, "quiz_name": name, "discription": discription, "country_data": country_data}
 ##TODO GEHT
 
-#TODO TESTEN !!!
+# ----- USER -----
+
 # CREATE NEW USER - API
-@app.get("/createnewuser/{user}")
-def createnewuser(user: str):
-    # user={"email": email, "username": username, "password": password}
-    return ad.create_new_user(user)
+@app.get("/createnewuser/{email}/{username}/{password}") # /createnewuser/email/username/password
+def createnewuser(email: str, username: str, password: str):
+    return ad.create_new_user(email, username, password) # {"message_type": message_type,"message": message}
+##TODO GEHT
 
-#TODO TESTEN !!!
 # USER LOGIN - API
-# @app.get("/userlogin/{logindata}")
-# def login(logindata: json):
-#     # logindata={"email": email, "password": password}
-#     return ad.user_login(logindata)
+@app.get("/login/{email}/{password}") # /createnewuser/email/password
+def login(email: str, password: str):
+    ##TODO MAYBE BRAUCHMA DA NO DASS DA USER MIT ZRUGGEBEN WIRT MUSS NO MIT LUCA DRÜBER REDEN
+    return ad.user_login(email, password) # {"message_type": message_type,"message": message}
+##TODO GEHT
 
+##TODO USER LÖSCHEN, PASSWORT ÄNDERN, EMAIL ÄNDERN, NUTZERNAME ÄNDERN
+
+##TODO HIGHSCORE SCHICKEN, HIGHSCORE ABRUFEN, ...
 
 if __name__ == "__main__":
     uvicorn.run(app, host="localhost", port=8080)
