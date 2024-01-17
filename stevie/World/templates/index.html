@@ -12,7 +12,7 @@
         <label for="country">Enter a country:</label>
         <input type="text" id="country" name="country" required>
         <button type="submit">Submit</button>
-        <button type="button" id="reset-button">Reset</button>
+        <button type="button" id="reset-button" onclick="resetMap()">Reset</button>
     </form>
     {% if message %}
         <p>{{ message }}</p>
@@ -26,17 +26,15 @@
         });
 
     // Add event listener for the reset button
-    document.getElementById('reset-button').addEventListener('click', function() {
-        // Send an AJAX request to reset the selected_countries list
-        fetch('/reset')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Reload the page to update the UI
+    function resetMap() {
+        fetch('/reset?reset_selected_countries=true')   
+            .then(response => response.json())   
+            .then(data => {   
+                if (data.success) {    
                     location.reload();
                 }
             });
-    });
+    }
     </script>
 </body>
 </html>

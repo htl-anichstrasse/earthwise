@@ -30,7 +30,7 @@ PATH_MAPZIP = os.path.abspath(os.path.join(curpath,'data','SVG_MAPS.zip'))
 
 
 # %% Main
-def plot(county_names, map_name='world', opacity=[], cmap='Set1', filename=None , showfig=True, verbose=True):
+def plot(county_names, map_name='world', opacity= 0.5, cmap='#ff0000', filename=None, showfig=True, verbose=True):
     """Color countries.
 
     Parameters
@@ -39,14 +39,13 @@ def plot(county_names, map_name='world', opacity=[], cmap='Set1', filename=None 
         Names of countries or regions within a county to be colored.
     map_name : str, optional
         Name of the county to be colored. The default is 'world'.
-    opacity : list of float [0-1], optional
-        Set the opacity for each of the map_name(s). The default is [].
-        If values are >1, it is scaled between [0-1]
+    opacity : float, optional
+        Set the opacity for each of the map_name(s). The default is 1.0.
         0 = full transparancy, 1= no transparancy
     cmap : str, optional
         Colormap to be used. Colors is set on the unique county_names. The default is 'Set1'. All colormaps can be reverted using the "_r": e.g., binary_r
         ['#ffffff','#1f1f1f']: Each map with a specified color
-        ['#ff0000']: All maps have a red color
+        '#ff0000' : All maps have a red color
         'Set1'     : Discrete colors (default)
         'Pastel1'  : Discrete colors
         'Paired'   : Discrete colors
@@ -77,7 +76,7 @@ def plot(county_names, map_name='world', opacity=[], cmap='Set1', filename=None 
     >>> region = ['zeeland','Overijssel', 'flevoland']
     >>>
     >>> # Color the regions
-    >>> opacity = [0.1, 0.2, 0.6]
+    >>> opacity = 0.5
     >>>
     >>> # Create the SVG
     >>> results = wm.plot(region, opacity=opacity, cmap='Set1', map_name='netherlands')
@@ -105,23 +104,7 @@ def plot(county_names, map_name='world', opacity=[], cmap='Set1', filename=None 
     if not DIROK: return
 
     # SETUP COLORS SCHEMES
-    if Param['opacity']==[]:
-        Param['opacity']=np.ones(len(Param['county_names']))
-    else:
-        if np.any(np.array(Param['opacity'])>1):
-            if Param['verbose']: print('[worldmap] Scaling opacity between [0-1]')
-            Param['opacity'] = minmax_scale(np.append([0,np.max(Param['opacity']) * 1.5],Param['opacity']))
-            Param['opacity'] = Param['opacity'][2:]
-
-    # Get color schemes
-    if 'str' in str(type(Param['cmap'])):
-        import colourmap
-        getcolors=np.array(sns.color_palette(Param['cmap'],len(Param['county_names'])).as_hex())
-        # getcolors=colourmap.generate(len(Param['county_names']), cmap=Param['cmap'])
-    elif 'list' in str(type(Param['cmap'])) and len(Param['cmap'])==1:
-        getcolors=np.repeat(Param['cmap'], len(Param['county_names']))
-    else:
-        getcolors=Param['cmap']
+    getcolors=np.array(sns.color_palette(Param['cmap'],len(Param['county_names'])).as_hex())
 
     # READ MAP FROM DIRECTORY AND MATCH WITH DESIRED MAP
     getsvg = _matchmap(Param['map_name'])
@@ -132,7 +115,7 @@ def plot(county_names, map_name='world', opacity=[], cmap='Set1', filename=None 
 
     # Extract city names to color them according the scores
    # Ensure that all arrays have the same length
-    if len(Param['county_names']) == len(Param['opacity']) == len(getcolors):
+    if len(Param['county_names']) == len(getcolors):
         d = {'county_names': Param['county_names'], 'SVGcity': np.nan, 'opacity': Param['opacity'], 'fill': getcolors, 'attr': np.nan}
         df = pd.DataFrame(d)
     else:
@@ -159,7 +142,7 @@ def plot(county_names, map_name='world', opacity=[], cmap='Set1', filename=None 
     if SVGcolorCity is not None:
         df['SVGcity'] = SVGcolorCity
     else:
-        print('Asshole')
+        print('wrong')
     df['SVGcity'] = df['SVGcity'].str.replace(' ', '', regex=True)
     df['attr'] = attributesIN
 
@@ -167,6 +150,7 @@ def plot(county_names, map_name='world', opacity=[], cmap='Set1', filename=None 
 
     # DFOUT
     SVGcounty_namesOUT=[]
+   
     for i in range(0, len(attributesOUT)):
         SVGcounty_namesOUT = np.append(SVGcounty_namesOUT, attributesOUT[i]['title'])
     d = {'county_names':SVGcounty_namesOUT, 'SVGcity':SVGcounty_namesOUT, 'opacity': 1, 'fill':'#CCCCCC', 'attr':attributesOUT}

@@ -82,7 +82,7 @@ def index():
             message = f"{selected_country} is not a valid country."
 
     # Create the SVG map
-    svg_map_tuple = wm.plot(selected_countries, opacity=opacity, map_name='world', cmap='Set1')
+    svg_map_tuple = wm.plot(selected_countries, opacity=opacity, map_name='world', cmap='green')
     svg_map_df = svg_map_tuple[0]  # Extract the DataFrame from the tuple
 
     # Convert the DataFrame to a string
