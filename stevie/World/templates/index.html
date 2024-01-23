@@ -27,7 +27,7 @@
 
     // Add event listener for the reset button
     function resetMap() {
-        fetch('/reset?reset_selected_countries=true')   
+        fetch('/reset', {method: 'POST'})   
             .then(response => response.json())   
             .then(data => {   
                 if (data.success) {    

@@ -14,6 +14,7 @@ county_names = wm.list_county_names(map_name='world')
 
 
 selected_countries = [' ']
+selected_country = None
 opacity = 0.5
 single_color_cmap = ListedColormap(['#06d009'])  
 # Einmal Aufrufen damit es kein no URL found
@@ -36,8 +37,9 @@ def delete_svg_file():
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    global selected_countries  
+    global selected_countries
     message = ""
+    
     map_exists = False
     if request.method == 'POST':
         selected_country = capitalize_first_letter(request.form.get('country'))    
@@ -61,6 +63,8 @@ def reset():
     selected_countries = [' ']
     delete_svg_file()
     return jsonify({'success': True})
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
