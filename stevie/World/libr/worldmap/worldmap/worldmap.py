@@ -104,7 +104,7 @@ def plot(county_names, map_name='world', opacity= 0.5, cmap='#ff0000', filename=
     if not DIROK: return
 
     # SETUP COLORS SCHEMES
-    getcolors=np.array(sns.color_palette(Param['cmap'],len(Param['county_names'])).as_hex())
+    getcolor = cmap
 
     # READ MAP FROM DIRECTORY AND MATCH WITH DESIRED MAP
     getsvg = _matchmap(Param['map_name'])
@@ -115,12 +115,10 @@ def plot(county_names, map_name='world', opacity= 0.5, cmap='#ff0000', filename=
 
     # Extract city names to color them according the scores
    # Ensure that all arrays have the same length
-    if len(Param['county_names']) == len(getcolors):
-        d = {'county_names': Param['county_names'], 'SVGcity': np.nan, 'opacity': Param['opacity'], 'fill': getcolors, 'attr': np.nan}
-        df = pd.DataFrame(d)
-    else:
-        print("Array lengths do not match.")
-
+    
+    d = {'county_names': county_names, 'SVGcity': np.nan, 'opacity': opacity, 'fill': getcolor, 'attr': np.nan}
+    df = pd.DataFrame(d)
+    
 
     # Retrieve all city/county names
     SVGcounty_names=[]
@@ -164,9 +162,7 @@ def plot(county_names, map_name='world', opacity= 0.5, cmap='#ff0000', filename=
     # Open figures
     #if Param['showfig']: webbrowser.open(os.path.abspath(Param['filename']), new=2)
 
-    
-    del dfout['attr']
-    return(dfout, filename)
+    return(df, filename)
 
 
 

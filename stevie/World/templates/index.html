@@ -19,22 +19,26 @@
     {% endif %}
     <div id="svg-container" />
     <script>
-    fetch('{{ url_for("static", filename="custom_map.svg") }}')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('svg-container').innerHTML = data;
-        });
-
-    // Add event listener for the reset button
-    function resetMap() {
-        fetch('/reset', {method: 'POST'})   
-            .then(response => response.json())   
-            .then(data => {   
-                if (data.success) {    
-                    location.reload();
-                }
+          fetch('{{ url_for("static", filename="custom_map.svg") }}')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('svg-container').innerHTML = data;
             });
-    }
+
+    
+            function resetMap() {
+                fetch('/reset', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('country').value = '';
+                            // Force a reload from the server to avoid form data resend
+                            location.reload(true);
+                        }
+                    });
+            }
+            
+            
     </script>
 </body>
 </html>
