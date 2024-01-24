@@ -30,11 +30,32 @@ def createnewuser(email: str, username: str, password: str):
 # USER LOGIN - API
 @app.get("/login/{email}/{password}") # /createnewuser/email/password
 def login(email: str, password: str):
-    ##TODO MAYBE BRAUCHMA DA NO DASS DA USER MIT ZRUGGEBEN WIRT MUSS NO MIT LUCA DRÜBER REDEN
     return ad.user_login(email, password) # {"message_type": message_type,"message": message}
 ##TODO GEHT
 
-##TODO USER LÖSCHEN, PASSWORT ÄNDERN, EMAIL ÄNDERN, NUTZERNAME ÄNDERN
+# USER CHANGE PASSWORD - API
+@app.get("/changepassword/{email}/{password}/{newpassword}") # /changepassword/email/password/newpassword
+def changepassword(email: str, password: str, newpassword: str):
+    return ad.change_password_user(email, password, newpassword) # {"message_type": message_type,"message": message}
+##TODO TESTEN
+
+# USER CHANGE EMIAL - API
+#@app.get("/changeemail/{email}/{password}/{newemail}") # /changeemail/email/password/newemail
+#def changeemail(email: str, password: str, newemail: str):
+#    return ad.change_email_user(email, password, newemail) # {"message_type": message_type,"message": message}
+##TODO NICHT UMSETZBAR DA EMAIL PRIMARY KEY IST
+
+# USER CHANGE USERNAME - API
+@app.get("/changeusername/{email}/{password}/{newusername}") # /changeusername/email/password/newusername
+def changeusername(email: str, password: str, newusername: str):
+    return ad.change_username_user(email, password, newusername) # {"message_type": message_type,"message": message}
+##TODO TESTEN
+
+# DELET USER - API
+@app.get("/deletuser/{email}/{password}") # /deletuser/email/password
+def deletuser(email: str, password: str):
+    return ad.delet_user(email, password) # {"message_type": message_type,"message": message}
+##TODO TESTEN
 
 ##TODO HIGHSCORE SCHICKEN, HIGHSCORE ABRUFEN, ...
 
