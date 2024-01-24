@@ -12,31 +12,33 @@
         <label for="country">Enter a country:</label>
         <input type="text" id="country" name="country" required>
         <button type="submit">Submit</button>
-        <button type="button" id="reset-button">Reset</button>
+        <button type="button" id="reset-button" onclick="resetMap()">Reset</button>
     </form>
     {% if message %}
         <p>{{ message }}</p>
     {% endif %}
     <div id="svg-container" />
     <script>
-    fetch('{{ url_for("static", filename="custom_map.svg") }}')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('svg-container').innerHTML = data;
-        });
-
-    // Add event listener for the reset button
-    document.getElementById('reset-button').addEventListener('click', function() {
-        // Send an AJAX request to reset the selected_countries list
-        fetch('/reset')
-            .then(response => response.json())
+          fetch('{{ url_for("static", filename="custom_map.svg") }}')
+            .then(response => response.text())
             .then(data => {
-                if (data.success) {
-                    // Reload the page to update the UI
-                    location.reload();
-                }
+                document.getElementById('svg-container').innerHTML = data;
             });
-    });
+
+    
+            function resetMap() {
+                fetch('/reset', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('country').value = '';
+                            // Force a reload from the server to avoid form data resend
+                            location.reload(true);
+                        }
+                    });
+            }
+            
+            
     </script>
 </body>
 </html>
