@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}50/50 Quiz{% endblock %}
+{% block content %}
+
+<style>
+    .button-container {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+        border: light-grey 1px;
+    }
+
+    .flag-button {
+        background: none;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+    }
+</style>
+
+<h1 style="text-align: center">{{ quiz_name }}</h1>
+<h3 style="text-align: center">Which Flag is: {{ correctLandName }}</h3>
+
+<h3 style="text-align: center">{{ points }}</h3>
+
+<div class="button-container">
+    <button id="button1" class="flag-button" onclick="checkInput('{{correctLandName}}')">
+        <img src="{{ url_for('static', filename=correctLand) }}" width="450" height="250" alt="Button 1">
+    </button>
+    <button id="button2" class="flag-button" onclick="checkInput('{{incorrectLandName}}')">
+        <img src="{{ url_for('static', filename=incorrectLand) }}" width="450" height="250" alt="Button 2">
+    </button>
+    
+</div>
+
+<script>
+    function checkInput(buttonPressed) {
+        var correctLandName = "{{ correctLandName }}";
+
+        // Deaktiviere die Buttons, um erneute Klicks zu verhindern
+        document.getElementById('button1').disabled = true;
+        document.getElementById('button2').disabled = true;
+
+        selectedAnswer = buttonPressed.toLowerCase();
+        correct_answer = correctLandName.toLowerCase();
+
+        fetch(`/check_answer/${selectedAnswer}`, { 
+            method: 'POST', 
+            body: new URLSearchParams({ correct_answer: correct_answer }), 
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' } 
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.is_correct) {
+                setTimeout(refreshPage, 3000);
+            } 
+            if (!data.is_correct) {
+                setTimeout(refreshPage, 3000);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function refreshPage() {
+        location.reload();
+    }
+</script>
+
+
+
+{% endblock %}

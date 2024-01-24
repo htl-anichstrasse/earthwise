@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}allFlags{% endblock %}
+{% block content %}
+
+<style>
+    #flagForm {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .flag-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .flag-container img {
+        width: 250px;
+        height: 150px;
+        border: 2px solid grey;
+    }
+</style>
+<h1 style="text-align: center; padding-top: 20px; padding-bottom: 30px;">All Flags of the World</h1>
+
+    <div style="width: 100%; text-align: center; padding-bottom:20px;">
+        <hr>
+            <h3>Europe</h3>
+        <hr>
+    </div>
+
+<form id="flagForm">
+    {% for i in country_names_list[0] %}
+        {% set path = '/flags/'+i+'.png' %} 
+        <div class="flag-container">
+            <img src="{{ url_for('static', filename = path) }}" alt="{{ i }}">
+            {% set i = i.replace('_', ' ') %}
+            <p><b>{{ i }}</b></p>
+        </div>
+    {% endfor %}
+</form>
+
+    <div style="width: 100%; text-align: center; padding-bottom:20px;">
+        <hr>
+            <h3>Asia</h3>
+        <hr>
+    </div>
+
+<form id="flagForm">
+    {% for i in country_names_list[1] %}
+        {% set path = '/flags/'+i+'.png' %} 
+        <div class="flag-container">
+            <img src="{{ url_for('static', filename = path) }}" alt="{{ i }}">
+            {% set i = i.replace('_', ' ') %}
+            <p><b>{{ i }}</b></p>
+        </div>
+    {% endfor %}
+</form>
+
+    <div style="width: 100%; text-align: center; padding-bottom:20px;">
+        <hr>
+            <h3>North America</h3>
+        <hr>
+    </div>
+
+<form id="flagForm">
+    {% for i in country_names_list[2] %}
+        {% set path = '/flags/'+i+'.png' %} 
+        <div class="flag-container">
+            <img src="{{ url_for('static', filename = path) }}" alt="{{ i }}">
+            {% set i = i.replace('_', ' ') %}
+            <p><b>{{ i }}</b></p>
+        </div>
+    {% endfor %}
+</form>
+
+    <div style="width: 100%; text-align: center; padding-bottom:20px;">
+        <hr>
+            <h3>South America</h3>
+        <hr>
+    </div>
+
+<form id="flagForm">
+    {% for i in country_names_list[3] %}
+        {% set path = '/flags/'+i+'.png' %} 
+        <div class="flag-container">
+            <img src="{{ url_for('static', filename = path) }}" alt="{{ i }}">
+            {% set i = i.replace('_', ' ') %}
+            <p><b>{{ i }}</b></p>
+        </div>
+    {% endfor %}
+</form>
+
+    <div style="width: 100%; text-align: center; padding-bottom:20px;">
+        <hr>
+            <h3>Africa</h3>
+        <hr>
+    </div>
+
+<form id="flagForm">
+    {% for i in country_names_list[4] %}
+        {% set path = '/flags/'+i+'.png' %} 
+        <div class="flag-container">
+            <img src="{{ url_for('static', filename = path) }}" alt="{{ i }}">
+            {% set i = i.replace('_', ' ') %}
+            <p><b>{{ i }}</b></p>
+        </div>
+    {% endfor %}
+</form>
+
+    <div style="width: 100%; text-align: center; padding-bottom:20px;">
+        <hr>
+            <h3>Oceania</h3>
+        <hr>
+    </div>
+
+<form id="flagForm">
+    {% for i in country_names_list[5] %}
+        {% set path = '/flags/'+i+'.png' %} 
+        <div class="flag-container">
+            <img src="{{ url_for('static', filename = path) }}" alt="{{ i }}">
+            {% set i = i.replace('_', ' ') %}
+            <p><b>{{ i }}</b></p>
+        </div>
+    {% endfor %}
+</form>
+
+
+{% endblock %}
