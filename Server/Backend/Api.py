@@ -37,7 +37,7 @@ def login(email: str, password: str):
 @app.get("/changepassword/{email}/{password}/{newpassword}") # /changepassword/email/password/newpassword
 def changepassword(email: str, password: str, newpassword: str):
     return ad.change_password_user(email, password, newpassword) # {"message_type": message_type,"message": message}
-##TODO TESTEN
+##TODO GEHT
 
 # USER CHANGE EMIAL - API
 #@app.get("/changeemail/{email}/{password}/{newemail}") # /changeemail/email/password/newemail
@@ -49,13 +49,13 @@ def changepassword(email: str, password: str, newpassword: str):
 @app.get("/changeusername/{email}/{password}/{newusername}") # /changeusername/email/password/newusername
 def changeusername(email: str, password: str, newusername: str):
     return ad.change_username_user(email, password, newusername) # {"message_type": message_type,"message": message}
-##TODO TESTEN
+##TODO GEHT
 
 # DELET USER - API
 @app.get("/deletuser/{email}/{password}") # /deletuser/email/password
 def deletuser(email: str, password: str):
     return ad.delet_user(email, password) # {"message_type": message_type,"message": message}
-##TODO TESTEN
+##TODO GEHT
 
 ##TODO HIGHSCORE SCHICKEN, HIGHSCORE ABRUFEN, ...
 

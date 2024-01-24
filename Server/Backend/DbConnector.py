@@ -62,6 +62,7 @@ def create_new_user(email, username, password):
     
 ##TODO GEHT
 
+# GATT ALL USERS - SELECT
 def get_all_users():
     mycursor, mydb = connect_db()
     select_statement = "select email from user"
@@ -72,7 +73,7 @@ def get_all_users():
     return emails
 ##TODO GEHT
 
-# USER LOGIN - SELECT
+# GET PASSWORD BY EMAIL - SELECT
 def get_password_by_email(email):
     mycursor, mydb = connect_db()
     select_statement = "select password from user where email = %s"
@@ -86,32 +87,42 @@ def get_password_by_email(email):
 # CHANGE PASSWORD USER - ALTER
 def alter_password_user(email, new_password):
     mycursor, mydb = connect_db()
-    update_statement = "update user set password = " + new_password + " where email = " + email
+    update_statement = "update user set password = \'" + new_password + "\' where email = \'" + email + "\'"
     mycursor.execute(update_statement)
     mydb.commit()
     mydb.close()
-##TODO TESTEN
+##TODO GEHT
 
 # CHANGE EMAIL USER - ALTER
-def alter_email_user(email, new_email):
-    pass
-##TODO METHODE SCHREIBEN UND TESTEN
-##TODO NICHT EINFACH UMSETZBAR, DA EMAIL DER PRIMARY KEY IST
+#def alter_email_user(email, new_email):
+#    pass
+##TODO NICHT UMSETZBAR, DA EMAIL DER PRIMARY KEY IST
 
 # CHANGE USERNAME USER - ALTER
 def alter_username_user(email, new_username):
     mycursor, mydb = connect_db()
-    update_statement = "update user set username = " + new_username + " where email = " + email
+    update_statement = "update user set username = \'" + new_username + "\' where email = \'" + email + "\'"
     mycursor.execute(update_statement)
     mydb.commit()
     mydb.close()
-##TODO TESTEN
+##TODO GEHT
+
+# GET USERNAME BY EMAIL - SELECT
+def get_username_by_email(email):
+    mycursor, mydb = connect_db()
+    select_statement = "select username from user where email = %s"
+    mycursor.execute(select_statement, (email,))
+    results = mycursor.fetchall()
+    mydb.close()
+    usernames = list(sum(results, ()))
+    return usernames[0]
+##TODO GEHT
 
 # DELET USER - DELET
 def delet_user(email):
     mycursor, mydb = connect_db()
-    delet_statement = "delet from user where email = " + email
+    delet_statement = "DELETE FROM user WHERE email = \'" + email + "\'"
     mycursor.execute(delet_statement)
     mydb.commit()
     mydb.close()
-##TODO TESTEN
+##TODO GEHT

@@ -74,61 +74,116 @@ def user_login(email, password):
 
 # CHANGE PASSWORD USER
 def change_password_user(email, password, new_password):
-    allusers = dbc.get_all_users()
-    for i in allusers:
-        if i == email:
-            if dbc.get_password_by_email(email) == password:
-                dbc.alter_password_user(email, new_password)
-                if dbc.get_password_by_email(email) == new_password:
-                    json_string = {
-                    "message_type": "Success",
-                    "message": "Password changed."
-                    }  
-                    return json_string
-                else:
-                    json_string = {
-                        "message_type": "Error",
-                        "message": "Password has not been changed. Reason unknown. Please try again."
-                    }
-                    return json_string
-            else:
-                json_string = {
-                    "message_type": "Error",
-                    "message": "Wrong password."
-                }
-                return json_string   
-    json_string = {
-        "message_type": "Error",
-        "message": "No existing user with this email."
-    }
-    return json_string
-##TODO TESTEN UND EVENTUELL EVIZIENTER GESTALTEN
-
-# CHANGE EMAIL USER
-def change_email_user(email, password, new_email):
-    allusers = dbc.get_all_users()
-    for i in allusers:
-        if i == new_email:
+    user_existing = check_if_user_exists(email, password)
+    if user_existing["message_type"] == "Success":
+        dbc.alter_password_user(email, new_password)
+        if dbc.get_password_by_email(email) == new_password:
+            json_string = {
+                "message_type": "Success",
+                "message": "Password changed."
+                }  
+            return json_string
+        else:
             json_string = {
                 "message_type": "Error",
-                "message": "A user with this email already exists."
+                "message": "Password has not been changed. Reason unknown. Please try again."
             }
             return json_string
+    return user_existing
+##TODO GEHT
+
+# CHANGE EMAIL USER
+#def change_email_user(email, password, new_email):
+#    allusers = dbc.get_all_users()
+#    for i in allusers:
+#        if i == new_email:
+#            json_string = {
+#                "message_type": "Error",
+#                "message": "A user with this email already exists."
+#            }
+#            return json_string
+#    for i in allusers:
+#        if i == email:
+#            if dbc.get_password_by_email(email) == password:
+#                dbc.alter_email_user(email, new_email)
+#                allusers = dbc.get_all_users()
+#                for y in allusers:
+#                    if y == new_email:
+#                        json_string = {
+#                            "message_type": "Success",
+#                            "message": "Email changed."
+#                        }  
+#                        return json_string
+#                json_string = {
+#                    "message_type": "Error",
+#                    "message": "Email has not been changed. Reason unknown. Please try again."
+#                }
+#                return json_string
+#            else:
+#                json_string = {
+#                    "message_type": "Error",
+#                    "message": "Wrong password."
+#                }
+#                return json_string   
+#    json_string = {
+#        "message_type": "Error",
+#        "message": "No existing user with this email."
+#    }
+#    return json_string
+##TODO EMAIL ÄNDERN GEHT NICHT WEILS DER PRIMARYKEY IST
+
+# CHANGE USERNAME USER
+def change_username_user(email, password, new_username):
+    user_existing = check_if_user_exists(email, password)
+    if user_existing["message_type"] == "Success":
+        dbc.alter_username_user(email, new_username)
+        if dbc.get_username_by_email(email) == new_username:
+            json_string = {
+                "message_type": "Success",
+                "message": "Username changed."
+            }
+            return json_string  
+        else:
+            json_string = {
+                "message_type": "Error",
+                "message": "Username has not been changed. Reason unknown. Please try again."
+            }
+            return json_string
+    return user_existing
+##TODO GEHT
+
+# DELET USER
+def delet_user(email, password):
+    user_existing = check_if_user_exists(email, password)
+    if user_existing["message_type"] == "Success":
+        dbc.delet_user(email)
+        allusers = dbc.get_all_users()
+        for i in allusers:
+            if i == email:
+                json_string = {
+                    "message_type": "Error",
+                    "message": "Password has not been changed. Reason unknown. Please try again."
+                }
+                return json_string
+        json_string = {
+            "message_type": "Success",
+            "message": "User deleted."
+        }
+        return json_string  
+    return user_existing
+##TODO GEHT
+
+# ----- OTHER METHODS -----
+
+# CHECK IF USER EXISTS
+def check_if_user_exists(email, password):
+    allusers = dbc.get_all_users()
     for i in allusers:
         if i == email:
             if dbc.get_password_by_email(email) == password:
-                dbc.alter_email_user(email, new_email)
-                allusers = dbc.get_all_users()
-                for y in allusers:
-                    if y == new_email:
-                        json_string = {
-                            "message_type": "Success",
-                            "message": "Email changed."
-                        }  
-                        return json_string
                 json_string = {
-                    "message_type": "Error",
-                    "message": "Email has not been changed. Reason unknown. Please try again."
+                    "message_type": "Success",
+                    "message": ""
                 }
                 return json_string
             else:
@@ -136,67 +191,10 @@ def change_email_user(email, password, new_email):
                     "message_type": "Error",
                     "message": "Wrong password."
                 }
-                return json_string   
+                return json_string
     json_string = {
         "message_type": "Error",
         "message": "No existing user with this email."
     }
     return json_string
-##TODO TESTEN UND EVENTUELL EVIZIENTER GESTALTEN
-
-# CHANGE USERNAME USER
-def change_username_user(email, password, new_username):
-    allusers = dbc.get_all_users()
-    for i in allusers:
-        if i == email:
-            if dbc.get_password_by_email(email) == password:
-                dbc.alter_username_user(email, new_username)
-                pass
-                ##TODO METHODE SCHREIBEN UM DEN NUTZERNAMEN ZU ERHALTEN UND DAMIT ÜBERPRÜFEN OB ER GEÄNDERT WURDE
-            else:
-                json_string = {
-                    "message_type": "Error",
-                    "message": "Wrong password."
-                }
-                return json_string   
-    json_string = {
-        "message_type": "Error",
-        "message": "No existing user with this email."
-    }
-    return json_string
-##TODO METHODE SCHREIBEN UND TESTEN UND EVENTUELL EVIZIENTER GESTALTEN
-##TODO NICHT EINFACH UMSETZBAR, DA EMAIL PRIMARY KEY IST
-
-
-# DELET USER
-def delet_user(email, password):
-    allusers = dbc.get_all_users()
-    for i in allusers:
-        if i == email:
-            if dbc.get_password_by_email(email) == password:
-                dbc.delet_user(email)
-                allusers = dbc.get_all_users()
-                for i in allusers:
-                    if i == email:
-                        json_string = {
-                        "message_type": "Error",
-                        "message": "Password has not been changed. Reason unknown. Please try again."
-                    }
-                    return json_string
-                json_string = {
-                    "message_type": "Success",
-                    "message": "Password changed."
-                    }  
-                return json_string       
-            else:
-                json_string = {
-                    "message_type": "Error",
-                    "message": "Wrong password."
-                }
-                return json_string   
-    json_string = {
-        "message_type": "Error",
-        "message": "No existing user with this email."
-    }
-    return json_string
-##TODO TESTEN UND EVENTUELL EVIZIENTER GESTALTEN
+##TODO GEHT
