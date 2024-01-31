@@ -27,174 +27,165 @@ def get_quiz_by_id(id):
             "country_data": country_data
         }
         return json_string
+    elif quiz_type == "flagquiz":
+        country_data = dbc.get_countries_by_quiz(select_statement)
+        json_string = {
+            "quiz_id": quiz_id,
+            "quiz_name": name,
+            "discription": discription,
+            "country_data": country_data
+        }
+        return json_string
         ##TODO ANDERE FÄLLE WIE FLAGGEN QUIZ MÜSSEN NO GEMACHT WERDEN UND VERNÜFTIGE FEHLERMELDUNG
         ##TODO beziehungsweise isch es wurst i muss lei den typ mit übergeben
     return "quiz type not existing"
 ##TODO GEHT
 
 # ----- USER -----
+##TODO SOWEIT ALLE FUNKTIONEN GESCHRIEBEN UND OPTIMIERT - ABGESCHLOSSEN - FERTIG KOMMENTIERT
 
 # CREATE NEW USER - FILTER AND ARRAGE JSON STRING
 def create_new_user(email, username, password):
+    #checks whether the email exists
+    email_exists = check_if_email_exists(email)
+    if email_exists["message_type"] == "Success": 
+        json_string = {
+            "message_type": "Error",
+            "message": "A user with this email already exists."
+        }
+        return json_string
+    #creates new user
+    return dbc.create_new_user(email, username, password)
+#TODO GEHT - FERTIG KOMMENTIERT UND OPTIMIERT - ERNEUTES TESTEN
+
+# USER LOGIN
+def user_login(email, password):
+    #checks whether the user exists and the password is correct
+    login_possible = check_if_login_is_possible(email,password)
+    if login_possible["message_type"] == "Success":
+        json_string = {
+            "message_type": "Success",
+            "message": "User logged in."
+        }
+        return json_string
+    return login_possible
+#TODO GEHT - FERTIG KOMMENTIERT UND OPTIMIERT - ERNEUTES TESTEN
+
+# CHECK IF EMAIL EXISTS
+def check_if_email_exists(email):
+    #searches all users in the database and checks whether the specified email address exists
     allusers = dbc.get_all_users()
     for i in allusers:
         if i == email:
             json_string = {
-                "message_type": "Error",
-                "message": "A user with this email already exists."
+                "message_type": "Success",
+                "message": ""
             }
             return json_string
-    return dbc.create_new_user(email, username, password)
-#TODO GEHT
-
-# USER LOGIN
-def user_login(email, password):
-    allusers = dbc.get_all_users()
-    for i in allusers:
-        if i == email:
-            if dbc.get_password_by_email(email) == password:
-                json_string = {
-                    "message_type": "Success",
-                    "message": "User logged in."
-                }
-                return json_string
-            else:
-                print(dbc.get_password_by_email(email))
-                json_string = {
-                    "message_type": "Error",
-                    "message": "Wrong password."
-                }
-                return json_string   
     json_string = {
         "message_type": "Error",
         "message": "No existing user with this email."
     }
     return json_string
-#TODO GEHT
+##TODO GEHT - FERTIG KOMMENTIERT UND OPTIMIERT - ERNEUTES TESTEN
+
+# CHECK IF USER EXISTS
+def check_if_login_is_possible(email, password):
+    #checks whether the email exists
+    email_exists = check_if_email_exists(email)
+    if email_exists["message_type"] == "Success": 
+        #checks whether the passed password matches the password of the database
+        if dbc.get_password_by_email(email) == password:
+            json_string = {
+                "message_type": "Success",
+                "message": ""
+            }
+        else:
+            json_string = {
+                "message_type": "Error",
+                "message": "Wrong password."
+            }
+        return json_string
+    return email_exists
+##TODO GEHT - FERTIG KOMMENTIERT UND OPTIMIERT - ERNEUTES TESTEN
 
 # CHANGE PASSWORD USER
 def change_password_user(email, password, new_password):
-    user_existing = check_if_user_exists(email, password)
-    if user_existing["message_type"] == "Success":
+    #checks whether the user exists and the password is correct
+    login_possible = check_if_login_is_possible(email, password)
+    if login_possible["message_type"] == "Success":
+        #changes the password
         dbc.alter_password_user(email, new_password)
+        #checks whether the password has been changed
         if dbc.get_password_by_email(email) == new_password:
             json_string = {
                 "message_type": "Success",
                 "message": "Password changed."
                 }  
-            return json_string
         else:
             json_string = {
                 "message_type": "Error",
                 "message": "Password has not been changed. Reason unknown. Please try again."
             }
-            return json_string
-    return user_existing
-##TODO GEHT
-
-# CHANGE EMAIL USER
-#def change_email_user(email, password, new_email):
-#    allusers = dbc.get_all_users()
-#    for i in allusers:
-#        if i == new_email:
-#            json_string = {
-#                "message_type": "Error",
-#                "message": "A user with this email already exists."
-#            }
-#            return json_string
-#    for i in allusers:
-#        if i == email:
-#            if dbc.get_password_by_email(email) == password:
-#                dbc.alter_email_user(email, new_email)
-#                allusers = dbc.get_all_users()
-#                for y in allusers:
-#                    if y == new_email:
-#                        json_string = {
-#                            "message_type": "Success",
-#                            "message": "Email changed."
-#                        }  
-#                        return json_string
-#                json_string = {
-#                    "message_type": "Error",
-#                    "message": "Email has not been changed. Reason unknown. Please try again."
-#                }
-#                return json_string
-#            else:
-#                json_string = {
-#                    "message_type": "Error",
-#                    "message": "Wrong password."
-#                }
-#                return json_string   
-#    json_string = {
-#        "message_type": "Error",
-#        "message": "No existing user with this email."
-#    }
-#    return json_string
-##TODO EMAIL ÄNDERN GEHT NICHT WEILS DER PRIMARYKEY IST
+        return json_string
+    return login_possible
+##TODO GEHT - FERTIG KOMMENTIERT UND OPTIMIERT - ERNEUTES TESTEN
 
 # CHANGE USERNAME USER
 def change_username_user(email, password, new_username):
-    user_existing = check_if_user_exists(email, password)
-    if user_existing["message_type"] == "Success":
+    #checks whether the user exists and the password is correct
+    login_possible = check_if_login_is_possible(email, password)
+    if login_possible["message_type"] == "Success":
+        #changes the username
         dbc.alter_username_user(email, new_username)
+        #checks whether the username has been changed
         if dbc.get_username_by_email(email) == new_username:
             json_string = {
                 "message_type": "Success",
                 "message": "Username changed."
             }
-            return json_string  
         else:
             json_string = {
                 "message_type": "Error",
                 "message": "Username has not been changed. Reason unknown. Please try again."
             }
-            return json_string
-    return user_existing
-##TODO GEHT
+        return json_string
+    return login_possible
+##TODO GEHT - FERTIG KOMMENTIERT UND OPTIMIERT - ERNEUTES TESTEN
 
 # DELET USER
 def delet_user(email, password):
-    user_existing = check_if_user_exists(email, password)
-    if user_existing["message_type"] == "Success":
+    #checks whether the user exists and the password is correct
+    login_possible = check_if_login_is_possible(email, password)
+    if login_possible["message_type"] == "Success":
+        #deletes the user
         dbc.delet_user(email)
-        allusers = dbc.get_all_users()
-        for i in allusers:
-            if i == email:
-                json_string = {
-                    "message_type": "Error",
-                    "message": "Password has not been changed. Reason unknown. Please try again."
-                }
-                return json_string
-        json_string = {
-            "message_type": "Success",
-            "message": "User deleted."
-        }
-        return json_string  
-    return user_existing
-##TODO GEHT
+        #checks whether the user has been deleted
+        email_exists = check_if_email_exists(email)
+        if email_exists["message_type"] == "Error":
+            json_string = {
+                "message_type": "Success",
+                "message": "User deleted."
+            }
+        else:
+            json_string = {
+                "message_type": "Error",
+                "message": "User has not been deletet. Reason unknown. Please try again."
+            }
+        return json_string 
+    return login_possible
+##TODO GEHT - FERTIG KOMMENTIERT UND OPTIMIERT - ERNEUTES TESTEN
 
-# ----- OTHER METHODS -----
+# ----- SCORE -----
 
-# CHECK IF USER EXISTS
-def check_if_user_exists(email, password):
-    allusers = dbc.get_all_users()
-    for i in allusers:
-        if i == email:
-            if dbc.get_password_by_email(email) == password:
-                json_string = {
-                    "message_type": "Success",
-                    "message": ""
-                }
-                return json_string
-            else:
-                json_string = {
-                    "message_type": "Error",
-                    "message": "Wrong password."
-                }
-                return json_string
-    json_string = {
-        "message_type": "Error",
-        "message": "No existing user with this email."
-    }
-    return json_string
-##TODO GEHT
+# SET SCORE
+def set_score(email, quiz_id, score, achivable_score, needed_time):
+    #checks if the email exists
+    email_exists = check_if_email_exists(email)
+    if email_exists["message_type"] == "Success":
+        pass
+        ##TODO CHECK IF QUIZ EXISTS
+        ##TODO CHECK IF SCORE EXISTS AND IF ITS LOWER
+        ##TODO SETSCORE
+    pass
+    

@@ -13,6 +13,8 @@ select * from country;
 SELECT COUNT(*) AS entry_count FROM country;
 select capital from country where name = "Eritrea"; 
 
-select count(*) AS c from country where independent = true and continent = "Asia";
+select count(*) AS c from country where independent = true and continent = "Oceania";
 
 select * from quiz;
+select * from user;
+select * from score;
