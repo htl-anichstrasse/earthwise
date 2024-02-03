@@ -41,6 +41,24 @@ def get_quiz_by_id(id):
     return "quiz type not existing"
 ##TODO GEHT
 
+# GET ALL QUIZ DATA
+def get_all_quiz_data():
+    quiz_data = dbc.get_all_quiz_data()
+    json_string = []
+    for quiz in quiz_data:
+        quiz_id, name, discription, quiz_type, select_statement = quiz
+        country_data = dbc.get_countries_by_quiz(select_statement)
+        quiz_json = {
+            "quiz_id": quiz_id,
+            "quiz_name": name,
+            "discription": discription,
+            "quiz_type": quiz_type,
+            "country_data": country_data
+        }
+        json_string.append(quiz_json)
+    return json_string
+##TODO GEHT
+
 # ----- USER -----
 ##TODO SOWEIT ALLE FUNKTIONEN GESCHRIEBEN UND OPTIMIERT - ABGESCHLOSSEN - FERTIG KOMMENTIERT
 

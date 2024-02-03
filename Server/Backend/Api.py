@@ -8,15 +8,21 @@ app = FastAPI()
 # ----- QUIZ -----
 
 # GET QUIZ OVERVIEW - API
-@app.get("/getquizoverview")
+@app.get("/getquizoverview") # /getquizoverview
 def getquizoverview():
-    return ad.get_quiz_overview() # {"quiz_data": quiz_data} -> quiz_data = [[quiz_id, name], ...]
+    return ad.get_quiz_overview() # {"quiz_data": quiz_data} -> quiz_data = [[quiz_id, name, quiz_type], ...]
 ##TODO GEHT
 
 # GET QUIZ BY ID - API
 @app.get("/getquizbyid/{id}") # /getquizbyid/id
 def getquiz(id: int):
     return ad.get_quiz_by_id(id) # {"quiz_id": quiz_id, "quiz_name": name, "discription": discription, "country_data": country_data}
+##TODO GEHT
+
+# GET ALL QUIZ DATA
+@app.get("/getallquizdata") # /getallquizdata
+def getallquizdata():
+    return ad.get_all_quiz_data()
 ##TODO GEHT
 
 # ----- USER -----

@@ -15,7 +15,7 @@ def connect_db():
 # GET QUIZ OVERVIEW - SELECT
 def get_quiz_overview():
     mycursor, mydb = connect_db()
-    mycursor.execute("select quiz_id, name from quiz")
+    mycursor.execute("select quiz_id, name, quiz_type from quiz")
     result = mycursor.fetchall()
     mydb.close()
     return result
@@ -33,6 +33,15 @@ def get_quiz_by_id(id):
 def get_countries_by_quiz(select_statement):
     mycursor, mydb = connect_db()
     mycursor.execute(select_statement)
+    result = mycursor.fetchall()
+    mydb.close()
+    return result
+##TODO GEHT
+
+# GET QUIZ OVERVIEW - SELECT
+def get_all_quiz_data():
+    mycursor, mydb = connect_db()
+    mycursor.execute("select * from quiz")
     result = mycursor.fetchall()
     mydb.close()
     return result
