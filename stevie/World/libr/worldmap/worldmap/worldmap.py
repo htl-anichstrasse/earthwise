@@ -22,9 +22,9 @@ import re
 from .utils.zip_extract import zip_extract
 from .utils.deepStringMatching import deepStringMatching
 
-
 global PATH_MAPZIP, CITYCODE
-curpath = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+curpath = os.path.dirname(os.path.abspath(__file__)) 
 CITYCODE = os.path.abspath(os.path.join(curpath,'data','citycode.txt'))
 PATH_MAPZIP = os.path.abspath(os.path.join(curpath,'data','SVG_MAPS.zip'))
 

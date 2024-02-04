@@ -4,13 +4,15 @@ from libr.worldmap.worldmap import plot
 import libr.worldmap.worldmap.worldmap as wm
 import io
 import os
+from os import path
 import shutil
 from matplotlib.colors import ListedColormap
 import json
+from flask_compress import Compress
 
 app = Flask(__name__)
+compress = Compress(app)
 
-# Sample data
 county_names = wm.list_county_names(map_name='world')
 
 
@@ -18,8 +20,12 @@ selected_countries = [' ']
 selected_country = [' ']
 opacity = 0.5
 single_color_cmap = ListedColormap(['#06d009'])  
+#filename = os.path.join(os.path.dirname(__file__), 'static', 'selected_countries.txt')
 filename='World\static\selected_countries.txt'
-is_reset = True
+is_reset = False
+first_time = True
+file_cleared = False
+selected_country = " "
 # Nutzerfreundlicher -> immer den ersten Buchstaben capital
 def capitalize_first_letter(text):
     return text.capitalize()
@@ -30,6 +36,14 @@ def capitalize_first_letter(text):
 def save_selected_countries():
     with open(filename, 'w') as f:
         json.dump(selected_countries, f)
+        
+def delete_selected_countries():
+    global selected_countries
+    global selected_country
+    with open(filename, 'w') as f:
+        json.dump([" "], f)
+    selected_countries = [' ']
+    selected_country = [' ']
 
 # Function to load selected_countries from a text file
 def load_selected_countries():
@@ -54,36 +68,56 @@ def generate_empty_svg_map():
 def delete_svg_file():
     global selected_countries
     global selected_country
-    os.remove("World\static\custom_map.svg")
+    if(os.path.exists('World\static\custom_map.svg')):
+        os.remove("World\static\custom_map.svg")
     with open(filename, 'w') as f:
         json.dump([" "], f)
-    
     selected_countries = [' ']
     selected_country = [' ']
+    generate_empty_svg_map()
     return jsonify({'success': True})
 
 
+def clear_selected_countries_file():
+    with open(filename, 'w') as f:
+        json.dump([" "], f)
+
+# Register a function to run before the first request is processed
+@app.before_request
+def before_request():
+    global file_cleared
+    global selected_countries
+    global selected_country
+    # Clear selected_countries.txt file only if it hasn't been cleared before
+    if not file_cleared:
+        clear_selected_countries_file()
+        file_cleared = True
+        selected_countries = [" "]
+        selected_country = " "
 load_selected_countries()
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     global selected_countries
     global is_reset
+    global first_time
+    global selected_country
     message = ""
-
-    map_exists = False
-
+    #map_exists = False
+    svg_map_tuple = plot([' '], opacity=opacity * len(selected_countries), cmap='ocean')
+    
+                
     if request.method == 'POST':
         if(is_reset):
             try:
+                delete_svg_file()
                 svg_map_tuple = plot([' '], opacity=opacity * len(selected_countries), cmap='ocean')
                 is_reset = False
             except Exception as e:
                 message = f"An error occurred while generating the map: {e}"
         else:
-            
             selected_country = capitalize_first_letter(request.form.get('country'))
-            
             for _ in range(10):
                 print(selected_country)
             if selected_country in county_names:
@@ -103,7 +137,7 @@ def index():
 
     # Save selected_countries to the text file before rendering the template
     save_selected_countries()
-    return render_template('index.html', map_exists=map_exists, message=message, selected_countries=selected_countries)
+    return render_template('index.html', map_exists=True, message=message, selected_countries=selected_countries)
 
 @app.route('/reset', methods=['GET', 'POST'])
 def reset():
