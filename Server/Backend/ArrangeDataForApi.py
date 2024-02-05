@@ -47,14 +47,20 @@ def get_all_quiz_data():
     json_string = []
     for quiz in quiz_data:
         quiz_id, name, discription, quiz_type, select_statement = quiz
-        country_data = dbc.get_countries_by_quiz(select_statement)
-        quiz_json = {
-            "quiz_id": quiz_id,
-            "quiz_name": name,
-            "discription": discription,
-            "quiz_type": quiz_type,
-            "country_data": country_data
-        }
+        if quiz_type == "mapquiz" or quiz_type == "flagquiz":
+            country_data = dbc.get_countries_by_quiz(select_statement)
+            country_data_filtered = []
+            for country in country_data:
+                country_data_filtered.append(country[1])
+            quiz_json = {
+                "quiz_id": quiz_id,
+                "quiz_name": name,
+                "discription": discription,
+                "quiz_type": quiz_type,
+                "country_data": country_data_filtered
+            }
+        ##TODO SPEZIELLE BEHANDLUNG FÜR TABLEQUIZZES
+        ##TODO DA MÜSSEN DIE ANTWORTEN DIREKT MITGESCHICKT WERDEN UND NIT LEI DIE LÄNDERCODES
         json_string.append(quiz_json)
     return json_string
 ##TODO GEHT
