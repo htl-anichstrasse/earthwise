@@ -74,7 +74,7 @@ create table country(
 create table user(
     email varchar(150) not null,
     username varchar(50) not null,
-    password varchar(50) not null,
+    password varchar(300) not null,
 
     constraint email_pk primary key (email)
 )engine=InnoDB;
