@@ -52,7 +52,7 @@ def get_all_quiz_data():
 # CREATE NEW USER - INSERT
 def create_new_user(email, username, password):
     mycursor, mydb = connect_db()
-    insert_query = 'INSERT INTO user VALUES ("' + email + '", "' + username + '", "' + password + '")'
+    insert_query = 'INSERT INTO user VALUES ("' + email + '", "' + username + '", "' + password + '",0)'
     try:
         mycursor.execute(insert_query)
         mydb.commit()
@@ -132,6 +132,26 @@ def delet_user(email):
     mycursor, mydb = connect_db()
     delet_statement = "DELETE FROM user WHERE email = \'" + email + "\'"
     mycursor.execute(delet_statement)
+    mydb.commit()
+    mydb.close()
+##TODO GEHT
+
+# GET LEVEL BY EMAIL - SELECT
+def get_level_by_email(email):
+    mycursor, mydb = connect_db()
+    select_statement = "select level from user where email = %s"
+    mycursor.execute(select_statement, (email,))
+    results = mycursor.fetchall()
+    mydb.close()
+    usernames = list(sum(results, ()))
+    return usernames[0]
+##TODO GEHT
+
+# CHANGE LEVEL BY EMAIL - ALTER
+def alter_level_user(email, level):
+    mycursor, mydb = connect_db()
+    update_statement = "update user set level = " + str(level) + " where email = \'" + email + "\'"
+    mycursor.execute(update_statement)
     mydb.commit()
     mydb.close()
 ##TODO GEHT

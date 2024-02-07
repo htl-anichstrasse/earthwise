@@ -71,10 +71,29 @@ create table country(
 )engine=InnoDB;
 
 #create user table
+
+drop table user;
+
 create table user(
     email varchar(150) not null,
     username varchar(50) not null,
     password varchar(300) not null,
+    level int unsigned not null,
 
     constraint email_pk primary key (email)
 )engine=InnoDB;
+
+#create score table
+
+drop table score;
+
+create table score(
+	email varchar(150) not null,
+    quiz_id int unsigned not null,
+    score int unsigned not null,
+    achivable_score int unsigned not null,
+    needed_time int unsigned not null,
+    
+    constraint email_quiz_id_pk primary key (email, quiz_id)
+)engine=InnoDB;
+

@@ -200,6 +200,41 @@ def delet_user(email, password):
     return login_possible
 ##TODO GEHT - FERTIG KOMMENTIERT UND OPTIMIERT - ERNEUTES TESTEN
 
+# GET USERNAME AND LEVEL
+def get_username_and_level(email):
+    email_exists = check_if_email_exists(email)
+    if email_exists["message_type"] == "Success":
+        username = dbc.get_username_by_email(email)
+        level = dbc.get_level_by_email(email)
+        json_string = {
+                "username": username,
+                "level": level
+            }
+        return json_string
+    return email_exists
+##TODO GEHT
+
+# GET USERNAME AND LEVEL
+def increase_level(email, levelincrease):
+    email_exists = check_if_email_exists(email)
+    if email_exists["message_type"] == "Success":
+        level = dbc.get_level_by_email(email)
+        new_level = levelincrease + level
+        dbc.alter_level_user(email, new_level)
+        if new_level == dbc.get_level_by_email(email):
+            json_string = {
+                "message_type": "Success",
+                "message": "Level increased."
+            }
+        else:
+            json_string = {
+                "message_type": "Error",
+                "message": "Level has not been increased. Reason unknown. Please try again."
+            }
+        return json_string
+    return email_exists
+##TODO GEHT
+
 # ----- SCORE -----
 
 # SET SCORE

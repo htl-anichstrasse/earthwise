@@ -26,6 +26,8 @@ def getallquizdata():
     return ad.get_all_quiz_data() # [{"quiz_id": quiz_id,"quiz_name":name,"discription": discription,"quiz_type":quiz_type,"country_data":["cca2","cca2", ...]}, ... ]
 ##TODO GEHT
 
+##TODO GET ALL ALTERNATIV NAMES
+
 # ----- USER -----
 ##TODO FERTIG
 
@@ -54,6 +56,16 @@ def changeusername(email: str, password: str, newusername: str):
 def deletuser(email: str, password: str):
     return ad.delet_user(email, password) # {"message_type": message_type,"message": message}
 
+# GET USERNAME AND LEVEL (to get the username and level)
+@app.get("/getusernameandlevel/{email}") # /getusernameandlevel/email
+def getusernameandlevel(email: str):
+    return ad.get_username_and_level(email) # {"username": username,"level": level} OR {"message_type": message_type,"message": message}
+
+# INCREASE LEVEL (to increase a users level)
+@app.get("/increaselevel/{email}/{levelincrease}") # /increaselevel/email/levelincrease
+def increaselevel(email: str, levelincrease: int):
+    return ad.increase_level(email, levelincrease) # {"message_type": message_type,"message": message}
+
 # ----- SCORE -----
 ##TODO DA FEHLT NO EINIGES
 
@@ -64,7 +76,6 @@ def setscore(email: str, quizid: int, score: int, achivablescore: int, neededtim
 ##TODO TESTEN UND SCHREIBEN
 
 ##TODO HIGHSCORE SCHICKEN, HIGHSCORE ABRUFEN, ...
-##TODO GET USERNAME, ...
 
 if __name__ == "__main__":
     uvicorn.run(app, host="localhost", port=8080)
