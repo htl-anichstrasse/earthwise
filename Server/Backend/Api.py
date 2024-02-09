@@ -29,7 +29,7 @@ def getallquizdata():
 ##TODO GET ALL ALTERNATIV NAMES
 
 # ----- USER -----
-##TODO FERTIG
+##TODO KOMPLETT ABGESCHLOSSEN
 
 # CREATE NEW USER (to create a new user)
 @app.get("/createnewuser/{email}/{username}/{password}") # /createnewuser/email/username/password
@@ -51,10 +51,10 @@ def changepassword(email: str, password: str, newpassword: str):
 def changeusername(email: str, password: str, newusername: str):
     return ad.change_username_user(email, password, newusername) # {"message_type": message_type,"message": message}
 
-# DELET USER (to delete the user from the database)
-@app.get("/deletuser/{email}/{password}") # /deletuser/email/password
-def deletuser(email: str, password: str):
-    return ad.delet_user(email, password) # {"message_type": message_type,"message": message}
+# DELETE USER (to delete the user from the database)
+@app.get("/deleteuser/{email}/{password}") # /deleteuser/email/password
+def deleteuser(email: str, password: str):
+    return ad.delete_user(email, password) # {"message_type": message_type,"message": message}
 
 # GET USERNAME AND LEVEL (to get the username and level)
 @app.get("/getusernameandlevel/{email}") # /getusernameandlevel/email
@@ -67,15 +67,25 @@ def increaselevel(email: str, levelincrease: int):
     return ad.increase_level(email, levelincrease) # {"message_type": message_type,"message": message}
 
 # ----- SCORE -----
-##TODO DA FEHLT NO EINIGES
+##TODO GEHT
 
 # SET SCORE - API
 @app.get("/setscore/{email}/{quizid}/{score}/{achivablescore}/{neededtime}") # /setscore/email/quizid/score/achivablescore/neededtime
 def setscore(email: str, quizid: int, score: int, achivablescore: int, neededtime: int):
     return ad.set_score(email, quizid, score, achivablescore, neededtime) # {"message_type": message_type,"message": message}
-##TODO TESTEN UND SCHREIBEN
+##TODO GEHT
 
-##TODO HIGHSCORE SCHICKEN, HIGHSCORE ABRUFEN, ...
+# GET SCORE - API
+@app.get("/getscore/{email}/{quizid}") # /getscore/email/quizid
+def getscore(email: str, quizid: int):
+    return ad.get_score(email, quizid) # [email, quiz_id, score, achivable_score, needed_time] OR {"message_type": message_type,"message": message}
+##TODO GEHT
+
+# GET ALL SCORES - API
+@app.get("/getallscores/{email}") # /getallscores/email
+def getallscores(email: str):
+    return ad.get_all_scores_by_email(email) # [[email, quiz_id, score, achivable_score, needed_time], ...]
+##TODO GEHT
 
 if __name__ == "__main__":
     uvicorn.run(app, host="localhost", port=8080)
