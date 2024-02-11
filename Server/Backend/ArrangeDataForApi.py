@@ -24,6 +24,7 @@ def get_quiz_by_id(id):
             "quiz_id": quiz_id,
             "quiz_name": name,
             "discription": discription,
+            "quiz_type": quiz_type,
             "country_data": country_data
         }
         return json_string
@@ -33,6 +34,7 @@ def get_quiz_by_id(id):
             "quiz_id": quiz_id,
             "quiz_name": name,
             "discription": discription,
+            "quiz_type": quiz_type,
             "country_data": country_data
         }
         return json_string
