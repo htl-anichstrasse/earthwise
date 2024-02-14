@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Flag-Overview{% endblock %}
+
+{% block content%}
+<head>  
+<style>
+    .float-container {
+        overflow: auto;
+    }
+
+    .float-child1{
+        width: 70%;
+        float: left;
+    }
+
+    .float-child2{
+        width: 30%;
+        float: left;
+    }
+
+    table {
+        border-collapse: collapse;
+        font-family: Tahoma, Geneva, sans-serif;
+    }
+
+    table td {
+        padding: 15px;
+    }
+
+    table thead td {
+        background-color: #54585d;
+        color: #ffffff;
+        font-weight: bold;
+        font-size: 13px;
+        border: 1px solid #54585d;
+    }
+
+    table tbody td {
+        color: #636363;
+        border: 1px solid #dddfe1;
+    }
+
+    table tbody tr {
+        background-color: #f9fafb;
+    }
+
+    table tbody tr:nth-child(odd) {
+        background-color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+<div class="float-container">
+        <form id="searchForm" style="text-align: center; margin-top: 20px;">
+            <label for="quizType">Search by Quiz Type: </label>
+            <input type="text" id="quizType" name="quizType" placeholder="Enter Quiz Type">
+            <button type="button" onclick="searchQuiz()">Search</button>
+        </form>
+        <div class="float-child1">
+        <table style="margin-top: 50px;" id="quizTable">
+            <thead>
+                <tr>
+                    <td>Quiz Name</td>
+                    <td>Quiz Type</td>
+                    <td>High Score</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in range(count) %}
+    <tr>
+        <td><a href="{{ url_for('auth.serverQuiz', quizId=i+1) }}">{{ quiz_names[i] }}</a></td>
+        <td>{{ quiz_types[i] }}</td>
+        {% set highscore_found = false %}
+        {% for value in high_scores %}
+            {% if quiz_ids[i] == value[1] %}
+                <td>{{ value[2] }}/{{ value[3] }} | {{ value[4] }}s</td>
+                {% set highscore_found = true %}
+            {% endif %}
+        {% endfor %}
+        {% if not highscore_found %}
+            <td>No Highscore</td>
+        {% endif %}
+    </tr>
+{% endfor %}
+
+                                
+            </tbody>
+        </table>
+    </div>
+    <div class="float-child2">
+        <table style="margin-top: 50px;">
+            <thead>
+                <tr>
+                    <td>All Flags</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <a href="{{ url_for('auth.allFlags') }}">By Names</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="{{ url_for('auth.allFlagsByContinent') }}">By Continents</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function searchQuiz() {
+        var input = document.getElementById("quizType").value.toLowerCase();
+        var table = document.getElementById("quizTable");
+        var rows = table.getElementsByTagName("tr");
+
+        for (var i = 1; i < rows.length; i++) {
+            var quizType = rows[i].getElementsByTagName("td")[1].innerText.toLowerCase();
+
+            if (quizType.includes(input)) {
+                rows[i].style.display = "";
+            } else {
+                rows[i].style.display = "none";
+            }
+        }
+    }
+</script>
+
+</body>
+{% endblock %}

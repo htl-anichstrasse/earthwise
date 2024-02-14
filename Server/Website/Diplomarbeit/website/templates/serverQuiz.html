@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% block title %}Server-Quiz{% endblock %}
+{% block content %}
+    <style>
+        .quizForm {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .flag-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .flag-container img {
+            width: 250px;
+            height: 150px;
+            border: 2px solid grey;
+        }
+
+        #timer {
+            text-align: center;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+
+        input {
+            padding: 16px;
+            font-size: 16px;
+            border: 2px solid #ccc;
+            border-radius: 2px;
+            box-sizing: border-box;
+            height:20px;
+            width: 250px;
+        }
+    </style>
+    <form method="post">
+
+        <h1 style="text-align: center">{{ quiz_name }}</h1>
+        <h3 style="text-align: center; padding-bottom: 30px;">{{ description }}</h3>
+        <button type="button" id="startButton" onclick="startQuiz()">Start</button>
+        <button type="button" id="stopButton" onclick="stopQuiz()">Stop</button>
+
+        <button type="button" id="showAndHide" onclick="showAndHideAnswers()">Show Answers</button>
+        
+        <div id="timer"></div>
+        <div id="point_count"></div>
+
+        <div class="quizForm">
+            {% for i in country_names %}
+                {% set path = '/flags/'+i+'.png' %} 
+                <div class="flag-container">
+                    <img src="{{ url_for('static', filename = path) }}" alt="{{ i }}">
+                    <span><input type="text" name="countryInput" id="input{{ i }}" disabled></span>
+                </div>
+            {% endfor %}
+        </div>
+
+    </form>
+
+    <script>
+        var inputs = document.getElementsByName('countryInput');
+        var sAndHBotton = document.getElementById('showAndHide');
+        var sButton = document.getElementById('startButton');
+        var stopButton = document.getElementById('stopButton');  
+        var timer;
+        var seconds = 0;
+        var points = 0;
+        var correct_answers = {{ country_names | tojson }};
+
+        function startQuiz() { 
+            seconds = 0;
+            hideAnswers();
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].removeAttribute('disabled');
+                inputs[i].style.backgroundColor = ''; 
+            }
+
+            sAndHBotton.setAttribute('disabled', 'disabled');
+            sButton.setAttribute('disabled', 'disabled');
+            stopButton.removeAttribute('disabled');  
+
+            startTimer();
+        }
+
+        function startTimer() {
+            timer = setInterval(function () {
+                seconds++;
+                document.getElementById('timer').innerText = seconds + ' seconds';
+            }, 1000);
+        }
+
+        function stopQuiz() {
+            points = 0;
+            clearInterval(timer);
+            document.getElementById('timer').innerText = 'Stopped at ' + seconds + ' seconds';
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].setAttribute('disabled', 'disabled');
+            }
+            checkAnswers(seconds);
+            
+            sAndHBotton.removeAttribute('disabled');
+            sButton.removeAttribute('disabled');
+            stopButton.setAttribute('disabled', 'disabled');  
+        }
+
+        function checkAnswers(seconds) {
+            var max_points = 0;
+            for (var i = 0; i < inputs.length; i++) {
+                var userAnswer = inputs[i].value.toLowerCase();
+                var correctAnswer = correct_answers[i].toLowerCase();
+                max_points += 1;
+
+                if (userAnswer !== correctAnswer) {
+                    inputs[i].style.backgroundColor = 'red';
+                } else {
+                    inputs[i].style.backgroundColor = ''; 
+                    points += 1
+                }
+            }
+            document.getElementById('point_count').innerText = points + ' out of possible ' + max_points + ' points';
+            sendScore(seconds, points, max_points);
+        }
+
+        function showAndHideAnswers() {
+            var showAndHide = document.getElementById('showAndHide');
+        
+            if (showAndHide.innerHTML === 'Show Answers') {
+                showAnswers();
+            } else {
+                hideAnswers();
+            }
+        }
+
+        function showAnswers() {
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].value = correct_answers[i];
+            }
+            document.getElementById('showAndHide').innerHTML = 'Hide Answers';
+        }
+
+        function hideAnswers() {
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].value = '';
+            }
+            document.getElementById('showAndHide').innerHTML = 'Show Answers';
+        }
+
+        function sendScore(seconds, points, max_points) {
+            var quizId = '{{ quizId }}';
+            var score = points;
+            var achievableScore = max_points;
+            var needed_time = seconds;
+
+            var url = '{{ url_for("auth.set_score") }}';
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            var data = JSON.stringify({
+                quiz_id: quizId,
+                score: score,
+                achievable_score: achievableScore,
+                needed_time: needed_time
+            });
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        console.log(xhr.responseText);
+                    }
+                }
+            };
+
+            xhr.send(data);
+        }
+
+    </script>
+{% endblock %}

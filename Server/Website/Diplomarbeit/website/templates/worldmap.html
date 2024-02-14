@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block title %}Map Quiz{% endblock %}
+{% block content %}
+<head>
+    <meta charset="latin1">
+    <title>World Map</title>
+    <style>
+    </style>
+</head>
+<body>
+    <div style="text-align: center">
+        <h1>{{quiz_name}}</h1>
+        <h3>{{description}}</h3>
+
+        <p id="answer_list" style="display: none">{{county_names}}</p>
+
+        <form method="post">
+            <label for="country">Enter a country:</label>
+            <input type="text" id="country" name="country" required disabled>
+            <button type="button" id="startButton" onclick="startQuiz()">Start</button>
+            <button type="button" id="stopButton" onclick="stopQuiz()" disabled>Stop</button>
+            <button type="submit" id="submitButton" disabled>Submit</button>
+            <button type="button" id="reset-button" onclick="resetMap()">Reset</button>
+            <button type="button" id="showAndHide" onclick="showAndHideAnswers()">Show Answers</button>
+
+            <div id="timer"></div>
+            <div id="point_count"></div>
+        </form>
+    </div>
+    {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+    <div id="svg-container" />
+
+
+
+
+
+
+    <script>
+            var timer;
+            var seconds = 0;
+            var points = 0;
+            var maxPoints = 0;
+            var quizStarted = false;
+
+            function startQuiz() {
+                if (!quizStarted) {
+                    seconds = 0;
+                    points = 0;
+                    maxPoints = 0;
+                    quizStarted = true;
+
+                    document.getElementById('country').removeAttribute('disabled');
+                    document.getElementById('showAndHide').disabled = false;
+                    document.getElementById('submitButton').removeAttribute('disabled');
+                    document.getElementById('stopButton').removeAttribute('disabled');
+                    document.getElementById('startButton').setAttribute('disabled', 'disabled');
+
+                    timer = setInterval(function () {
+                        seconds++;
+                        document.getElementById('timer').innerText = 'Time: ' + seconds + ' seconds';
+                    }, 1000);
+
+                    document.getElementById('point_count').style.display = 'none';
+                }
+            }
+
+            function stopQuiz() {
+                if (quizStarted) {
+                    quizStarted = false;
+
+                    clearInterval(timer);
+                    document.getElementById('timer').innerText = 'Stopped at ' + seconds + ' seconds';
+                    document.getElementById('country').setAttribute('disabled', 'disabled');
+                    document.getElementById('showAndHide').disabled = false;
+                    document.getElementById('submitButton').setAttribute('disabled', 'disabled');
+                    document.getElementById('stopButton').setAttribute('disabled', 'disabled');
+                    document.getElementById('startButton').removeAttribute('disabled');
+        
+
+                    checkAnswers(seconds);
+                    document.getElementById('point_count').innerText = 'Points: ' + points + ' out of ' + maxPoints + ' possible';
+                    document.getElementById('point_count').style.display = 'block';
+
+                    seconds = 0;
+                    points = 0;
+                    maxPoints = 0;
+                }
+            }
+
+            function checkAnswers(seconds) {
+              
+                maxPoints = {{max_points}};
+                points ={{ selected_countries | length }} -1;
+                sendScore(seconds, points, maxPoints);
+
+            }
+
+            function sendScore(seconds, points, max_points) {
+                var quizId = '{{ quizId }}';
+                var score = points;
+                var achievableScore = max_points;
+                var needed_time = seconds;
+            
+                var url = '{{ url_for("auth.set_score") }}';
+            
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+            
+                var data = JSON.stringify({
+                    quiz_id: quizId,
+                    score: score,
+                    achievable_score: achievableScore,
+                    needed_time: needed_time
+                });
+            
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4) {
+                        if (xhr.status == 200) {
+                            console.log(xhr.responseText);
+                        }
+                    }
+                };
+            
+                xhr.send(data);
+            }
+            
+
+            function showAndHideAnswers() {
+                var selectedCountriesElement = document.getElementById('answer_list');
+                var showAndHideButton = document.getElementById('showAndHide');
+        
+                if (selectedCountriesElement.style.display === 'none') {
+                    selectedCountriesElement.style.display = 'block';
+                    showAndHideButton.innerText = 'Hide Answers';
+                } else {
+                    selectedCountriesElement.style.display = 'none';
+                    showAndHideButton.innerText = 'Show Answers';
+                }
+
+                
+            }
+
+
+
+
+
+          fetch('{{ url_for("static", filename="custom_map.svg") }}')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('svg-container').innerHTML = data;
+            });
+
+    
+            function resetMap() {
+                fetch('/reset', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('country').value = '';
+                            // Force a reload from the server to avoid form data resend
+                            location.reload(true);
+                        }
+                    });
+            }
+            
+            
+    </script>
+</body>
+{%endblock%} 
