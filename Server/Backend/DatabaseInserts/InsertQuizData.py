@@ -7,7 +7,7 @@ mydb = mysql.connector.connect(host="localhost", user="root", password="david200
 mycursor = mydb.cursor()
 
 #FIELDS IN DATABASE
-#quiz_id(int), name(string), discription(string), quiz_type(string), select_statement(string)
+#quiz_id(int), name(string), description(string), quiz_type(string), select_statement(string)
 
 def insert_into_database(insert_query):
     try:
@@ -32,19 +32,19 @@ def all_neighboring_countries():
             print(dicttest["4"])
             
             
-    #INSERT INTO quiz VALUES (21, "All capitals of in Oceania", "Name the capitals of all 15 independet countries in Oceania.", "tablequiz", \'select name, cca2, capital from country where independent = true and continent = "Oceania"\')'
+    #INSERT INTO quiz VALUES (21, "All capitals of in Oceania", "Name the capitals of all 15 independent countries in Oceania.", "tablequiz", \'select name, cca2, capital from country where independent = true and continent = "Oceania"\')'
     mydb.close()
         
 if __name__ == '__main__':
-    #tempcount = 0
-    #for i in d.data:
-    #    tempcount = tempcount + 1
-    #    print(i)
-    #    insert_into_database(i)
-    #    print(tempcount)
-    #mycursor.close()
-    #mydb.close()
-    all_neighboring_countries()
+    tempcount = 0
+    for i in d.data:
+        tempcount = tempcount + 1
+        print(i)
+        insert_into_database(i)
+        print(tempcount)
+    mycursor.close()
+    mydb.close()
+    #all_neighboring_countries()
     ##TODO UMBAUEN SO DASS MIT INSTALATIONSDATEI AUFGERUFEN WIRD
 
 

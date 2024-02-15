@@ -31,6 +31,8 @@ alternative_spellings = {'United Arab Emirates': ["UAE", "Arab Emirates"], 'Anti
                          'Timor-Leste': ["Timor Leste", "Timor"],'Trinidad and Tobago': ["Trinidad", "Tobago"], 'United States': ["USA", "United States of America"], 
                          'Vatican City': ["Vatican"], 'Saint Vincent and the Grenadines': ["Saint Vincent", "Grenadines"]}
 
+borders_dict = {}
+
 def arrange_insert_string(data):
     # NAME, OFFICIAL_NAME
     allnames = data['name']
@@ -116,9 +118,9 @@ def arrange_insert_string(data):
     # BORDERS
     if 'borders' in data:
         borders = data['borders']
-    else:
-        borders = []
-    #print("borders: " + str(borders))
+        borders_dict.update({cca2: data['borders']})
+
+    
     
     # ALT_SPELLINGS
     for altspell in alternative_spellings:
@@ -133,7 +135,7 @@ def arrange_insert_string(data):
     #capital (list), languages (list), landlocked (boolean), area (float), population (int), timezones (list), continents (list), borders (list)
     returnvalue = '"' + name + '","' + official_name + '","' + cca2 + '","' + cca3 + '","' + str(int(independent)) + '","' + status + '","' + str(int(un_member)) 
     returnvalue = returnvalue + '","' + str(currencies) + '","' + str(capital) + '","' + str(languages) + '","' + str(int(landlocked)) + '","' + str(area)
-    returnvalue = returnvalue + '","' + str(population) + '","' + str(timezones) + '","' + str(continent) + '","' + str(borders) + '"'
+    returnvalue = returnvalue + '","' + str(population) + '","' + str(timezones) + '","' + str(continent) + '"'
     return returnvalue
 
 def list_to_json(values):
@@ -159,7 +161,46 @@ def insert_into_alternative_spellings_to_country(insertstring):
     except mysql.connector.Error as error:
         mydb.rollback()
         print(f"Error inserting record: {error}")
-    
+
+def arrange_border_insert_string():
+    for country in borders_dict:
+        #print(borders_dict[country])
+        border_countries = replace_cca3_with_cca2(borders_dict[country])
+        allready_saved = select_border(country)
+        for border in border_countries:
+            saved = False
+            for i in allready_saved:
+                if i == border:
+                    saved = True
+            if saved == False:
+                insert_into_border_to_country('"' + country + '", "' + border + '"')
+
+def replace_cca3_with_cca2(border_countries):
+    returnvalue = []
+    for cca3 in border_countries:
+        mycursor.execute("select cca2 from country where cca3 = \'" + cca3 + "\'")
+        result = mycursor.fetchall()
+        cca2 = result[0]
+        returnvalue.append(cca2[0])
+    return returnvalue
+
+def select_border(cca2):
+    mycursor.execute("select cca2 from border_to_country where border = \'" + cca2 + "\'")
+    result = mycursor.fetchall()
+    returnvalue = []
+    for border in result:
+        returnvalue.append(border[0])
+    return returnvalue
+
+def insert_into_border_to_country(insertstring):
+    insert_query = "INSERT INTO border_to_country VALUES (" + str(insertstring) + ")"
+    try:
+        mycursor.execute(insert_query)
+        mydb.commit()
+        print("border inserted successfully.")
+    except mysql.connector.Error as error:
+        mydb.rollback()
+        print(f"Error inserting record: {error}")
 
 if __name__ == '__main__':
     alldata = d.data
@@ -170,6 +211,7 @@ if __name__ == '__main__':
         #print("\n" + insertstring)
         insert_into_country(insertstring)
         print(tempcount)
+    arrange_border_insert_string()
     mycursor.close()
     mydb.close()
     ##TODO UMBAUEN SO DASS MIT INSTALATIONSDATEI AUFGERUFEN WIRD

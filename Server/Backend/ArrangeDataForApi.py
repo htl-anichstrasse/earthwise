@@ -19,12 +19,12 @@ def get_quiz_overview():
 def get_quiz_by_id(id):
     quiz_data = dbc.get_quiz_by_id(id)
     row = quiz_data[0]
-    quiz_id, name, discription, quiz_type, select_statement = row
+    quiz_id, name, description, quiz_type, select_statement = row
     country_data = dbc.get_countries_by_quiz(select_statement)
     json_string = {
         "quiz_id": quiz_id,
         "quiz_name": name,
-        "discription": discription,
+        "description": description,
         "quiz_type": quiz_type,
         "country_data": country_data
     }
@@ -36,7 +36,7 @@ def get_all_quiz_data():
     quiz_data = dbc.get_all_quiz_data()
     json_string = []
     for quiz in quiz_data:
-        quiz_id, name, discription, quiz_type, select_statement = quiz
+        quiz_id, name, description, quiz_type, select_statement = quiz
         if quiz_type == "mapquiz" or quiz_type == "flagquiz":
             country_data = dbc.get_countries_by_quiz(select_statement)
             country_data_filtered = []
@@ -45,7 +45,7 @@ def get_all_quiz_data():
             quiz_json = {
                 "quiz_id": quiz_id,
                 "quiz_name": name,
-                "discription": discription,
+                "description": description,
                 "quiz_type": quiz_type,
                 "country_data": country_data_filtered
             }
@@ -60,7 +60,7 @@ def get_all_quiz_data():
             quiz_json = {
                 "quiz_id": quiz_id,
                 "quiz_name": name,
-                "discription": discription,
+                "description": description,
                 "quiz_type": quiz_type,
                 "country_data": country_data_filtered
             }  
@@ -97,6 +97,7 @@ def get_alternativ_spellings_by_cca2(cca2):
                 alt_spell_list.append(i)
         return alt_spell_list
     return cca2_exists
+##TODO GEHT
             
         
 def check_if_cca2_exists(cca2):
@@ -110,10 +111,10 @@ def check_if_cca2_exists(cca2):
             return json_string
     json_string = {
         "message_type": "Error",
-        #"message": "No existing country with this cca2."
-        "message": country_data
+        "message": "No existing country with this cca2."
     }
     return json_string
+##TODO GEHT
 
 def check_if_quiz_exists(quiz_id):
     quiz_data = dbc.get_all_quiz_data()
@@ -129,6 +130,7 @@ def check_if_quiz_exists(quiz_id):
         "message": "No existing quiz with this id."
     }
     return json_string
+##TODO GEHT
 
 # ----- USER -----
 ##TODO KOMPLETT ABGESCHLOSSEN

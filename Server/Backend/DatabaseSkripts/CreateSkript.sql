@@ -26,7 +26,7 @@ drop table quiz;
 create table quiz(
 	quiz_id int unsigned not null,
     name varchar(100) not null,
-    discription varchar (1000) not null,
+    description varchar (1000) not null,
     quiz_type varchar(100) not null,
     select_statement varchar(1000) not null,
     
@@ -65,7 +65,6 @@ create table country(
     population int unsigned not null,
     timezones varchar(200) not null,
     continent varchar(20) not null,
-    borders varchar(150) not null,
     
     constraint cca2_pk primary key (cca2)
 )engine=InnoDB;
@@ -77,6 +76,16 @@ drop table alternative_spellings_to_country;
 create table alternative_spellings_to_country(
     cca2 varchar(2) not null,
 	alt_spelling varchar(50) not null
+    
+)engine=InnoDB;
+
+# create border table
+
+drop table border_to_country;
+
+create table border_to_country(
+    cca2 varchar(2) not null,
+	border varchar(2) not null
     
 )engine=InnoDB;
 
