@@ -67,7 +67,17 @@ create table country(
     continent varchar(20) not null,
     borders varchar(150) not null,
     
-    constraint cca3_pk primary key (cca3)
+    constraint cca2_pk primary key (cca2)
+)engine=InnoDB;
+
+# create alternative_spellings_to_country table
+
+drop table alternative_spellings_to_country;
+
+create table alternative_spellings_to_country(
+    cca2 varchar(2) not null,
+	alt_spelling varchar(50) not null
+    
 )engine=InnoDB;
 
 #create user table

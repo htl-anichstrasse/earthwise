@@ -17,7 +17,7 @@ def getquizoverview():
 # GET QUIZ BY ID (to get all the data from a quiz by id)
 @app.get("/getquizbyid/{id}") # /getquizbyid/id
 def getquiz(id: int):
-    return ad.get_quiz_by_id(id) # {"quiz_id": quiz_id, "quiz_name": name, "discription": discription, "country_data": country_data}
+    return ad.get_quiz_by_id(id) # {"quiz_id": quiz_id, "quiz_name": name, "discription": discription, "quiz_type":quiz_type, "country_data": country_data}
 ##TODO GEHT
 
 # GET ALL QUIZ DATA (for the offline version of the app to save the quizzes in a text document)
@@ -26,7 +26,17 @@ def getallquizdata():
     return ad.get_all_quiz_data() # [{"quiz_id": quiz_id,"quiz_name":name,"discription": discription,"quiz_type":quiz_type,"country_data":["cca2","cca2", ...]}, ... ]
 ##TODO GEHT
 
-##TODO GET ALL ALTERNATIV NAMES
+# GET ALL QUIZ DATA (for the offline version of the app to save the possible spellings in a text document)
+@app.get("/getallalternativspellings") # /getallalternativspellings
+def getallalternativspellings():
+    return ad.get_all_alternativ_spellings() # {"cca2":["alternative_spelling", ...], ...}
+##TODO GEHT
+
+# GET ALL QUIZ DATA 
+@app.get("/getalternativspellingsbycca2/{cca2}") # /getalternativspellingsbycca2/cca2
+def getalternativspellingsbycca2(cca2: str):
+    return ad.get_alternativ_spellings_by_cca2(cca2) # 
+##TODO GEHT
 
 # ----- USER -----
 ##TODO KOMPLETT ABGESCHLOSSEN

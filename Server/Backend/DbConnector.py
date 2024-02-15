@@ -44,6 +44,13 @@ def get_all_quiz_data():
     return result
 ##TODO GEHT
 
+def get_alternative_spellings_to_cca2(cca2):
+    mycursor, mydb = connect_db()
+    mycursor.execute("select alt_spelling from alternative_spellings_to_country where cca2 = \'" + cca2 + "\'")
+    result = mycursor.fetchall()
+    mydb.close()
+    return result
+
 # ----- USER -----
 ##TODO KOMPLETT ABGESCHLOSSEN
 

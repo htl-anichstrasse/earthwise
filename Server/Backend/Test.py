@@ -1,6 +1,6 @@
-import ArrangeDataForWebsite as ad
-import DatabaseInserts.DataForDatabase as d
-import json
+#import ArrangeDataForWebsite as ad
+#import DatabaseInserts.DataForDatabase as d
+#import json
 
 def testDataForDatabase():
     da = d.data
@@ -40,15 +40,17 @@ def testDataForDatabase():
 if __name__ == '__main__':
     #answer = ad.get_quiz_overview()
     #print(answer)
-    da = d.data
-    allKeys = []
-    for i in da:
-        a = i.keys()
-        for x in a:
-            if x in allKeys:
-                pass
-            else:
-                allKeys.append(x)
-                
-    print(allKeys)
-    
+    #da = d.data
+    #allKeys = []
+    #for i in da:
+    #    a = i.keys()
+    #    for x in a:
+    #        if x in allKeys:
+    #            pass
+    #        else:
+    #            allKeys.append(x)
+    #            
+    #print(allKeys)
+    dicttest = {"hallo": "hallo"}
+    dicttest.update({"hallo2": "hallo2"})
+    print(dicttest)

@@ -13,7 +13,7 @@ import json
 
 #FIELDS IN DATABASE
 #   name (string), official_name (string), cca2 (string), cca3 (string), independent (boolean), status (string), un_member (boolean), currencies (list), 
-#   capital (list), languages (list), landlocked (boolean), area (float), population (int), timezones (list), continent (string), borders (list)
+#   capital (list), languages (list), landlocked (boolean), area (float), population (int), timezones (list), continent (string), borders (list), alt_spellings (list)
 
 mydb = mysql.connector.connect(
     host="localhost",
@@ -22,6 +22,14 @@ mydb = mysql.connector.connect(
     database="diplomarbeit"
 )
 mycursor = mydb.cursor()
+
+alternative_spellings = {'United Arab Emirates': ["UAE", "Arab Emirates"], 'Antigua and Barbuda': ["Antigua", "Barbuda"], 
+                         'Bosnia and Herzegovina': ["Bosnia", "Herzegovina"], 'Central African Republic': ["CAR", "Central Africa"], 'DR Congo': ["Congo", "DRC"], 
+                         'Republic of the Congo': ["Congo", "ROC"], 'Dominican Republic': ["Dominican"], 'United Kingdom': ["UK", "Great Britain"], 
+                         'Guinea-Bissau': ["Guinea Bissau"], 'Saint Kitts and Nevis': ["Saint Kitts", "Saint Nevis", "Kitts and Nevis"], 
+                         'North Macedonia': ["Macedonia"], 'Papua New Guinea': ["Papua", "New Guinea"], 'Sao Tome and Principe': ["Sao Tome", "Tome and Principe"], 
+                         'Timor-Leste': ["Timor Leste", "Timor"],'Trinidad and Tobago': ["Trinidad", "Tobago"], 'United States': ["USA", "United States of America"], 
+                         'Vatican City': ["Vatican"], 'Saint Vincent and the Grenadines': ["Saint Vincent", "Grenadines"]}
 
 def arrange_insert_string(data):
     # NAME, OFFICIAL_NAME
@@ -112,6 +120,14 @@ def arrange_insert_string(data):
         borders = []
     #print("borders: " + str(borders))
     
+    # ALT_SPELLINGS
+    for altspell in alternative_spellings:
+        if altspell == name:
+            alt_spellings = alternative_spellings[name]
+            for spelling in alt_spellings:
+                insertstring = '"' + cca2 + '", "' + spelling + '"'
+                insert_into_alternative_spellings_to_country(insertstring)
+        
     # ARRANGE INSERT STRING
     #name (string), official_name (string), cca2 (string), cca3 (string), independent (boolean), status (string), un_member (boolean), currencies (list), 
     #capital (list), languages (list), landlocked (boolean), area (float), population (int), timezones (list), continents (list), borders (list)
@@ -124,12 +140,22 @@ def list_to_json(values):
     values_json = json.dumps(values)
     return values_json
 
-def insert_into_database(insertstring):
+def insert_into_country(insertstring):
     insert_query = "INSERT INTO country VALUES (" + str(insertstring) + ")"
     try:
         mycursor.execute(insert_query)
         mydb.commit()
-        print("Data inserted successfully.")
+        print("counry inserted successfully.")
+    except mysql.connector.Error as error:
+        mydb.rollback()
+        print(f"Error inserting record: {error}")
+        
+def insert_into_alternative_spellings_to_country(insertstring):
+    insert_query = "INSERT INTO alternative_spellings_to_country VALUES (" + str(insertstring) + ")"
+    try:
+        mycursor.execute(insert_query)
+        mydb.commit()
+        print("alternative spelling inserted successfully.")
     except mysql.connector.Error as error:
         mydb.rollback()
         print(f"Error inserting record: {error}")
@@ -141,8 +167,8 @@ if __name__ == '__main__':
     for i in alldata:
         insertstring = arrange_insert_string(i)
         tempcount = tempcount + 1
-        print("\n" + insertstring)
-        insert_into_database(insertstring)
+        #print("\n" + insertstring)
+        insert_into_country(insertstring)
         print(tempcount)
     mycursor.close()
     mydb.close()

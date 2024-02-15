@@ -1,5 +1,7 @@
 import json
 import ast
+
+from annotated_types import UpperCase
 import DbConnector as dbc
 
 # ----- QUIZ -----
@@ -18,29 +20,15 @@ def get_quiz_by_id(id):
     quiz_data = dbc.get_quiz_by_id(id)
     row = quiz_data[0]
     quiz_id, name, discription, quiz_type, select_statement = row
-    if quiz_type == "mapquiz":
-        country_data = dbc.get_countries_by_quiz(select_statement)
-        json_string = {
-            "quiz_id": quiz_id,
-            "quiz_name": name,
-            "discription": discription,
-            "quiz_type": quiz_type,
-            "country_data": country_data
-        }
-        return json_string
-    elif quiz_type == "flagquiz":
-        country_data = dbc.get_countries_by_quiz(select_statement)
-        json_string = {
-            "quiz_id": quiz_id,
-            "quiz_name": name,
-            "discription": discription,
-            "quiz_type": quiz_type,
-            "country_data": country_data
-        }
-        return json_string
-        ##TODO ANDERE FÄLLE WIE FLAGGEN QUIZ MÜSSEN NO GEMACHT WERDEN UND VERNÜFTIGE FEHLERMELDUNG
-        ##TODO beziehungsweise isch es wurst i muss lei den typ mit übergeben
-    return "quiz type not existing"
+    country_data = dbc.get_countries_by_quiz(select_statement)
+    json_string = {
+        "quiz_id": quiz_id,
+        "quiz_name": name,
+        "discription": discription,
+        "quiz_type": quiz_type,
+        "country_data": country_data
+    }
+    return json_string
 ##TODO GEHT
 
 # GET ALL QUIZ DATA
@@ -61,11 +49,71 @@ def get_all_quiz_data():
                 "quiz_type": quiz_type,
                 "country_data": country_data_filtered
             }
-        ##TODO SPEZIELLE BEHANDLUNG FÜR TABLEQUIZZES
-        ##TODO DA MÜSSEN DIE ANTWORTEN DIREKT MITGESCHICKT WERDEN UND NIT LEI DIE LÄNDERCODES
+        elif quiz_type == "tablequiz":
+            country_data = dbc.get_countries_by_quiz(select_statement)
+            country_data_filtered = []
+            for country in country_data:
+                temp = []
+                temp.append(country[1])
+                temp.append(country[2])
+                country_data_filtered.append(temp)
+            quiz_json = {
+                "quiz_id": quiz_id,
+                "quiz_name": name,
+                "discription": discription,
+                "quiz_type": quiz_type,
+                "country_data": country_data_filtered
+            }  
         json_string.append(quiz_json)
     return json_string
 ##TODO GEHT
+
+# GET ALL ALTERNATIVE SPELLINGS
+def get_all_alternativ_spellings():
+    country_data = dbc.get_countries_by_quiz("select cca2, name from country where independent = true")
+    return_value = {}
+    for country in country_data:
+        alt_spell = dbc.get_alternative_spellings_to_cca2(country[0])
+        if alt_spell != []:
+            alt_spell_list = [country[1]]
+            for i in alt_spell[0]:
+                alt_spell_list.append(i)
+            return_value.update({country[0]: alt_spell_list})
+        else:
+            return_value.update({country[0]: [country[1]]})
+    return return_value
+##TODO GEHT
+
+# GET ALTERNATIVE SPELLINGS BY CCA2
+def get_alternativ_spellings_by_cca2(cca2):
+    cca2_exists = check_if_cca2_exists(cca2)
+    if cca2_exists["message_type"] == "Success":
+        country_data = dbc.get_countries_by_quiz("select name from country where independent = true and cca2 = \'" + cca2 + "\'")
+        alt_spell = dbc.get_alternative_spellings_to_cca2(cca2)
+        name = country_data[0]
+        alt_spell_list = [name[0]]
+        if alt_spell != []:
+            for i in alt_spell[0]:
+                alt_spell_list.append(i)
+        return alt_spell_list
+    return cca2_exists
+            
+        
+def check_if_cca2_exists(cca2):
+    country_data = dbc.get_countries_by_quiz("select cca2 from country where independent = true")
+    for i in country_data:
+        if i[0] == cca2:
+            json_string = {
+                "message_type": "Success",
+                "message": ""
+            }
+            return json_string
+    json_string = {
+        "message_type": "Error",
+        #"message": "No existing country with this cca2."
+        "message": country_data
+    }
+    return json_string
 
 def check_if_quiz_exists(quiz_id):
     quiz_data = dbc.get_all_quiz_data()
