@@ -19,15 +19,7 @@ def get_quiz_overview():
 def get_quiz_by_id(id):
     quiz_data = dbc.get_quiz_by_id(id)
     row = quiz_data[0]
-    quiz_id, name, description, quiz_type, select_statement = row
-    country_data = dbc.get_countries_by_quiz(select_statement)
-    json_string = {
-        "quiz_id": quiz_id,
-        "quiz_name": name,
-        "description": description,
-        "quiz_type": quiz_type,
-        "country_data": country_data
-    }
+    json_string = select_quiz_and_filter(row)
     return json_string
 ##TODO GEHT
 
@@ -36,48 +28,60 @@ def get_all_quiz_data():
     quiz_data = dbc.get_all_quiz_data()
     json_string = []
     for quiz in quiz_data:
-        quiz_id, name, description, quiz_type, select_statement = quiz
-        if quiz_type == "mapquiz" or quiz_type == "flagquiz":
-            country_data = dbc.get_countries_by_quiz(select_statement)
-            country_data_filtered = []
-            for country in country_data:
-                country_data_filtered.append(country[1])
-            quiz_json = {
-                "quiz_id": quiz_id,
-                "quiz_name": name,
-                "description": description,
-                "quiz_type": quiz_type,
-                "country_data": country_data_filtered
-            }
-        elif quiz_type == "tablequiz":
-            country_data = dbc.get_countries_by_quiz(select_statement)
-            country_data_filtered = []
-            for country in country_data:
-                temp = []
-                temp.append(country[1])
-                temp.append(country[2])
-                country_data_filtered.append(temp)
-            quiz_json = {
-                "quiz_id": quiz_id,
-                "quiz_name": name,
-                "description": description,
-                "quiz_type": quiz_type,
-                "country_data": country_data_filtered
-            }  
+        quiz_json = select_quiz_and_filter(quiz)
         json_string.append(quiz_json)
     return json_string
 ##TODO GEHT
 
+def select_quiz_and_filter(quiz):
+    quiz_id, name, description, quiz_type, select_statement = quiz
+    if quiz_type == "mapquiz" or quiz_type == "flagquiz":
+        country_data = dbc.get_countries_by_quiz(select_statement)
+        country_data_filtered = []
+        for country in country_data:
+            country_data_filtered.append(country[1])
+        quiz_json = {
+            "quiz_id": quiz_id,
+            "quiz_name": name,
+            "description": description,
+            "quiz_type": quiz_type,
+            "country_data": country_data_filtered
+        }
+    elif quiz_type == "tablequiz":
+        country_data = dbc.get_countries_by_quiz(select_statement)
+        country_data_filtered = []
+        for country in country_data:
+            temp = []
+            temp.append(country[1])
+            temp.append(country[2])
+            country_data_filtered.append(temp)
+        quiz_json = {
+            "quiz_id": quiz_id,
+            "quiz_name": name,
+            "description": description,
+            "quiz_type": quiz_type,
+            "country_data": country_data_filtered
+        } 
+    elif quiz_type == "neighboringcountries":
+        quiz_json = {
+            "quiz_id": quiz_id,
+            "quiz_name": name,
+            "description": description,
+            "quiz_type": quiz_type,
+            "country_data": select_statement
+        } 
+    return quiz_json
+
 # GET ALL ALTERNATIVE SPELLINGS
-def get_all_alternativ_spellings():
+def get_all_alternative_spellings():
     country_data = dbc.get_countries_by_quiz("select cca2, name from country where independent = true")
     return_value = {}
     for country in country_data:
         alt_spell = dbc.get_alternative_spellings_to_cca2(country[0])
         if alt_spell != []:
             alt_spell_list = [country[1]]
-            for i in alt_spell[0]:
-                alt_spell_list.append(i)
+            for i in alt_spell:
+                alt_spell_list.append(i[0])
             return_value.update({country[0]: alt_spell_list})
         else:
             return_value.update({country[0]: [country[1]]})
@@ -85,7 +89,7 @@ def get_all_alternativ_spellings():
 ##TODO GEHT
 
 # GET ALTERNATIVE SPELLINGS BY CCA2
-def get_alternativ_spellings_by_cca2(cca2):
+def get_alternative_spellings_by_cca2(cca2):
     cca2_exists = check_if_cca2_exists(cca2)
     if cca2_exists["message_type"] == "Success":
         country_data = dbc.get_countries_by_quiz("select name from country where independent = true and cca2 = \'" + cca2 + "\'")

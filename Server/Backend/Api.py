@@ -26,16 +26,16 @@ def getallquizdata():
     return ad.get_all_quiz_data() # [{"quiz_id": quiz_id,"quiz_name":name,"description": description,"quiz_type":quiz_type,"country_data":["cca2","cca2", ...]}, ... ]
 ##TODO GEHT
 
-# GET ALL ALTERNATIVE SPELLINGS (for the offline version of the app to save the possible spellings in a text document)
-@app.get("/getallalternativspellings") # /getallalternativspellings
-def getallalternativspellings():
-    return ad.get_all_alternativ_spellings() # {"cca2":["alternative_spelling", ...], ...}
+# GET ALL alternativeE SPELLINGS (for the offline version of the app to save the possible spellings in a text document)
+@app.get("/getallalternativeespellings") # /getallalternativeespellings
+def getallalternativeespellings():
+    return ad.get_all_alternative_spellings() # {"cca2":["alternativee_spelling", ...], ...}
 ##TODO GEHT
 
-# GET ALTERNATIV SPELLINGS BY CCA2 (to get the alternativ spelling to a cca2)
-@app.get("/getalternativspellingsbycca2/{cca2}") # /getalternativspellingsbycca2/cca2
-def getalternativspellingsbycca2(cca2: str):
-    return ad.get_alternativ_spellings_by_cca2(cca2) # ["alternative_spelling", ...] OR {"message_type": message_type,"message": message}
+# GET alternativeE SPELLINGS BY CCA2 (to get the alternative spelling to a cca2)
+@app.get("/getalternativespellingsbycca2/{cca2}") # /getalternativespellingsbycca2/cca2
+def getalternativespellingsbycca2(cca2: str):
+    return ad.get_alternative_spellings_by_cca2(cca2) # ["alternative_spelling", ...] OR {"message_type": message_type,"message": message}
 ##TODO GEHT
 
 # ----- USER -----
