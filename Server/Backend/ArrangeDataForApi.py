@@ -8,7 +8,7 @@ import DbConnector as dbc
 # GET QUIZ OVERVIEW
 def get_quiz_overview():
     # gets all ids and names of the quizzes from the database and returns them
-    quiz_data = dbc.get_quiz_overview()
+    quiz_data = dbc.execute_statement('SELECT quiz_id, name, quiz_type FROM quiz')
     json_string = {
         "quiz_data": quiz_data
     }
@@ -17,7 +17,7 @@ def get_quiz_overview():
 # GET QUIZ BY ID
 def get_quiz_by_id(id):
     #gets all the data from the quiz with this id
-    quiz_data = dbc.get_quiz_by_id(id)
+    quiz_data = dbc.execute_statement('SELECT * FROM quiz WHERE quiz_id = "' + str(id) + '"')
     row = quiz_data[0]
     # filters according to the quiz type and returns corresponding data and returns them
     json_string = filter_quiz(row)
@@ -26,7 +26,7 @@ def get_quiz_by_id(id):
 # GET ALL QUIZ DATA
 def get_all_quiz_data():
     # gets all data for each quiz from the database
-    quiz_data = dbc.get_all_quiz_data()
+    quiz_data = dbc.execute_statement('SELECT * FROM quiz')
     json_string = []
     # goes through each quiz individually
     for quiz in quiz_data:
@@ -42,7 +42,7 @@ def filter_quiz(quiz):
     quiz_id, name, description, quiz_type, select_statement = quiz
     # if its a map or a flag quiz the select statement is executed and is returned in a json
     if quiz_type == "mapquiz" or quiz_type == "flagquiz":
-        country_data = dbc.get_countries_by_quiz(select_statement)
+        country_data = dbc.execute_statement(select_statement)
         country_data_filtered = []
         for country in country_data:
             country_data_filtered.append(country[1])
@@ -55,7 +55,7 @@ def filter_quiz(quiz):
         }
     # if it is a table quiz, more values ​​are expected and filtered accordingly
     elif quiz_type == "tablequiz":
-        country_data = dbc.get_countries_by_quiz(select_statement)
+        country_data = dbc.execute_statement(select_statement)
         country_data_filtered = []
         for country in country_data:
             temp = []
@@ -84,11 +84,11 @@ def filter_quiz(quiz):
 # GET ALL ALTERNATIVE SPELLINGS
 def get_all_alternative_spellings():
     # gets all the names and cca2s of the countries from the database
-    country_data = dbc.get_countries_by_quiz("select cca2, name from country where independent = true")
+    country_data = dbc.execute_statement("select cca2, name from country where independent = true")
     return_value = {}
     # each country is examined individually and checked to see whether alternative spellings exist
     for country in country_data:
-        alt_spell = dbc.get_alternative_spellings_to_cca2(country[0])
+        alt_spell = dbc.execute_statement('SELECT alt_spelling FROM alternative_spellings_to_country WHERE cca2 = "' + country[0] + '"')
         if alt_spell != []:
             # if this is the case, they will be added to the return value
             alt_spell_list = [country[1]]
@@ -106,8 +106,8 @@ def get_alternative_spellings_by_cca2(cca2):
     cca2_exists = check_if_cca2_exists(cca2)
     if cca2_exists["message_type"] == "Success":
         # if this is the case, the corresponding name is fetched from the database and the corresponding alternative spellings
-        country_data = dbc.get_countries_by_quiz("select name from country where independent = true and cca2 = \'" + cca2 + "\'")
-        alt_spell = dbc.get_alternative_spellings_to_cca2(cca2)
+        country_data = dbc.execute_statement("select name from country where independent = true and cca2 = \'" + cca2 + "\'")
+        alt_spell = dbc.execute_statement('SELECT alt_spelling FROM alternative_spellings_to_country WHERE cca2 = "' + cca2 + '"')
         # it is then compiled into a return value
         name = country_data[0]
         alt_spell_list = [name[0]]
@@ -121,7 +121,7 @@ def get_alternative_spellings_by_cca2(cca2):
 # CHECH IF CCA2 EXISTS    
 def check_if_cca2_exists(cca2):
     # gets all cca2s from the database
-    country_data = dbc.get_countries_by_quiz("select cca2 from country where independent = true")
+    country_data = dbc.execute_statement("select cca2 from country where independent = true")
     for i in country_data:
         # go through them all and see if any of them match what was handed over and returns a corresponding message
         if i[0] == cca2:
@@ -139,7 +139,7 @@ def check_if_cca2_exists(cca2):
 # CHECK IF QUIZ EXISTS
 def check_if_quiz_exists(quiz_id):
     # gets all quizzes from the database
-    quiz_data = dbc.get_all_quiz_data()
+    quiz_data = dbc.execute_statement('SELECT * FROM quiz')
     for quiz in quiz_data:
         # go through them all and see if any of them match what was handed over and returns a corresponding message
         if quiz_id == quiz[0]:
@@ -169,7 +169,7 @@ def create_new_user(email, username, password):
         }
         return json_string
     #creates new user and returns a message
-    return dbc.create_new_user(email, username, password)
+    return dbc.insert_data('INSERT INTO user VALUES ("' + email + '", "' + username + '", "' + password + '",0)')
 
 # USER LOGIN
 def user_login(email, password):
@@ -188,7 +188,7 @@ def user_login(email, password):
 # CHECK IF EMAIL EXISTS
 def check_if_email_exists(email):
     # searches all users in the database and checks whether the specified email address exists
-    allusers = dbc.get_all_users()
+    allusers = dbc.execute_statement_flattened('SELECT email FROM user')
     for i in allusers:
         if i == email:
             # if this is the case, a success message is returned
@@ -210,7 +210,7 @@ def check_if_login_is_possible(email, password):
     email_exists = check_if_email_exists(email)
     if email_exists["message_type"] == "Success": 
         # checks whether the passed password matches the password of the database
-        if dbc.get_password_by_email(email) == password:
+        if dbc.execute_statement_flattened_first_entry('SELECT password FROM user WHERE email = "' + email + '"') == password:
             # if this is the case, a success message is returned
             json_string = {
                 "message_type": "Success",
@@ -232,9 +232,9 @@ def change_password_user(email, password, new_password):
     login_possible = check_if_login_is_possible(email, password)
     if login_possible["message_type"] == "Success":
         # changes the password
-        dbc.alter_password_user(email, new_password)
+        dbc.execute_statement('UPDATE user SET password = "' + new_password + '" WHERE email = "' + email + '"')
         # checks whether the password has been changed
-        if dbc.get_password_by_email(email) == new_password:
+        if dbc.execute_statement_flattened_first_entry('SELECT password FROM user WHERE email = "' + email + '"') == new_password:
             # if this is the case, a success message is returned
             json_string = {
                 "message_type": "Success",
@@ -256,9 +256,9 @@ def change_username_user(email, password, new_username):
     login_possible = check_if_login_is_possible(email, password)
     if login_possible["message_type"] == "Success":
         # changes the username
-        dbc.alter_username_user(email, new_username)
+        dbc.execute_statement('UPDATE user SET username = "' + new_username + '" WHERE email = "' + email + '"')
         # checks whether the username has been changed
-        if dbc.get_username_by_email(email) == new_username:
+        if dbc.execute_statement_flattened_first_entry('SELECT username FROM user WHERE email = "' + email + '"') == new_username:
             # if this is the case, a success message is returned
             json_string = {
                 "message_type": "Success",
@@ -280,7 +280,7 @@ def delete_user(email, password):
     login_possible = check_if_login_is_possible(email, password)
     if login_possible["message_type"] == "Success":
         # deletes the user
-        dbc.delete_user(email)
+        dbc.execute_statement('DELETE FROM user WHERE email = "' + email + '"')
         # checks whether the user has been deleted
         email_exists = check_if_email_exists(email)
         if email_exists["message_type"] == "Error":
@@ -305,8 +305,8 @@ def get_username_and_level(email):
     email_exists = check_if_email_exists(email)
     if email_exists["message_type"] == "Success":
         # gets the username and level from the database
-        username = dbc.get_username_by_email(email)
-        level = dbc.get_level_by_email(email)
+        username = dbc.execute_statement_flattened_first_entry('SELECT username FROM user WHERE email = "' + email + '"')
+        level = dbc.execute_statement_flattened_first_entry('SELECT level FROM user WHERE email = "' + email + '"')
         # composes the return value and returns it
         json_string = {
                 "username": username,
@@ -322,13 +322,13 @@ def increase_level(email, levelincrease):
     email_exists = check_if_email_exists(email)
     if email_exists["message_type"] == "Success":
         # fetches the previous level from the database
-        level = dbc.get_level_by_email(email)
+        level = dbc.execute_statement_flattened_first_entry('SELECT level FROM user WHERE email = "' + email + '"')
         # calculates the new level
         new_level = levelincrease + level
         # updates the level
-        dbc.alter_level_user(email, new_level)
+        dbc.execute_statement('UPDATE user SET level = "' + str(new_level) + '" WHERE email = "' + email + '"')
         # checks whether the level has been changed
-        if new_level == dbc.get_level_by_email(email):
+        if new_level == dbc.execute_statement_flattened_first_entry('SELECT level FROM user WHERE email = "' + email + '"'):
             # if this is the case, a success message is returned
             json_string = {
                 "message_type": "Success",
@@ -350,7 +350,7 @@ def increase_level(email, levelincrease):
 # CHECK IF SCORE EXISTS
 def check_if_score_exists(email, quiz_id):
     # gets all scores from the database
-    score_data = dbc.get_all_score_data()
+    score_data = dbc.execute_statement("SELECT * FROM score")
     # goes through each score individually and see if the email and id matches
     for score in score_data:
         if score[0] == email and score[1] == quiz_id:
@@ -383,7 +383,7 @@ def set_score(email, quiz_id, score, achivable_score, needed_time):
                 # checks whether the new score is highrt
                 if score > score_db[2]:
                     # if this is the case, it will be entered in the database and a corresponding message is returned
-                    dbc.delete_score(email, quiz_id)
+                    dbc.execute_statement('DELETE FROM score WHERE email = "' + email + '" AND quiz_id = ' + str(quiz_id))
                     deleted_score_exists = check_if_score_exists(email, quiz_id)
                     if deleted_score_exists["message_type"] == "Success":
                         json_string = {
@@ -392,7 +392,7 @@ def set_score(email, quiz_id, score, achivable_score, needed_time):
                         }
                         return json_string
                     else:
-                        create_score = dbc.create_new_score(email, quiz_id, score, achivable_score, needed_time)
+                        create_score = dbc.insert_data('INSERT INTO score VALUES ("' + email + '", "' + str(quiz_id) + '", "' + str(score) + '", "' + str(achivable_score) + '", "' + str(needed_time) + '")')
                         json_string = {
                         "message_type": "Success",
                         "message": "The score has been updated."
@@ -403,7 +403,7 @@ def set_score(email, quiz_id, score, achivable_score, needed_time):
                     # if this is the case, it will be checked whether the new time was faster
                     if needed_time < score_db[4]:
                         # if this is the case, the score is updated and a corresponding message is returned
-                        dbc.delete_score(email, quiz_id)
+                        dbc.execute_statement('DELETE FROM score WHERE email = "' + email + '" AND quiz_id = ' + str(quiz_id))
                         deleted_score_exists = check_if_score_exists(email, quiz_id)
                         if deleted_score_exists["message_type"] == "Success":
                             json_string = {
@@ -412,7 +412,7 @@ def set_score(email, quiz_id, score, achivable_score, needed_time):
                             }
                             return json_string
                         else:
-                            create_score = dbc.create_new_score(email, quiz_id, score, achivable_score, needed_time)
+                            create_score = dbc.insert_data('INSERT INTO score VALUES ("' + email + '", "' + str(quiz_id) + '", "' + str(score) + '", "' + str(achivable_score) + '", "' + str(needed_time) + '")')
                             json_string = {
                                 "message_type": "Success",
                                 "message": "The score has been updated."
@@ -434,7 +434,7 @@ def set_score(email, quiz_id, score, achivable_score, needed_time):
                     return json_string
             else:
                 # if the score does not yet exist, a new one is created
-                create_score = dbc.create_new_score(email, quiz_id, score, achivable_score, needed_time)
+                create_score = dbc.insert_data('INSERT INTO score VALUES ("' + email + '", "' + str(quiz_id) + '", "' + str(score) + '", "' + str(achivable_score) + '", "' + str(needed_time) + '")')
                 return create_score
         return quiz_exists
     return email_exists
@@ -451,7 +451,7 @@ def get_score(email, quiz_id):
             score_exists = check_if_score_exists(email, quiz_id)
             if score_exists["message_type"] == "Success":
                 # if so, the score is returned
-                score = dbc.get_score(email, quiz_id)
+                score = dbc.execute_statement('SELECT * FROM score WHERE email = "' + email + '" AND quiz_id = ' + str(quiz_id))
                 return score[0]
             # if one of these criteria is not the case, a corresponding error message is returned
             return score_exists
@@ -465,7 +465,7 @@ def get_all_scores_by_email(email):
     email_exists = check_if_email_exists(email)
     if email_exists["message_type"] == "Success":
         # if this is the case, all scores will be fetched from the database with this email and returned
-        scores = dbc.get_all_scores_by_email(email)
+        scores = dbc.execute_statement('select * from score where email = "' + email + '"')
         return scores
     # if the email does not exist, a corresponding error message is returned
     return email_exists
