@@ -47,6 +47,7 @@ def insert_data(statement):
     # exception handling
     except mysql.connector.Error as error:
         mydb.rollback()
+        mydb.close()
         json_string = {
             "message_type": "Error",
             "message": error.msg

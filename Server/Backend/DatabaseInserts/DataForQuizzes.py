@@ -17,7 +17,8 @@ data = ['INSERT INTO quiz VALUES (1, "All countries in the world", "Name all 194
         'INSERT INTO quiz VALUES (17, "All capitals of Asia", "Name the capitals of all 45 independent countries in Asia.", "tablequiz", \'select name, cca2, capital from country where independent = true and continent = "Asia"\')',
         'INSERT INTO quiz VALUES (18, "All capitals of North America", "Name the capitals of all 23 independent countries in North America.", "tablequiz", \'select name, cca2, capital from country where independent = true and continent = "North America"\')',
         'INSERT INTO quiz VALUES (19, "All capitals of South America", "Name the capitals of all 12 independent countries in South America.", "tablequiz", \'select name, cca2, capital from country where independent = true and continent = "South America"\')',
-        'INSERT INTO quiz VALUES (20, "All capitals of in Africa", "Name the capitals of all 54 independent countries in Africa.", "tablequiz", \'select name, cca2, capital from country where independent = true and continent = "Africa"\')',
-        'INSERT INTO quiz VALUES (21, "All capitals of in Oceania", "Name the capitals of all 15 independent countries in Oceania.", "tablequiz", \'select name, cca2, capital from country where independent = true and continent = "Oceania"\')']
+        'INSERT INTO quiz VALUES (20, "All capitals of Africa", "Name the capitals of all 54 independent countries in Africa.", "tablequiz", \'select name, cca2, capital from country where independent = true and continent = "Africa"\')',
+        'INSERT INTO quiz VALUES (178, "All capitals of the world", "Name the capitals of all 194 independent countries in the world.", "tablequiz", \'select name, cca2, capital from country where independent = true"\')',
+        'INSERT INTO quiz VALUES (21, "All capitals of Oceania", "Name the capitals of all 15 independent countries in Oceania.", "tablequiz", \'select name, cca2, capital from country where independent = true and continent = "Oceania"\')']
 
 #Name the flag of all 15 independent countries in Oceania

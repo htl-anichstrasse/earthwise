@@ -24,8 +24,8 @@ def getallquizdata():
     return ad.get_all_quiz_data() # [{"quiz_id": quiz_id,"quiz_name":name,"description": description,"quiz_type":quiz_type,"country_data":["cca2","cca2", ...]}, ... ]
 
 # GET ALL alternativeE SPELLINGS (for the offline version of the app to save the possible spellings in a text document)
-@app.get("/getallalternativeespellings") # /getallalternativeespellings
-def getallalternativeespellings():
+@app.get("/getallalternativespellings") # /getallalternativeespellings
+def getallalternativespellings():
     return ad.get_all_alternative_spellings() # {"cca2":["alternativee_spelling", ...], ...}
 
 # GET alternativeE SPELLINGS BY CCA2 (to get the alternative spelling to a cca2)

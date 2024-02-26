@@ -51,7 +51,7 @@ def filter_quiz(quiz):
             "quiz_name": name,
             "description": description,
             "quiz_type": quiz_type,
-            "country_data": country_data_filtered
+            "country_data": country_data
         }
     # if it is a table quiz, more values ​​are expected and filtered accordingly
     elif quiz_type == "tablequiz":
@@ -67,7 +67,7 @@ def filter_quiz(quiz):
             "quiz_name": name,
             "description": description,
             "quiz_type": quiz_type,
-            "country_data": country_data_filtered
+            "country_data": country_data
         } 
     # if it is a neighboring country quiz, the data is already in the select_statement because it could not be summarized in a select statement
     elif quiz_type == "neighboringcountries":
