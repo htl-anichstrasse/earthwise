@@ -20,7 +20,7 @@ def get_quiz_by_id(id):
     quiz_data = dbc.execute_statement('SELECT * FROM quiz WHERE quiz_id = "' + str(id) + '"')
     row = quiz_data[0]
     # filters according to the quiz type and returns corresponding data and returns them
-    json_string = filter_quiz(row)
+    json_string = filter_quiz(row, True)
     return json_string
 
 # GET ALL QUIZ DATA
@@ -31,13 +31,13 @@ def get_all_quiz_data():
     # goes through each quiz individually
     for quiz in quiz_data:
         # filters according to the quiz type and returns corresponding data
-        quiz_json = filter_quiz(quiz)
+        quiz_json = filter_quiz(quiz, False)
         json_string.append(quiz_json)
     # returns all quiz data
     return json_string
 
 # FILTER QUIZ
-def filter_quiz(quiz):
+def filter_quiz(quiz, web):
     # splits the quiz into its individual values
     quiz_id, name, description, quiz_type, select_statement = quiz
     # if its a map or a flag quiz the select statement is executed and is returned in a json
@@ -46,13 +46,22 @@ def filter_quiz(quiz):
         country_data_filtered = []
         for country in country_data:
             country_data_filtered.append(country[1])
-        quiz_json = {
-            "quiz_id": quiz_id,
-            "quiz_name": name,
-            "description": description,
-            "quiz_type": quiz_type,
-            "country_data": country_data
-        }
+        if web:
+            quiz_json = {
+                "quiz_id": quiz_id,
+                "quiz_name": name,
+                "description": description,
+                "quiz_type": quiz_type,
+                "country_data": country_data
+            }
+        else:
+            quiz_json = {
+                "quiz_id": quiz_id,
+                "quiz_name": name,
+                "description": description,
+                "quiz_type": quiz_type,
+                "country_data": country_data_filtered
+            }
     # if it is a table quiz, more values ​​are expected and filtered accordingly
     elif quiz_type == "tablequiz":
         country_data = dbc.execute_statement(select_statement)
@@ -62,13 +71,22 @@ def filter_quiz(quiz):
             temp.append(country[1])
             temp.append(country[2])
             country_data_filtered.append(temp)
-        quiz_json = {
-            "quiz_id": quiz_id,
-            "quiz_name": name,
-            "description": description,
-            "quiz_type": quiz_type,
-            "country_data": country_data
-        } 
+        if web:
+            quiz_json = {
+                "quiz_id": quiz_id,
+                "quiz_name": name,
+                "description": description,
+                "quiz_type": quiz_type,
+                "country_data": country_data
+            }
+        else:
+            quiz_json = {
+                "quiz_id": quiz_id,
+                "quiz_name": name,
+                "description": description,
+                "quiz_type": quiz_type,
+                "country_data": country_data_filtered
+            }
     # if it is a neighboring country quiz, the data is already in the select_statement because it could not be summarized in a select statement
     elif quiz_type == "neighboringcountries":
         quiz_json = {
