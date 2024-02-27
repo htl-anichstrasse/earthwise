@@ -250,7 +250,7 @@ def change_password_user(email, password, new_password):
     login_possible = check_if_login_is_possible(email, password)
     if login_possible["message_type"] == "Success":
         # changes the password
-        dbc.execute_statement('UPDATE user SET password = "' + new_password + '" WHERE email = "' + email + '"')
+        dbc.delete_update_data('UPDATE user SET password = "' + new_password + '" WHERE email = "' + email + '"')
         # checks whether the password has been changed
         if dbc.execute_statement_flattened_first_entry('SELECT password FROM user WHERE email = "' + email + '"') == new_password:
             # if this is the case, a success message is returned
@@ -274,7 +274,7 @@ def change_username_user(email, password, new_username):
     login_possible = check_if_login_is_possible(email, password)
     if login_possible["message_type"] == "Success":
         # changes the username
-        dbc.execute_statement('UPDATE user SET username = "' + new_username + '" WHERE email = "' + email + '"')
+        dbc.delete_update_data('UPDATE user SET username = "' + new_username + '" WHERE email = "' + email + '"')
         # checks whether the username has been changed
         if dbc.execute_statement_flattened_first_entry('SELECT username FROM user WHERE email = "' + email + '"') == new_username:
             # if this is the case, a success message is returned
@@ -298,7 +298,7 @@ def delete_user(email, password):
     login_possible = check_if_login_is_possible(email, password)
     if login_possible["message_type"] == "Success":
         # deletes the user
-        dbc.execute_statement('DELETE FROM user WHERE email = "' + email + '"')
+        dbc.delete_update_data('DELETE FROM user WHERE email = "' + email + '"')
         # checks whether the user has been deleted
         email_exists = check_if_email_exists(email)
         if email_exists["message_type"] == "Error":
@@ -344,7 +344,7 @@ def increase_level(email, levelincrease):
         # calculates the new level
         new_level = levelincrease + level
         # updates the level
-        dbc.execute_statement('UPDATE user SET level = "' + str(new_level) + '" WHERE email = "' + email + '"')
+        dbc.delete_update_data('UPDATE user SET level = "' + str(new_level) + '" WHERE email = "' + email + '"')
         # checks whether the level has been changed
         if new_level == dbc.execute_statement_flattened_first_entry('SELECT level FROM user WHERE email = "' + email + '"'):
             # if this is the case, a success message is returned
@@ -401,7 +401,7 @@ def set_score(email, quiz_id, score, achivable_score, needed_time):
                 # checks whether the new score is highrt
                 if score > score_db[2]:
                     # if this is the case, it will be entered in the database and a corresponding message is returned
-                    dbc.execute_statement('DELETE FROM score WHERE email = "' + email + '" AND quiz_id = ' + str(quiz_id))
+                    dbc.delete_update_data('DELETE FROM score WHERE email = "' + email + '" AND quiz_id = ' + str(quiz_id))
                     deleted_score_exists = check_if_score_exists(email, quiz_id)
                     if deleted_score_exists["message_type"] == "Success":
                         json_string = {
@@ -421,7 +421,7 @@ def set_score(email, quiz_id, score, achivable_score, needed_time):
                     # if this is the case, it will be checked whether the new time was faster
                     if needed_time < score_db[4]:
                         # if this is the case, the score is updated and a corresponding message is returned
-                        dbc.execute_statement('DELETE FROM score WHERE email = "' + email + '" AND quiz_id = ' + str(quiz_id))
+                        dbc.delete_update_data('DELETE FROM score WHERE email = "' + email + '" AND quiz_id = ' + str(quiz_id))
                         deleted_score_exists = check_if_score_exists(email, quiz_id)
                         if deleted_score_exists["message_type"] == "Success":
                             json_string = {

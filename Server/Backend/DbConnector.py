@@ -60,3 +60,14 @@ def insert_data(statement):
         "message": ""
     }
     return json_string
+
+# EXECUTE STATEMENT (to execute an update, delete or select statement)
+def delete_update_data(statement):
+    # opens the connection to the database
+    mycursor, mydb = connect_db()
+    # executes the statement
+    mycursor.execute(statement)
+    mydb.commit()
+    # closes the database connection
+    mydb.close()
+    
