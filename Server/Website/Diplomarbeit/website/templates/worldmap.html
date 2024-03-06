@@ -2,40 +2,116 @@
 {% block title %}Map Quiz{% endblock %}
 {% block content %}
 <head>
+    <!-- Metadaten für die Darstellung der Seite -->
     <meta charset="latin1">
     <title>World Map</title>
+    <!-- Stile für die Eingabefelder und Schaltflächen -->
     <style>
+        /* Stil für Eingabefelder */
+        input {
+            width: 250px;
+            color: rgb(36, 35, 42);
+            font-size: 16px;
+            line-height: 20px;
+            min-height: 28px;
+            border-radius: 2px;
+            padding: 8px 16px;
+            border: 2px solid transparent;
+            box-shadow: rgb(0 0 0 / 12%) 0px 1px 3px, rgb(0 0 0 / 24%) 0px 1px 2px;
+            background: rgb(251, 251, 251);
+            transition: all 0.1s ease 0s;
+            :focus{
+                border: 2px solid rgb(124, 138, 255);
+            }
+        }
+
+        /* Stil für Schaltflächen */
+        .button-81 {
+            background-color: #fff;
+            border: 0 solid #e2e8f0;
+            border-radius: 1.5rem;
+            box-sizing: border-box;
+            color: #0d172a;
+            cursor: pointer;
+            display: inline-block;
+            font-family: "Basier circle",-apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+            font-size: 1.1rem;
+            font-weight: 600;
+            line-height: 1;
+            padding: 1rem 1.6rem;
+            text-align: center;
+            text-decoration: none #0d172a solid;
+            text-decoration-thickness: auto;
+            transition: all .1s cubic-bezier(.4, 0, .2, 1);
+            box-shadow: 0px 1px 2px rgba(166, 175, 195, 0.25);
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            }
+    
+            /* Hover-Effekt für Schaltflächen */
+            .button-81:hover {
+            background-color: #1e293b;
+            color: #fff;
+            }
+    
+            @media (min-width: 768px) {
+            .button-81 {
+                font-size: 1.125rem;
+                padding: 1rem 2rem;
+            }
+            }
+
+            /* Deaktivierter Zustand für Schaltflächen */
+            .button-81:disabled {
+                background-color: #d3d3d3;
+                color: #a0aec0;
+                cursor: not-allowed; 
+            }
+            
+            /* Hover-Effekt für deaktivierte Schaltflächen */
+            .button-81:hover:disabled {
+                background-color: #d3d3d3; 
+            }
     </style>
 </head>
 <body>
     <div style="text-align: center">
-        <h1>{{quiz_name}}</h1>
-        <h3>{{description}}</h3>
+        <!-- Überschriften für Quiz -->
+        <h2 style="margin-top: 30px">{{quiz_name}}</h2>
+        <h4>{{description}}</h4>
 
+        <!-- Liste der Länderantworten (versteckt) -->
         <p id="answer_list" style="display: none">{{county_names}}</p>
 
+        <!-- Formular für das Quiz -->
         <form method="post">
-            <label for="country">Enter a country:</label>
-            <input type="text" id="country" name="country" required disabled>
-            <button type="button" id="startButton" onclick="startQuiz()">Start</button>
-            <button type="button" id="stopButton" onclick="stopQuiz()" disabled>Stop</button>
-            <button type="submit" id="submitButton" disabled>Submit</button>
-            <button type="button" id="reset-button" onclick="resetMap()">Reset</button>
-            <button type="button" id="showAndHide" onclick="showAndHideAnswers()">Show Answers</button>
+            <!-- Eingabefeld für Ländername -->
+            <label for="country" style="font-size: 20px">Enter a country:</label>
+            <input type="text" id="country" name="country" style="margin-bottom: 30px; margin-top: 20px; text-alighn: center" required disabled>
+            <br/>
+
+            <!-- Schaltflächen für Quiz-Steuerung -->
+            <button class="button-81" type="button" id="startButton" onclick="startQuiz()">Start</button>
+            <button class="button-81" type="button" id="stopButton" onclick="stopQuiz()" disabled>Stop</button>
+            <button class="button-81" type="submit" id="submitButton" disabled>Submit</button>
+            <button class="button-81" type="button" id="reset-button" onclick="resetMap()">Reset</button>
+            <button class="button-81" type="button" id="showAndHide" onclick="showAndHideAnswers()">Show Answers</button>
+            <button class="button-81" type="button" onclick="back()" style="margin-left: 100px;margin-bottom: 15px">X</button>
+
 
             <div id="timer"></div>
             <div id="point_count"></div>
         </form>
     </div>
+
+    <!-- Nachrichten-Ausgabe (falls vorhanden) -->
     {% if message %}
         <p>{{ message }}</p>
     {% endif %}
+
+    <!-- Container für SVG-Datei (Weltkarte) -->
     <div id="svg-container" />
-
-
-
-
-
 
     <script>
             var timer;
@@ -44,6 +120,7 @@
             var maxPoints = 0;
             var quizStarted = false;
 
+            /* ... Logik für Quiz-Start ... */
             function startQuiz() {
                 if (!quizStarted) {
                     seconds = 0;
@@ -66,6 +143,7 @@
                 }
             }
 
+            /* ... Logik für Quiz-Stop ... */
             function stopQuiz() {
                 if (quizStarted) {
                     quizStarted = false;
@@ -89,6 +167,7 @@
                 }
             }
 
+            /* ... Logik für Überprüfung der Antworten ... */
             function checkAnswers(seconds) {
               
                 maxPoints = {{max_points}};
@@ -97,6 +176,7 @@
 
             }
 
+            /* ... Logik für Punkteübermittlung ... */
             function sendScore(seconds, points, max_points) {
                 var quizId = '{{ quizId }}';
                 var score = points;
@@ -127,7 +207,7 @@
                 xhr.send(data);
             }
             
-
+            /* ... Logik für Anzeige/Verstecken der Antworten ... */
             function showAndHideAnswers() {
                 var selectedCountriesElement = document.getElementById('answer_list');
                 var showAndHideButton = document.getElementById('showAndHide');
@@ -153,7 +233,7 @@
                 document.getElementById('svg-container').innerHTML = data;
             });
 
-    
+            /* ... Logik für Zurücksetzen der Karte ... */
             function resetMap() {
                 fetch('/reset', { method: 'POST' })
                     .then(response => response.json())
@@ -165,8 +245,10 @@
                         }
                     });
             }
-            
-            
+
+            function back() {
+                window.location.href = "{{ url_for('auth.flagOverview') }}";
+            }
     </script>
 </body>
 {%endblock%} 

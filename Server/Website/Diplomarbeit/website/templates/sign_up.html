@@ -1,6 +1,8 @@
-{% extends "base.html" %} {% block title %}Sign Up{% endblock %} {% block
-content %}
+{% extends "base.html" %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}
 <style>
+  /* Styling für das Auge-Symbol, um Passwort-Sichtbarkeit zu ändern */
   .field-icon {
     float: right;
     margin-left: -25px;
@@ -12,8 +14,11 @@ content %}
     cursor: pointer;
   }
 </style>
+
 <form method="POST">
   <h3 align="center">Sign Up</h3>
+
+  <!-- Eingabefeld für E-Mail -->
   <div class="form-group">
     <label for="email">Email Address</label>
     <input
@@ -24,6 +29,8 @@ content %}
       placeholder="Enter email"
     />
   </div>
+
+  <!-- Eingabefeld für Benutzernamen -->
   <div class="form-group">
     <label for="firstName">Username</label>
     <input
@@ -34,6 +41,8 @@ content %}
       placeholder="Enter first name"
     />
   </div>
+
+  <!-- Eingabefeld für Passwort 1 -->
   <div class="form-group">
     <label for="password1">Password</label>
     <input
@@ -43,8 +52,11 @@ content %}
       name="password1"
       placeholder="Enter password"
     />
+    <!-- Auge-Symbol zum Umschalten der Passwort-Sichtbarkeit -->
     <span class="fa fa-fw fa-eye field-icon toggle-password1" onclick="togglePasswordVisibility1()"></span>
   </div>
+
+  <!-- Eingabefeld für Passwort 2 (Bestätigung) -->
   <div class="form-group">
     <label for="password2">Password (Confirm)</label>
     <input
@@ -54,12 +66,17 @@ content %}
       name="password2"
       placeholder="Confirm password"
     />
+    <!-- Auge-Symbol zum Umschalten der Passwort-Sichtbarkeit -->
     <span class="fa fa-fw fa-eye field-icon toggle-password2" onclick="togglePasswordVisibility2()"></span>
   </div>
+
   <br />
+
+  <!-- Submit-Button -->
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
+<!-- JavaScript-Funktionen zum Umschalten der Passwort-Sichtbarkeit -->
 <script>
 
   function togglePasswordVisibility1() {

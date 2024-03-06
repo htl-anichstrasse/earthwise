@@ -2,6 +2,7 @@
 {% block title %}Login{% endblock %}
 {% block content %}
 <style>
+  /* Styling für das Auge-Symbol, um Passwort-Sichtbarkeit zu ändern */
   .field-icon {
     float: right;
     margin-left: -25px;
@@ -13,8 +14,11 @@
     cursor: pointer;
   }
 </style>
+
 <form method="POST">
   <h3 align="center">Login</h3>
+
+  <!-- Eingabefeld für E-Mail -->
   <div class="form-group">
     <label for="email">Email Address</label>
     <input
@@ -25,6 +29,8 @@
       placeholder="Enter email"
     />
   </div>
+
+  <!-- Eingabefeld für Passwort -->
   <div class="form-group">
     <label for="password">Password</label>
     <input
@@ -34,12 +40,20 @@
       name="password"
       placeholder="Enter password"
     />
-    <span class="fa fa-fw fa-eye field-icon toggle-password" onclick="togglePasswordVisibility()"></span>
+    <!-- Auge-Symbol zum Umschalten der Passwort-Sichtbarkeit -->
+    <span class="fa fa-fw fa-eye field-icon" onclick="togglePasswordVisibility()"></span>
   </div>
-  <br />
+
+  <!-- Link zum Zurücksetzen des Passworts -->
+  <div style="margin-bottom: 7px; font-size: 14px">
+    <a href="{{ url_for('auth.reset_password') }}">Forgot password?</a>
+  </div>
+
+  <!-- Login-Button -->
   <button type="submit" class="btn btn-primary">Login</button>  
 </form>
 
+<!-- JavaScript-Funktion zum Umschalten der Passwort-Sichtbarkeit -->
 <script>
   function togglePasswordVisibility() {
     const passwordInput = document.getElementById('password');

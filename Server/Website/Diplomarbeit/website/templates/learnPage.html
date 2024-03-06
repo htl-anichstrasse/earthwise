@@ -1,96 +1,135 @@
 {% extends "base.html" %} {% block title %}Flag-Overview{% endblock %} {% block content%}
-<head>  
-<style>
-    .float-child1{
-        width: 70%;
-        float: left;
-    }
-    .float-child2{
-        width: 30%;
-        float: left;
-    }
-    table {
-        border-collapse: collapse;
-        font-family: Tahoma, Geneva, sans-serif;
-    }
-    table td {
-        padding: 15px;
-    }
-    table thead td {
-        background-color: #54585d;
-        color: #ffffff;
-        font-weight: bold;
-        font-size: 13px;
-        border: 1px solid #54585d;
-    }
-    table tbody td {
-        color: #636363;
-        border: 1px solid #dddfe1;
-    }
-    table tbody tr {
-        background-color: #f9fafb;
-    }
-    table tbody tr:nth-child(odd) {
-        background-color: #ffffff;
-    }
-  </style>
+
+<head>
+    <!-- Stildefinitionen für die Tabelle -->
+    <style>
+        body {
+            font-family: 'lato', sans-serif;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        h2 {
+            font-size: 26px;
+            margin: 20px 0;
+            text-align: center;
+            small {
+                font-size: 0.5em;
+            }
+        }
+
+        .responsive-table {
+            li {
+                border-radius: 3px;
+                padding: 25px 30px;
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 25px;
+            }
+
+            .table-header {
+                background-color: #95A5A6;
+                font-size: 14px;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+            }
+
+            .table-row {
+                background-color: #ffffff;
+                box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.1);
+            }
+
+            .col-1 {
+                flex-basis: 10%;
+            }
+
+            .col-2 {
+                flex-basis: 40%;
+            }
+
+            .col-3 {
+                flex-basis: 25%;
+            }
+
+            .col-4 {
+                flex-basis: 25%;
+            }
+
+            @media all and (max-width: 767px) {
+                .table-header {
+                    display: none;
+                }
+
+                .table-row {}
+
+                li {
+                    display: block;
+                }
+
+                .col {
+                    flex-basis: 100%;
+                }
+
+                .col {
+                    display: flex;
+                    padding: 10px 0;
+                    &:before {
+                        color: #6C7A89;
+                        padding-right: 10px;
+                        content: attr(data-label);
+                        flex-basis: 50%;
+                        text-align: right;
+                    }
+                }
+            }
+        }
+
+        a {
+            text-decoration: none;
+            color: black;
+        }
+    </style>
 </head>
+
 <body>
-<div class="float-container">
-    <div class="float-child1">
-        <table style="margin-top: 50px;">
-            <thead>
-                <tr>
-                    <td>Quiz Name</td>
-                    <td>Difficulty</td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><a href="{{ url_for('auth.reset_points', referrer = 'flagNameQuiz') }}">Name der Flaggen erraten</a></td>
-                    <td>Diff1</td>
-                </tr>
-                <tr>
-                    <td><a href="{{ url_for('auth.reset_points', referrer = 'singleFlagNameQuiz') }}">Name der Flagge erraten</a></td>
-                    <td>Diff2</td>
-                </tr>
-                <tr>
-                    <td><a href="{{ url_for('auth.twoFlagsQuiz') }}">50/50 Flaggen raten</a></td>
-                    <td>Diff3</td>
-                </tr>
-                <tr>
-                    <td><a href="{{ url_for('auth.reset_points', referrer = 'multiChoiseQuiz') }}">Multible-Choise</a></td>
-                    <td>Diff3</td>
-                </tr>
-                <tr>
-                    <td><a href="{{ url_for('auth.reset_points', referrer = 'textQuiz') }}">Textquestions</a></td>
-                    <td>Diff3</td>
-                </tr>
-                
-            </tbody>
-        </table>
+    <div class="container">
+        <!-- Erstellung einer responsiven Tabelle für die Übersicht -->
+        <ul class="responsive-table" style="margin-top: 25px">
+            <!-- Header-Zeile der Tabelle -->
+            <li class="table-header">
+                <div class="col col-2">Link</div>
+                <div class="col col-2">Difficulty</div>
+                <div class="col col-3">Description</div>
+            </li>
+
+            <!-- Zeilen der Tabelle mit Informationen zu den Quiz-Links -->
+            <li class="table-row">
+                <div class="col col-2"><a href="{{ url_for('auth.reset_points', referrer = 'flagNameQuiz') }}">Flagname Quiz</a></div>
+                <div class="col col-2">Hard</div>
+                <div class="col col-3">Find the names of the 4 given flags.</div>
+            </li>
+            <li class="table-row">
+                <div class="col col-2"><a href="{{ url_for('auth.reset_points', referrer = 'singleFlagNameQuiz') }}">Single Flagname Quiz</a></div>
+                <div class="col col-2">Easy</div>
+                <div class="col col-3">Find the name of the given flag.</div>
+            </li>
+            <li class="table-row">
+                <div class="col col-2"><a href="{{ url_for('auth.twoFlagsQuiz') }}">50/50 Chance Quiz</a></div>
+                <div class="col col-2">Easy</div>
+                <div class="col col-3">Choose the right button representing the flag of the searched country.</div>
+            </li>
+            <li class="table-row">
+                <div class="col col-2"><a href="{{ url_for('auth.reset_points', referrer = 'multiChoiseQuiz') }}">Multiblechoise Quiz</a></div>
+                <div class="col col-2">Middle</div>
+                <div class="col col-3">Choose 1 out of 4 buttons with the names of the given flag.</div>
+            </li>
+        </ul>
     </div>
-    <div class="float-child2">
-        <table style="margin-top: 50px;">
-            <thead>
-                <tr>
-                    <td>All Flags</td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        <a href="{{ url_for('auth.allFlags') }}">By Names</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <a href="{{ url_for('auth.allFlagsByContinent') }}">By Continents</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-<body>
-{% endblock %}
+    <body>
+        {% endblock %}

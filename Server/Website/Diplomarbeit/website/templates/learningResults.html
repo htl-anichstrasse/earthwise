@@ -1,84 +1,126 @@
 {% extends "base.html" %}
 {% block title %}Learning Results{% endblock %}
 {% block content %}
-<style>
-    .try-container{
-        text-align: center;
-        margin-top: 21px;
-    }
-</style>
-<head>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-</head>
-<body>
-    
-    <h2 style="text-align: center; margin top: 20px">Erreichte Punktzahl: {{ correct_answers_count }}/{{sum}}</h2>
+    <!-- Stildefinitionen für den Button -->
+    <style>
+        .button-81 {
+            background-color: #fff;
+            border: 0 solid #e2e8f0;
+            border-radius: 1.5rem;
+            box-sizing: border-box;
+            color: #0d172a;
+            cursor: pointer;
+            display: inline-block;
+            font-family: "Basier circle", -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            font-size: 1.1rem;
+            font-weight: 600;
+            line-height: 1;
+            padding: 1rem 1.6rem;
+            text-align: center;
+            text-decoration: none #0d172a solid;
+            text-decoration-thickness: auto;
+            transition: all .1s cubic-bezier(.4, 0, .2, 1);
+            box-shadow: 0px 1px 2px rgba(166, 175, 195, 0.25);
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            margin-left: 44%;
+        }
 
-    <div id="chart-container" style="text-align: center; margin-top: 20px;"></div>
+        .button-81:hover {
+            background-color: #1e293b;
+            color: #fff;
+        }
 
-    <div class="try-container">
-        <a href="{{ url_for('auth.reset_points', referrer = referrer) }}">Try again</a>
-    </div>
-
-    <script src="script.js"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            points = {{correct_answers_count}}
-            rest = {{sum}} - {{correct_answers_count}}
-            if (points == 0){
-                var data = [rest];
-                var colors = ['red'];
-            }else{
-                var data = [rest, points];
-                var colors = ['red', 'green'];
+        @media (min-width: 768px) {
+            .button-81 {
+                font-size: 1.125rem;
+                padding: 1rem 2rem;
             }
-        
-            // Größe des Diagramms
-            var width = 350;
-            var height = 350;
-            var radius = Math.min(width, height) / 2;
-        
-            // SVG-Element erstellen
-            var svg = d3.select("#chart-container")
-                .append("svg")
-                .attr("width", width)
-                .attr("height", height)
-                .append("g")
-                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-        
-            // Farbskala erstellen
-            var color = d3.scaleOrdinal().range(colors);
-        
-            // Donut-Chart erstellen
-            var pie = d3.pie();
-            var arc = d3.arc().innerRadius(radius - 80).outerRadius(radius);
-        
-            // Elemente hinzufügen
-            var arcs = svg.selectAll("arc")
-                .data(pie(data))
-                .enter()
-                .append("g")
-                .attr("class", "arc");
-        
-            arcs.append("path")
-                .attr("d", arc)
-                .attr("fill", function (d, i) {
-                    return color(i);
-                });
-        
-            // Text hinzufügen
-            arcs.append("text")
-                .attr("transform", function (d) {
-                    return "translate(" + arc.centroid(d) + ")";
-                })
-                .attr("text-anchor", "middle")
-                .text(function (d) {
-                    return d.value;
-                });
-        });
-        
-    </script>
-</body>
+        }
+    </style>
 
+    <!-- Skript für die Darstellung des Diagramms -->
+    <head>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    </head>
+
+    <body>
+        <!-- Überschrift mit erreichten Punkten -->
+        <h2 style="text-align: center; margin-top: 30px">Erreichte Punktzahl: {{ correct_answers_count }}/{{sum}}</h2>
+
+        <!-- Container für das Diagramm -->
+        <div id="chart-container" style="text-align: center; margin-top: 20px;"></div>
+
+        <!-- Button zum Erneut Versuchen -->
+        <button type="button" class="button-81" onclick="tryAgain()">Try again</button>
+
+        <!-- Skript zum Einbinden der Diagramm-Logik -->
+        <script src="script.js"></script>
+
+        <!-- Skript für die Diagrammgenerierung -->
+        <script>
+            function tryAgain() {
+                window.location.href = "{{ url_for('auth.reset_points', referrer = referrer) }}";
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                // Auswertung der erreichten Punkte und Restpunkte
+                points = {{correct_answers_count}}
+                rest = {{sum}} - {{correct_answers_count}}
+
+                // Daten und Farben für das Diagramm
+                if (points == 0){
+                    var data = [rest];
+                    var colors = ['red'];
+                }else{
+                    var data = [rest, points];
+                    var colors = ['red', 'green'];
+                }
+
+                // Dimensionen des Diagramms
+                var width = 350;
+                var height = 350;
+                var radius = Math.min(width, height) / 2;
+
+                // SVG-Element für das Diagramm erstellen
+                var svg = d3.select("#chart-container")
+                    .append("svg")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .append("g")
+                    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+                // Farbpalette für das Diagramm
+                var color = d3.scaleOrdinal().range(colors);
+
+                // Definition von Pie- und Arc-Funktionen
+                var pie = d3.pie();
+                var arc = d3.arc().innerRadius(radius - 80).outerRadius(radius);
+
+                // Daten den Bögen zuweisen und sie zum SVG hinzufügen
+                var arcs = svg.selectAll("arc")
+                    .data(pie(data))
+                    .enter()
+                    .append("g")
+                    .attr("class", "arc");
+
+                arcs.append("path")
+                    .attr("d", arc)
+                    .attr("fill", function (d, i) {
+                        return color(i);
+                    });
+
+                // Texte zu den Bögen hinzufügen
+                arcs.append("text")
+                    .attr("transform", function (d) {
+                        return "translate(" + arc.centroid(d) + ")";
+                    })
+                    .attr("text-anchor", "middle")
+                    .text(function (d) {
+                        return d.value;
+                    });
+            });
+        </script>
+    </body>
 {%endblock%}

@@ -2,8 +2,7 @@
 {% block title %}Profile Site{% endblock %}
 {% block content %}
 
-<!--Code von:    https://bbbootstrap.com/snippets/social-profile-container-63944396-->
-
+<!-- Styling der Seite -->
 <style>
     body {
         background-color: #f9f9fa
@@ -154,62 +153,95 @@
     .user-card-full .card-block a:hover {
         background-color: #e9ecef;
     }
+
+    .col-sm-7 a {
+        color: #18272F;
+      position: relative;
+      text-decoration: none;
+    }
+    
+    .col-sm-7 a::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 4px;
+      border-radius: 4px;
+      background-color: #18272F;
+      bottom: 0;
+      left: 0;
+      transform-origin: right;
+      transform: scaleX(0);
+      transition: transform .3s ease-in-out;
+    }
+    
+    .col-sm-7 a:hover::before {
+      transform-origin: left;
+      transform: scaleX(1);
+    }
+    
+    
 </style>
 
-    
-    
-    
-</style>
+<!-- Hauptinhalt der Profilseite -->
 
 <div class="page-content page-container" id="page-content">
     <div class="padding">
         <div class="row container d-flex justify-content-center">
-        <div class="col-xl-8 col-md-12">
-            <div class="card user-card-full">
-                <div class="row m-l-0 m-r-0">
-                    <div class="col-sm-4 bg-c-lite-green user-profile">
-                        <div class="card-block text-center text-white">
-                            <div class="m-b-25">
-                                <img src="{{ url_for('static', filename="blank-profile-picture-973460_960_720.webp") }}" class="img-radius" height="75px">
+            <div class="col-xl-8 col-md-12">
+                <div class="card user-card-full">
+                    <div class="row m-l-0 m-r-0">
+                        <!-- Linker Bereich: Benutzerprofilbild und Hintergrundfarbe -->
+                        <div class="col-sm-4 bg-c-lite-green user-profile">
+                            <div class="card-block text-center text-white">
+                                <!-- Benutzerprofilbild -->
+                                <div class="m-b-25">
+                                    <img src="{{ url_for('static', filename='blank-profile-picture-973460_960_720.webp') }}" class="img-radius" height="75px">
+                                </div>
+                                <!-- Benutzername und Rolle -->
+                                {% set user_name_upper = user_name.upper() %}
+                                <h6 class="f-w-600">{{ user_name_upper }}</h6>
+                                <p>Normal User</p>
+                                <!-- Bearbeiten-Icon -->
+                                <i class=" mdi mdi-square-edit-outline feather icon-edit m-t-10 f-16"></i>
                             </div>
-                            {%set user_name_upper = user_name.upper()%}
-                            <h6 class="f-w-600">{{user_name_upper}}</h6>
-                            <p>Normal User</p>
-                            <i class=" mdi mdi-square-edit-outline feather icon-edit m-t-10 f-16"></i>
                         </div>
-                    </div>
-                    <div class="col-sm-8">
-                        <div class="card-block">
-                            <h6 class="m-b-20 p-b-5 b-b-default f-w-600">Information</h6>
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <p class="m-b-10 f-w-600">Email</p>
-                                    <h6 class="text-muted f-w-400">{{user_email}}</h6>
+                        <!-- Rechter Bereich: Benutzerinformationen und Aktionen -->
+                        <div class="col-sm-8">
+                            <div class="card-block">
+                                <!-- Abschnitt für allgemeine Informationen -->
+                                <h6 class="m-b-20 p-b-5 b-b-default f-w-600">Information</h6>
+                                <div class="row">
+                                    <!-- Informationen wie Email und Name -->
+                                    <div class="col-sm-6">
+                                        <p class="m-b-10 f-w-600">Email</p>
+                                        <h6 class="text-muted f-w-400">{{ user_email }}</h6>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <p class="m-b-10 f-w-600">Name</p>
+                                        <h6 class="text-muted f-w-400">{{ user_name }}</h6>
+                                    </div>
                                 </div>
-                                <div class="col-sm-6">
-                                    <p class="m-b-10 f-w-600">Name</p>
-                                    <h6 class="text-muted f-w-400">{{user_name}}</h6>
+                                <!-- Abschnitt für Benutzerdaten und Aktionen -->
+                                <h6 class="m-b-20 m-t-40 p-b-5 b-b-default f-w-600">User Data</h6>
+                                <div class="row">
+                                    <!-- Informationen wie Level -->
+                                    <div class="col-sm-5">
+                                        <p class="m-b-10 f-w-600">Level</p>
+                                        <h6 class="text-muted f-w-400">{{ level }}</h6>
+                                    </div>
+                                    <!-- Aktionen wie Ändern des Benutzernamens oder Passworts -->
+                                    <div class="col-sm-7">
+                                        <a href="{{ url_for('auth.changeUserName')}}" class="m-b-10 f-w-600" style="color: black; padding:3px;">Change User-Name</a>
+                                        <a href="{{ url_for('auth.changeUserPassword')}}" class="m-b-10 f-w-600" style="color: black; padding:3px;">Change User-Password</a>
+                                        <a href="{{ url_for('auth.deleteUser')}}" class="m-b-10 f-w-600" style="color: black; padding:3px;">Delete User</a>
+                                    </div>
                                 </div>
                             </div>
-                            <h6 class="m-b-20 m-t-40 p-b-5 b-b-default f-w-600">User Data</h6>
-                            <div class="row">
-                                <div class="col-sm-5">
-                                    <p class="m-b-10 f-w-600">Level</p>
-                                    <h6 class="text-muted f-w-400">{{level}}</h6>
-                                </div>
-                                <div class="col-sm-7">
-                                    <a href="{{ url_for('auth.changeUserName')}}" class="m-b-10 f-w-600" style="color: black; padding:3px;">Change User-Name</a>
-                                    <a href="{{ url_for('auth.changeUserPassword')}}" class="m-b-10 f-w-600" style="color: black; padding:3px;">Change User-Password</a>
-                                    <a href="{{ url_for('auth.deleteUser')}}" class="m-b-10 f-w-600" style="color: black; padding:3px;">Delete User</a>
-                                </div>
-                            </div>
-                            
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-      </div>
     </div>
 </div>
 

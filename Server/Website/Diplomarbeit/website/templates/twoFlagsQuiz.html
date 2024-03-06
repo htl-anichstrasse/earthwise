@@ -2,7 +2,9 @@
 {% block title %}50/50 Quiz{% endblock %}
 {% block content %}
 
+<!-- Stile für die Schaltflächen und den Container -->
 <style>
+    /* Container für die Schaltflächen */
     .button-container {
         display: flex;
         justify-content: space-around;
@@ -10,6 +12,7 @@
         border: light-grey 1px;
     }
 
+    /* Stil für die Schaltflächen */
     .flag-button {
         background: none;
         padding: 0;
@@ -18,32 +21,43 @@
     }
 </style>
 
-<h1 style="text-align: center">{{ quiz_name }}</h1>
-<h3 style="text-align: center" id="questionText">Which Flag is: {{ random_county_name }}</h3>
+<!-- Überschrift für das Quiz -->
+<h2 style="text-align: center">{{ quiz_name }}</h2>
 
-<h3 style="text-align: center">{{ points }}</h3>
+<!-- Fragestellung und aktuelle Punktzahl -->
+<h4 style="text-align: center" id="questionText">Which Flag is: {{ random_county_name }}</h4>
+<h4 style="text-align: center">{{ points }}</h4>
 
+<!-- Container für die Schaltflächen -->
 <div class="button-container">
+    <!-- Schaltfläche 1 mit Bild und Click-Event -->
     <button id="button1" class="flag-button" onclick="checkInput('{{correctLandName}}')">
         <img src="{{ url_for('static', filename=correctLand) }}" width="450" height="250" alt="Button 1">
     </button>
+    <!-- Schaltfläche 2 mit Bild und Click-Event -->
     <button id="button2" class="flag-button" onclick="checkInput('{{incorrectLandName}}')">
         <img src="{{ url_for('static', filename=incorrectLand) }}" width="450" height="250" alt="Button 2">
     </button>
-    
 </div>
 
+<!-- Anzeige der aktuellen Quiz-Frage -->
+<p style="text-align: center; font-size: 21px">{{session["quiz_count"]}}/5</p>
+
+<!-- JavaScript-Code für die Quiz-Logik -->
 <script>
+    // Funktion zum Überprüfen der ausgewählten Antwort
     function checkInput(buttonPressed) {
         var correctLandName = "{{ random_county_name }}";
         var questionText = document.getElementById('questionText');
 
+        // Deaktivieren Sie die Schaltflächen, um Mehrfachklicks zu verhindern
         document.getElementById('button1').disabled = true;
         document.getElementById('button2').disabled = true;
 
         selectedAnswer = buttonPressed.toLowerCase();
         correct_answer = correctLandName.toLowerCase();
 
+        // Senden Sie die ausgewählte Antwort an den Server zur Überprüfung
         fetch(`/check_answer/${selectedAnswer}`, { 
             method: 'POST', 
             body: new URLSearchParams({ correct_answer: correct_answer }), 
@@ -51,20 +65,24 @@
         })
         .then(response => response.json())
         .then(data => {
+            // Verarbeiten Sie die Server-Antwort
             if (data.is_correct) {
                 questionText.innerText = "That's correct!";
                 questionText.style.color ="green";
+
                 setTimeout(refreshPage, 3000);
             } 
             if (!data.is_correct) {
                 questionText.innerText = "That's wrong!";
                 questionText.style.color ="red";
+
                 setTimeout(refreshPage, 3000);
             }
         })
         .catch(error => console.error('Error:', error));
     }
 
+    // Funktion zum Aktualisieren der Seite
     function refreshPage() {
         location.reload();
     }

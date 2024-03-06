@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Server-Quiz{% endblock %}
 {% block content %}
-    <style>
+
+<!-- Stile für die Seite -->
+<style>
         .quizForm {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -19,7 +21,8 @@
         .flag-container img {
             width: 250px;
             height: 150px;
-            border: 2px solid grey;
+            border: 1px solid black;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
         }
 
         #timer {
@@ -29,39 +32,100 @@
         }
 
         input {
-            padding: 16px;
-            font-size: 16px;
-            border: 2px solid #ccc;
-            border-radius: 2px;
-            box-sizing: border-box;
-            height:20px;
             width: 250px;
+            color: rgb(36, 35, 42);
+            font-size: 16px;
+            line-height: 20px;
+            min-height: 28px;
+            border-radius: 2px;
+            padding: 8px 16px;
+            border: 2px solid transparent;
+            box-shadow: rgb(0 0 0 / 12%) 0px 1px 3px, rgb(0 0 0 / 24%) 0px 1px 2px;
+            background: rgb(251, 251, 251);
+            transition: all 0.1s ease 0s;
+            :focus{
+                border: 2px solid rgb(124, 138, 255);
+            }
         }
-    </style>
-    <form method="post">
-
-        <h1 style="text-align: center">{{ quiz_name }}</h1>
-        <h3 style="text-align: center; padding-bottom: 30px;">{{ description }}</h3>
-        <button type="button" id="startButton" onclick="startQuiz()">Start</button>
-        <button type="button" id="stopButton" onclick="stopQuiz()">Stop</button>
-
-        <button type="button" id="showAndHide" onclick="showAndHideAnswers()">Show Answers</button>
+     
         
-        <div id="timer"></div>
-        <div id="point_count"></div>
 
-        <div class="quizForm">
-            {% for i in country_names %}
-                {% set path = '/flags/'+i+'.png' %} 
-                <div class="flag-container">
-                    <img src="{{ url_for('static', filename = path) }}" alt="{{ i }}">
-                    <span><input type="text" name="countryInput" id="input{{ i }}" disabled></span>
-                </div>
-            {% endfor %}
-        </div>
+        .button-81 {
+        background-color: #fff;
+        border: 0 solid #e2e8f0;
+        border-radius: 1.5rem;
+        box-sizing: border-box;
+        color: #0d172a;
+        cursor: pointer;
+        display: inline-block;
+        font-family: "Basier circle",-apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+        font-size: 1.1rem;
+        font-weight: 600;
+        line-height: 1;
+        padding: 1rem 1.6rem;
+        text-align: center;
+        text-decoration: none #0d172a solid;
+        text-decoration-thickness: auto;
+        transition: all .1s cubic-bezier(.4, 0, .2, 1);
+        box-shadow: 0px 1px 2px rgba(166, 175, 195, 0.25);
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        }
 
-    </form>
+        .button-81:hover {
+        background-color: #1e293b;
+        color: #fff;
+        }
 
+        @media (min-width: 768px) {
+        .button-81 {
+            font-size: 1.125rem;
+            padding: 1rem 2rem;
+        }
+        }
+
+        .button-81:disabled {
+            background-color: #d3d3d3;
+            color: #a0aec0;
+            cursor: not-allowed; 
+        }
+        
+        .button-81:hover:disabled {
+            background-color: #d3d3d3; 
+        }
+
+</style>
+<!-- HTML-Formular für das Quiz -->
+<form method="post">
+    <h2 style="text-align: center; margin-top: 30px;">{{ quiz_name }}</h2>
+    <h4 style="text-align: center; padding-bottom: 30px;">{{ description }}</h4>
+
+    <!-- Buttons für Quiz-Steuerung -->
+    <button class="button-81" type="button" id="startButton" onclick="startQuiz()">Start</button>
+    <button class="button-81" type="button" id="stopButton" onclick="stopQuiz()" disabled>Stop</button>
+    <button class="button-81" type="button" id="showAndHide" onclick="showAndHideAnswers()">Show Answers</button>
+    <button class="button-81" type="button" style="margin-left: 630px" onclick="back()">X</button>
+
+    <!-- Anzeige des Timers und Punktestands -->
+    <div id="timer"></div>
+    <div id="point_count"></div>
+
+    <!-- Formularfelder für Flaggen -->
+    <div class="quizForm">
+        {% for i in country_data %}
+            {% set path = '/flags/'+i+'.png' %}
+            <div class="flag-container">
+                <!-- Anzeige von Flaggenbildern -->
+                <img src="{{ url_for('static', filename = path) }}" alt="{{ i }}">
+                <!-- Eingabefeld für Benutzerantwort -->
+                <span><input type="text" name="countryInput" id="input{{ i }}" disabled></span>
+            </div>
+        {% endfor %}
+    </div>
+</form>
+
+<!-- JavaScript-Code für die Quiz-Logik -->
     <script>
         var inputs = document.getElementsByName('countryInput');
         var sAndHBotton = document.getElementById('showAndHide');
@@ -70,7 +134,7 @@
         var timer;
         var seconds = 0;
         var points = 0;
-        var correct_answers = {{ country_names | tojson }};
+        var correct_answers = {{ country_data | tojson }};
 
         function startQuiz() { 
             seconds = 0;
@@ -180,5 +244,8 @@
             xhr.send(data);
         }
 
-    </script>
+        function back() {
+            window.location.href = "{{ url_for('auth.flagOverview') }}";
+        }
+    </script>>
 {% endblock %}

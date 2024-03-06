@@ -2,6 +2,7 @@
 {% block title %}allFlags{% endblock %}
 {% block content %}
 
+<!-- Stildefinitionen für das Grid und die Flaggencontainer -->
 <style>
     #flagForm {
         display: grid;
@@ -23,8 +24,12 @@
         border: 2px solid grey;
     }
 </style>
-<h1 style="text-align: center; padding-top: 20px; padding-bottom: 30px;">All Flags of the World</h1>
 
+<!-- Überschriften für die Seite -->
+<h2 style="text-align: center; padding-top: 30px; padding-bottom: 15px;">All Flags of the World</h2>
+<hr>
+
+<!-- Formular für alle Flaggen -->
 <form id="flagForm">
     {% for i in country_names %}
         {% set path = '/flags/'+i+'.png' %} 
@@ -35,6 +40,5 @@
         </div>
     {% endfor %}
 </form>
-
 
 {% endblock %}

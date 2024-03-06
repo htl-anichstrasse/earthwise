@@ -12,28 +12,71 @@ import website.libr.worldmap.worldmap.worldmap as wm
 import json
 from matplotlib.colors import ListedColormap
 import hashlib
-import shutil
-
+import ast
+from flask_mail import Message
 
 
 auth = Blueprint('auth', __name__)
 
 correct_answers_count = 0 
 wrong_answer_count = 0
-home_url = 'http://83.219.162.2:1234/'
-school_url = 'http://192.168.0.195:1234/' 
-
+server_url = 'http://83.219.181.152:1234/'
+ 
 
 @auth.route('/home', methods=['GET', 'POST'])
 def index():
-    return render_template('home.html', user=current_user)
+    external_server_url = server_url + 'getquizoverview'
+
+    try:
+          response = requests.get(external_server_url)
+          if response.status_code == 200:
+                data = response.json()
+                last_5_entries = data["quiz_data"][-5:]
+                names = [item[1] for item in last_5_entries]
+                types = [item[2] for item in last_5_entries]
+
+                return render_template('home.html', last_5_entries=last_5_entries, names=names, 
+                                       types=types, user=current_user)
+
+          else:
+                return f"Error: {response.status_code}"
+    except Exception as e:
+            return f"An error occurred: {str(e)}"
+
+@auth.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+    return render_template('reset_password.html', user=current_user)
+
+
+@auth.route('/send_reset_email', methods=['GET', 'POST'])
+def send_reset_email():
+    if request.method == 'POST':
+        
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+
+            reset_link = url_for('auth.reset_password', token='your_reset_token', _external=True)
+            msg = Message('Passwort zurücksetzen', sender='earthwise@gmail.com', recipients=[email])
+            msg.body = render_template('reset_password_email.txt', user=user, reset_link=reset_link)
+            mail = mail
+            mail.send(msg)
+
+            flash('An email with password reset instructions has been sent to your email address.', 'success')
+            return redirect(url_for('auth.login'))
+
+    flash('No User for this email found!', 'error')
+    return render_template('reset_password.html', user=current_user)
 
 @auth.route('/show_pic')
 def show_pic():
-    # Pfad zum Bild
-    pic_path = 'static/flags/Vatican_City.png'
-    
-    # Rückgabe des Bildes
+    pic_path = 'static/LOGO.png'
+    return send_file(pic_path, mimetype='image/png')
+
+@auth.route('/profile_picture')
+def profile_picture():
+    pic_path = "static/blank-profile-picture-973460_960_720.webp"
     return send_file(pic_path, mimetype='image/png')
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -43,7 +86,7 @@ def login():
         password = request.form.get('password')
         password = hashlib.sha256(password.encode()).hexdigest()
 
-        url = home_url + 'login/' + email + '/' + password    
+        url = server_url + 'login/' + email + '/' + password    
         user = User.query.filter_by(email=email).first()
         if user:
             if user.password == password:        
@@ -95,7 +138,7 @@ def sign_up():
             password = hashlib.sha256(password1.encode()).hexdigest()
             print(password)
             
-            url = home_url + 'createnewuser/' + email + '/' + first_name + '/' + password            
+            url = server_url + 'createnewuser/' + email + '/' + first_name + '/' + password            
             try:
                 response = requests.get(url)
                 if response.status_code == 200:
@@ -111,7 +154,7 @@ def sign_up():
             except Exception as e:
                 flash(f'An error occurred: {str(e)}', category='error')            
 
-    return render_template("sign_up.html", user=current_user, home_url=home_url)
+    return render_template("sign_up.html", user=current_user, server_url=server_url)
 
 @auth.route('/changeUserName', methods=['GET', 'POST'])
 def changeUserName():
@@ -126,7 +169,7 @@ def changeUserName():
         elif current_user.password != password:
             flash('Password is incorrect.', category='error')
         else:
-            url = home_url + 'changeusername/' + email + '/' + password + '/' + new_username            
+            url = server_url + 'changeusername/' + email + '/' + password + '/' + new_username            
             try:
                response = requests.get(url)
                if response.status_code == 200:  
@@ -162,7 +205,7 @@ def changeUserPassword():
             flash('Password must be at least 7 characters.', category='error')
         else:
             password2 = hashlib.sha256(password2.encode()).hexdigest()
-            url = home_url + 'changepassword/' + email + '/' + password1 + '/' + password2           
+            url = server_url + 'changepassword/' + email + '/' + password1 + '/' + password2           
             try:
                 response = requests.get(url)
                 if response.status_code == 200:
@@ -194,7 +237,7 @@ def deleteUser():
         elif len(password1) < 7: 
             flash('Password must be at least 7 characters.', category='error')
         else:
-            url = home_url + 'deleteuser/' + email + '/' + password1         
+            url = server_url + 'deleteuser/' + email + '/' + password1         
             try:
                 response = requests.get(url)
                 if response.status_code == 200:
@@ -220,7 +263,7 @@ def deleteUser():
 
 @auth.route('/flagOverview', methods=['GET', 'POST'])
 def flagOverview():
-    external_server_url = home_url + 'getquizoverview'
+    external_server_url = server_url + 'getquizoverview'
 
     try:
           response = requests.get(external_server_url)
@@ -248,7 +291,7 @@ def flagOverview():
             return f"An error occurred: {str(e)}"
         
 def get_high_scores():
-    external_server_url = home_url + 'getallscores/' + current_user.email
+    external_server_url = server_url + 'getallscores/' + current_user.email
 
     try:
           response = requests.get(external_server_url)
@@ -264,7 +307,7 @@ def get_high_scores():
 
 @auth.route('/allFlags', methods=['GET', 'POST'])
 def allFlags():
-    external_server_url = home_url + 'getquizbyid/1' 
+    external_server_url = server_url + 'getquizbyid/1' 
 
     try:
           response = requests.get(external_server_url)
@@ -272,7 +315,7 @@ def allFlags():
               data = response.json()
               country_data = data['country_data']
 
-              country_names = [country[0].replace(' ', '_') for country in country_data]
+              country_names = [country[0].replace(' ', ' ') for country in country_data]
 
 
               return render_template('allFlags.html', country_names=country_names, user=current_user)
@@ -283,12 +326,12 @@ def allFlags():
 
 @auth.route('/allFlagsByContinent', methods=['GET', 'POST'])
 def allFlagsByContinent():
-    external_server_url_2 = home_url + 'getquizbyid/2'
-    external_server_url_3 = home_url + 'getquizbyid/3'
-    external_server_url_4 = home_url + 'getquizbyid/4'
-    external_server_url_5 = home_url + 'getquizbyid/5'
-    external_server_url_6 = home_url + 'getquizbyid/6'
-    external_server_url_7 = home_url + 'getquizbyid/7' 
+    external_server_url_2 = server_url + 'getquizbyid/2'
+    external_server_url_3 = server_url + 'getquizbyid/3'
+    external_server_url_4 = server_url + 'getquizbyid/4'
+    external_server_url_5 = server_url + 'getquizbyid/5'
+    external_server_url_6 = server_url + 'getquizbyid/6'
+    external_server_url_7 = server_url + 'getquizbyid/7' 
 
     try:
           response2 = requests.get(external_server_url_2)
@@ -306,7 +349,7 @@ def allFlagsByContinent():
                 data = response.json()
                 country_data = data['country_data']
 
-                country_names = [country[0].replace(' ', '_') for country in country_data]
+                country_names = [country[0].replace(' ', ' ') for country in country_data]
                 country_names_list.append(country_names)
 
 
@@ -366,7 +409,7 @@ def multiChoiseQuiz():
 
     # Überprüfe, ob die Seite 5 Mal aufgerufen wurde
     if session['quiz_count'] <= 5:
-        external_server_url = home_url + 'getquizbyid/1' 
+        external_server_url = server_url + 'getquizbyid/1' 
         try:
             response = requests.get(external_server_url)
             if response.status_code == 200:
@@ -375,10 +418,11 @@ def multiChoiseQuiz():
                 
                 data = response.json()
                 country_data = data['country_data']
-                countries = [country[0] for country in country_data]
+                country_data = list(map(lambda pair: pair[0], country_data))
+                countries = [country for country in country_data]
 
                 random_countries = random.sample(countries, 4)
-                country_paths = ['/flags/' + country.replace(" ", "_") + '.png' for country in random_countries]
+                country_paths = ['/flags/' + country.replace(" ", " ") + '.png' for country in random_countries]
                 
                 correctLand = random.choice(country_paths)
                 
@@ -415,26 +459,24 @@ def flagNameQuiz():
     if 'quiz_count' not in session:
         session['quiz_count'] = 0
 
-    # Erhöhe die Zählvariable
     session['quiz_count'] += 1
 
-    # Überprüfe, ob die Seite 5 Mal aufgerufen wurde
-    if session['quiz_count'] <= 4:
-        external_server_url = home_url + 'getquizbyid/1' 
+    if session['quiz_count'] <= 5:
+        external_server_url = server_url + 'getquizbyid/1' 
         try:
             response = requests.get(external_server_url)
             if response.status_code == 200:
-                quiz_name = "Test-Quiz"
+                quiz_name = "4 Flags Quiz"
                 discription = "What are the names of these countries?"
                 
                 data = response.json()
                 country_data = data['country_data']
+                country_data = list(map(lambda pair: pair[0], country_data))
 
-                countries = [country[0] for country in country_data]
+                countries = [country for country in country_data]
                 random_countries = random.sample(countries, 4)
-                country_paths = ['/flags/' + country.replace(" ", "_") + '.png' for country in random_countries]
+                country_paths = ['/flags/' + country.replace(" ", " ") + '.png' for country in random_countries]
                 country_names = [country.replace("_", " ") for country in random_countries]
-
 
                 return render_template("flagNameQuiz.html", user=current_user, quiz_name=quiz_name, discription=discription, land1=country_paths[0],
                             land2=country_paths[1], land3=country_paths[2], land4=country_paths[3], land_names=country_names)
@@ -455,12 +497,10 @@ def singleFlagNameQuiz():
     if 'quiz_count' not in session:
         session['quiz_count'] = 0
 
-    # Erhöhe die Zählvariable
     session['quiz_count'] += 1
 
-    # Überprüfe, ob die Seite 5 Mal aufgerufen wurde
     if session['quiz_count'] <= 5:
-        external_server_url = home_url + 'getquizbyid/1' 
+        external_server_url = server_url + 'getquizbyid/1' 
         try:
             response = requests.get(external_server_url)
             if response.status_code == 200:
@@ -469,10 +509,12 @@ def singleFlagNameQuiz():
                 
                 data = response.json()
                 country_data = data['country_data']
+                country_data = list(map(lambda pair: pair[0], country_data))
 
-                countries = [country[0] for country in country_data]
+
+                countries = [country for country in country_data]
                 random_country = random.choice(countries)
-                country_path = "/flags/" + random_country.replace(" ", "_") + '.png' 
+                country_path = "/flags/" + random_country.replace(" ", " ") + '.png' 
                 country_name = random_country.replace("_", " ") 
 
 
@@ -522,7 +564,7 @@ def twoFlagsQuiz():
     session['quiz_count'] += 1
 
     if session['quiz_count'] <= 5:
-        external_server_url = home_url + 'getquizbyid/1'
+        external_server_url = server_url + 'getquizbyid/1'
         try:
             response = requests.get(external_server_url)
             if response.status_code == 200:
@@ -530,12 +572,13 @@ def twoFlagsQuiz():
                 
                 data = response.json()
                 country_data = data['country_data']
-                countries = [country[0] for country in country_data]
+                country_data = list(map(lambda pair: pair[0], country_data))
+                countries = [country for country in country_data]
                 
                 random_country1 = random.choice(countries)
                 random_country2 = random.choice(countries)
-                whole_path1 = "/flags/" + random_country1.replace(" ", "_") + '.png'
-                whole_path2 = "/flags/" + random_country2.replace(" ", "_") + '.png'
+                whole_path1 = "/flags/" + random_country1.replace(" ", " ") + '.png'
+                whole_path2 = "/flags/" + random_country2.replace(" ", " ") + '.png'
                 
                 correctLand = whole_path1
                 incorrectLand = whole_path2
@@ -563,7 +606,7 @@ def learnPage():
 @auth.route('/profileSite', methods=['GET', 'POST'])
 def profileSite():
     email = current_user.email
-    external_server_url = home_url + 'getusernameandlevel/' + email
+    external_server_url = server_url + 'getusernameandlevel/' + email
     try:
           response = requests.get(external_server_url)
           if response.status_code == 200:
@@ -665,7 +708,7 @@ def before_request():
         selected_countries = [" "]
         selected_country = " "
 
-load_selected_countries()  # Load selected countries when the application starts
+load_selected_countries()  
 
 @auth.route('/worldmap', methods=['GET', 'POST'])
 def worldmap():
@@ -724,23 +767,42 @@ def reset():
 
 @auth.route('/serverQuiz/<quizId>', methods=['GET', 'POST'])
 def serverQuiz(quizId):
-    external_server_url = home_url + 'getquizbyid/' + quizId
+    external_server_url = server_url + 'getquizbyid/' + quizId
 
     try:
           response = requests.get(external_server_url)
           if response.status_code == 200:
               data = response.json()
+
               quiz_name = data['quiz_name']
-              description = data['discription']
+              description = data['description']
               country_data = data['country_data']
               quiz_type = data['quiz_type']
+              print(country_data)
               
               if quiz_type == 'flagquiz':
-                    country_names = [country[0].replace(' ', '_') for country in country_data]
+                    return handle_flag_quiz(quiz_name, description, country_data, quizId)
+              elif quiz_type == 'mapquiz':
+                    return handle_map_quiz(country_data, quiz_name, description, quizId)
+              elif quiz_type == 'tablequiz':
+                    return handle_table_quiz(quiz_name, description, country_data, quizId)
+              elif quiz_type == 'neighboringcountries':
+                    return handle_neighboringcountries_quiz(quiz_name, description, country_data, quizId)
+                  
+          else:
+                return f"Error: {response.status_code}"
+    except Exception as e:
+            return f"An error occurred: {str(e)}"
+        
+        
+def handle_flag_quiz(quiz_name, description, country_data, quizId):
 
-                    return render_template('serverQuiz.html', quiz_name=quiz_name, description=description, country_names=country_names, 
-                                     user=current_user, quizId=quizId, home_url=home_url)
-              else:
+    country_data = list(map(lambda pair: pair[0], country_data))
+
+    return render_template('serverQuiz.html', quiz_name=quiz_name, description=description, country_data=country_data, 
+                           user=current_user, quizId=quizId, server_url=server_url)
+    
+def handle_map_quiz(country_data, quiz_name, description, quizId):
                     county_names = country_data
                     country_names_list = [country[0] for country in county_names]
                     max_points = len(country_names_list)
@@ -792,7 +854,42 @@ def serverQuiz(quizId):
                                            description=description, user=current_user, 
                                            country_names_list=country_names_list, max_points=max_points, 
                                            county_names=county_names, quizId=quizId)
-                  
+    
+def handle_table_quiz(quiz_name, description, country_data, quizId):
+    
+    
+    return render_template('tableQuiz.html', quiz_name=quiz_name, description=description, country_data=country_data, 
+                           user=current_user, quizId=quizId, server_url=server_url)
+    
+def handle_neighboringcountries_quiz(quiz_name, description, country_data, quizId):
+ 
+    country_data = ast.literal_eval(country_data)
+    print(type(country_data))
+
+    return render_template('neighboringcountriesQuiz.html', quiz_name=quiz_name, description=description, country_data=country_data, 
+                           user=current_user, quizId=quizId, server_url=server_url)
+              
+
+
+    
+def alternate_spellings(country_codes):
+    if isinstance(country_codes, str):
+        country_codes = ast.literal_eval(country_codes)
+    external_server_url = server_url + 'getallalternativespellings'
+    try:
+          response = requests.get(external_server_url)
+          if response.status_code == 200:
+              country_data = response.json()
+              
+              country_names = []
+              for code in country_codes:
+                if code in country_data:
+                    for name in country_data[code]:
+                        if len(name) > 3:
+                            country_names.append(name)
+
+              return country_names
+              
           else:
                 return f"Error: {response.status_code}"
     except Exception as e:
@@ -809,7 +906,7 @@ def set_score():
             achievable_score = data['achievable_score']
             needed_time = data['needed_time']
                 
-            external_server_url = home_url + 'setscore/' + email + '/' + str(quiz_id) + '/' + str(score) + '/' + str(achievable_score) + '/' + str(needed_time)
+            external_server_url = server_url + 'setscore/' + email + '/' + str(quiz_id) + '/' + str(score) + '/' + str(achievable_score) + '/' + str(needed_time)
             
             response = requests.get(external_server_url)
             
@@ -819,7 +916,7 @@ def set_score():
                 print(response.content)
                 check_level_increase()
                 if(message_type == 'Success'):
-                    flash("New Highscore", category="Success") #geht irgendwie nit 
+                    flash("New Highscore", category="Success")
                 return "Success"  
             else:
                 return f"Error: {response.status_code}"
@@ -829,24 +926,27 @@ def set_score():
 
 def check_level_increase():
     try:
-          external_server_url = home_url + 'getallscores/' + current_user.email
+          external_server_url = server_url + 'getallscores/' + current_user.email
           response = requests.get(external_server_url)
           if response.status_code == 200:
               data = response.json()
-              points_sum = sum(item[2] for item in data)
+              points_sum = sum(item[2] for item in data if item[2] == item[3])
+              time_sum = sum(item[4] for item in data)
+              points_per_time_sum = sum(100 / item[4] for item in data) if time_sum > 0 else 0
+              whole_sum = points_sum + points_per_time_sum
               current_level = get_user_level()
               
-              if points_sum < 50 and current_level != 1:
+              if whole_sum < 500 and current_level != 1:
                     increase_level(1)
-              elif points_sum < 100 and points_sum >= 50 and current_level != 2:
+              elif whole_sum < 1000 and whole_sum >= 500 and current_level != 2:
                     increase_level(1)
-              elif points_sum < 250 and points_sum >= 100 and current_level != 3:
+              elif whole_sum < 1500 and whole_sum >= 1000 and current_level != 3:
                     increase_level(1)
-              elif points_sum < 400 and points_sum >= 250 and current_level != 4:
+              elif whole_sum < 2000 and whole_sum >= 1500 and current_level != 4:
                     increase_level(1)
-              elif points_sum < 600 and points_sum >= 400 and current_level != 5:
+              elif whole_sum < 3000 and whole_sum >= 2000 and current_level != 5:
                     increase_level(1)
-              elif points_sum >= 600 and current_level != 6:
+              elif whole_sum >= 3000 and current_level != 6:
                     increase_level(1)
               
           else:
@@ -856,7 +956,7 @@ def check_level_increase():
     
 def increase_level(number):
     try:
-        external_server_url = home_url + 'increaselevel/' + current_user.email + '/' + str(number)
+        external_server_url = server_url + 'increaselevel/' + current_user.email + '/' + str(number)
         print(external_server_url)
         response = requests.get(external_server_url)
         print(response.status_code)
@@ -870,7 +970,7 @@ def increase_level(number):
 
 def get_user_level():
     email = current_user.email
-    external_server_url = home_url + 'getusernameandlevel/' + email
+    external_server_url = server_url + 'getusernameandlevel/' + email
     try:
           response = requests.get(external_server_url)
           if response.status_code == 200:

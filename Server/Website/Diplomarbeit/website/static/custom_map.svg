@@ -7,7 +7,7 @@
        .
 		{
 					fill: ocean;
-					fill-opacity: 2.0;
+					fill-opacity: 1.0;
 					stroke:white;
 					stroke-opacity: 1;
 					stroke-width:0.5;

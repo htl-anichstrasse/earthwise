@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+{% block title %}Server-Quiz{% endblock %}
+{% block content %}
+<style>
+    /* Stil für die Buttons */
+    .button-81 {
+        background-color: #fff;
+        border: 0 solid #e2e8f0;
+        border-radius: 1.5rem;
+        box-sizing: border-box;
+        color: #0d172a;
+        cursor: pointer;
+        display: inline-block;
+        font-family: "Basier circle",-apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+        font-size: 1.1rem;
+        font-weight: 600;
+        line-height: 1;
+        padding: 1rem 1.6rem;
+        text-align: center;
+        text-decoration: none #0d172a solid;
+        text-decoration-thickness: auto;
+        transition: all .1s cubic-bezier(.4, 0, .2, 1);
+        box-shadow: 0px 1px 2px rgba(166, 175, 195, 0.25);
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+    }
+
+    /* Hover-Effekt für die Buttons */
+    .button-81:hover {
+        background-color: #1e293b;
+        color: #fff;
+    }
+
+    /* Responsives Design für die Buttons */
+    @media (min-width: 768px) {
+        .button-81 {
+            font-size: 1.125rem;
+            padding: 1rem 2rem;
+        }
+    }
+
+    /* Stil für deaktivierte Buttons */
+    .button-81:disabled {
+        background-color: #d3d3d3;
+        color: #a0aec0;
+        cursor: not-allowed; 
+    }
+
+    /* Hover-Effekt für deaktivierte Buttons */
+    .button-81:hover:disabled {
+        background-color: #d3d3d3; 
+    }
+
+    /* Stil für die Tabelle */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background-color: white; 
+    }
+
+    /* Stil für Tabellenzellen */
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+
+    /* Stil für Tabellenüberschriften */
+    th {
+        background-color: #f2f2f2;
+        height: 35px;
+    }
+
+    /* Stil für Texteingabefelder */
+    input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    /* Stil für den Fokus von Texteingabefeldern */
+    input[type="text"]:focus {
+        border-color: #007bff; 
+        outline: none;
+    }
+</style>
+
+<!-- Das eigentliche Formular für das Quiz -->
+<form method="post">
+
+    <!-- Überschriften und Buttons für das Quiz -->
+    <h2 style="text-align: center; margin-top: 30px;">{{ quiz_name }}</h2>
+    <h4 style="text-align: center; padding-bottom: 30px;">{{ description }}</h4>
+    <button class="button-81" type="button" id="startButton" onclick="startQuiz()">Start</button>
+    <button class="button-81" type="button" id="stopButton" onclick="stopQuiz()" disabled>Stop</button>
+    <button class="button-81" type="button" id="showAndHide" onclick="showAndHideAnswers()">Show Answers</button>
+    <button class="button-81" type="button" style="margin-left: 500px" onclick="back()">X</button>
+
+    <!-- Anzeige für den Timer und Punktestand -->
+    <div id="timer"></div>
+    <div id="point_count"></div>
+
+    <!-- Tabelle für die Quiz-Fragen und Antworten -->
+    <table id="myTable" border="1">
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th> </th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+        </tbody>
+    </table>
+
+</form>
+
+<!-- JavaScript-Code für die Quiz-Funktionalitäten -->
+<script>
+    // Variablen für verschiedene HTML-Elemente und Quiz-Daten
+    var answerInputs = document.querySelectorAll('input[type="text"]');
+    var sAndHBotton = document.getElementById('showAndHide'); 
+    var sButton = document.getElementById('startButton');  
+    var stopButton = document.getElementById('stopButton');  
+    var points = 0;
+
+    var dataList = {{country_data | tojson}};
+    var newList = [];
+    for (var x = 0; x<dataList.length; x++) {
+        var value = dataList[x];
+        newList.push(value);
+    }
+
+    // Funktion zum Hinzufügen von Zeilen zur Tabelle basierend auf den Quiz-Daten
+    function addRowsToTable(dataList) {
+        var tableBody = document.getElementById("tableBody");
+        var numColumns = 4;
+        var numRows = Math.ceil(dataList.length / numColumns);
+        var answerInputs = [];  
+        var correctAnswers = [];  
+
+        for (var i = 0; i < numRows; i++) {
+            var row = document.createElement("tr");
+
+            for (var j = 0; j < numColumns; j++) {
+                var dataIndex = i * numColumns + j;
+
+                if (dataIndex < dataList.length) {
+                    var data = dataList[dataIndex];
+                    var cell = document.createElement("td");
+
+                    var input = document.createElement("input");
+                    input.type = "text";
+                    input.setAttribute("data-correct-answer", data);
+                    input.setAttribute("disabled", "disabled");
+                    
+                    answerInputs.push(input);
+                    correctAnswers.push(data);
+
+                    cell.appendChild(input);
+                    row.appendChild(cell);
+                }
+            }
+
+            tableBody.appendChild(row);
+        }
+
+        return { answerInputs, correctAnswers };
+    }
+
+    // Initialisierung der Quiz-Daten und Hinzufügen von Zeilen zur Tabelle
+    var { answerInputs, correctAnswers } = addRowsToTable(newList);
+
+    // Funktion zum Starten des Quiz
+    function startQuiz() { 
+        seconds = 0;
+        hideAnswers();
+        for (var i = 0; i < answerInputs.length; i++) {
+            answerInputs[i].removeAttribute('disabled');
+            answerInputs[i].style.backgroundColor = ''; 
+        }
+
+        sAndHBotton.setAttribute('disabled', 'disabled');
+        sButton.setAttribute('disabled', 'disabled');
+        stopButton.removeAttribute('disabled');  
+
+        startTimer();
+    }
+
+    // Funktion zum Starten des Timers
+    function startTimer() {
+        timer = setInterval(function () {
+            seconds++;
+            document.getElementById('timer').innerText = seconds + ' seconds';
+        }, 1000);
+    }
+
+    // Funktion zum Stoppen des Quiz
+    function stopQuiz() {
+        points = 0;
+        clearInterval(timer);
+        document.getElementById('timer').innerText = 'Stopped at ' + seconds + ' seconds';
+        for (var i = 0; i < answerInputs.length; i++) {
+            answerInputs[i].setAttribute('disabled', 'disabled');
+        }
+        checkAnswers(seconds);
+        
+        sAndHBotton.removeAttribute('disabled');
+        sButton.removeAttribute('disabled');
+        stopButton.setAttribute('disabled', 'disabled');  
+    }
+
+    // Funktion zum Überprüfen der Antworten
+    function checkAnswers(seconds) {
+        var max_points = 0;
+        for (var i = 0; i < answerInputs.length; i++) {
+            var userAnswer = answerInputs[i].value.toLowerCase();
+            var correctAnswer = answerInputs[i].getAttribute("data-correct-answer").toLowerCase();
+            max_points += 1;
+    
+            if (userAnswer !== correctAnswer) {
+                answerInputs[i].style.backgroundColor = 'red';
+            } else {
+                answerInputs[i].style.backgroundColor = ''; 
+                points += 1;
+            }
+        }
+        document.getElementById('point_count').innerText = points + ' out of possible ' + max_points + ' points';
+        sendScore(seconds, points, max_points);
+    }
+    
+    // Funktion zum Anzeigen oder Ausblenden der Antworten
+    function showAndHideAnswers() {
+        var showAndHide = document.getElementById('showAndHide');
+    
+        if (showAndHide.innerHTML === 'Show Answers') {
+            showAnswers();
+        } else {
+            hideAnswers();
+        }
+    }
+
+    // Funktion zum Anzeigen der Antworten
+    function showAnswers() {
+        for (var i = 0; i < answerInputs.length; i++) {
+            answerInputs[i].value = correctAnswers[i];
+            answerInputs[i].style.backgroundColor = '#FF6961';
+        }
+        document.getElementById('showAndHide').innerHTML = 'Hide Answers';
+    }
+    
+    // Funktion zum Ausblenden der Antworten
+    function hideAnswers() {
+        for (var i = 0; i < answerInputs.length; i++) {
+            answerInputs[i].value = '';
+            answerInputs[i].style.backgroundColor = 'white';
+        }
+        document.getElementById('showAndHide').innerHTML = 'Show Answers';
+    }
+
+    // Funktion zum Senden der Punktzahl an den Server
+    function sendScore(seconds, points, max_points) {
+        var quizId = '{{ quizId }}';
+        var score = points;
+        var achievableScore = max_points;
+        var needed_time = seconds;
+
+        var url = '{{ url_for("auth.set_score") }}';
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        var data = JSON.stringify({
+            quiz_id: quizId,
+            score: score,
+            achievable_score: achievableScore,
+            needed_time: needed_time
+        });
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    console.log(xhr.responseText);
+                }
+            }
+        };
+
+        xhr.send(data);
+    }
+
+    // Funktion zum Zurückkehren zur vorherigen Seite
+    function back() {
+        window.location.href = "{{ url_for('auth.flagOverview') }}";
+    }
+</script>
+{% endblock %}

@@ -1,9 +1,8 @@
 {% extends "base.html" %}
-
 {% block title %}Change Username{% endblock %}
-
 {% block content %}
 <style>
+  /* Stildefinitionen für das Icon, das das Passwort verdeckt/zeigt */
   .field-icon {
     float: right;
     margin-left: -25px;
@@ -15,11 +14,16 @@
     cursor: pointer;
   }
 </style>
-  <form method="POST">
+
+<!-- Formular zur Änderung des Benutzernamens -->
+<form method="POST">
     <h3 align="center">Change User</h3>
+
+    <!-- Eingabefeld für den Benutzernamen -->
     <div class="form-group">
       <label for="firstName">Username</label>
       <div style="font-size: 14px" id="info_text"></div>
+      <!-- Benutzername-Eingabefeld mit onBlur-Ereignis zum Anzeigen des vorherigen Benutzernamens -->
       <input
         type="text"
         class="form-control"
@@ -30,6 +34,8 @@
         onblur="show_text()"
       />
     </div>
+
+    <!-- Eingabefeld für das neue Passwort -->
     <div class="form-group">
       <label for="password">Password</label>
       <input
@@ -39,33 +45,36 @@
         name="password"
         placeholder="New Password"
       />
+      <!-- Schaltfläche zum Ein- und Ausblenden des Passworts -->
       <span class="fa fa-fw fa-eye field-icon toggle-password1" onclick="togglePasswordVisibility()"></span>
     </div>
     <br />
-    <button type="submit" class="btn btn-primary">Change</button>  
-  </form>
 
-  <script>
-    function show_text() {
-      document.getElementById("info_text").innerText = "The previous Username has been: {{user_name}}";
-    }    
-  
-    function togglePasswordVisibility() {
-      const passwordInput = document.getElementById('password'); 
-      const icon = document.querySelector('.toggle-password');
-  
-      if (passwordInput.type === 'password') { 
-        passwordInput.type = 'text';
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
-      } else {
-        passwordInput.type = 'password';
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
-      }
+    <!-- Schaltfläche zum Ändern des Benutzernamens -->
+    <button type="submit" class="btn btn-primary">Change</button>  
+</form>
+
+<script>
+  // Funktion zum Anzeigen des vorherigen Benutzernamens
+  function show_text() {
+    document.getElementById("info_text").innerText = "The previous Username has been: {{user_name}}";
+  }    
+
+  // Funktion zum Ein- und Ausblenden des Passworts
+  function togglePasswordVisibility() {
+    const passwordInput = document.getElementById('password'); 
+    const icon = document.querySelector('.toggle-password');
+
+    if (passwordInput.type === 'password') { 
+      passwordInput.type = 'text';
+      icon.classList.remove('fa-eye');
+      icon.classList.add('fa-eye-slash');
+    } else {
+      passwordInput.type = 'password';
+      icon.classList.remove('fa-eye-slash');
+      icon.classList.add('fa-eye');
     }
-  
-    
-  </script>
-  
+  }
+</script>
+
 {% endblock %}

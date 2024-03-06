@@ -1,133 +1,187 @@
 {% extends "base.html" %}
-
 {% block title %}Flag-Overview{% endblock %}
-
 {% block content%}
-<head>  
-<style>
-    .float-container {
-        overflow: auto;
-    }
-
-    .float-child1{
-        width: 70%;
-        float: left;
-    }
-
-    .float-child2{
-        width: 30%;
-        float: left;
-    }
-
-    table {
-        border-collapse: collapse;
-        font-family: Tahoma, Geneva, sans-serif;
-    }
-
-    table td {
-        padding: 15px;
-    }
-
-    table thead td {
-        background-color: #54585d;
-        color: #ffffff;
-        font-weight: bold;
-        font-size: 13px;
-        border: 1px solid #54585d;
-    }
-
-    table tbody td {
-        color: #636363;
-        border: 1px solid #dddfe1;
-    }
-
-    table tbody tr {
-        background-color: #f9fafb;
-    }
-
-    table tbody tr:nth-child(odd) {
-        background-color: #ffffff;
-    }
-  </style>
-</head>
-<body>
-<div class="float-container">
-        <form id="searchForm" style="text-align: center; margin-top: 20px;">
-            <label for="quizType">Search by Quiz Type: </label>
-            <input type="text" id="quizType" name="quizType" placeholder="Enter Quiz Type">
-            <button type="button" onclick="searchQuiz()">Search</button>
-        </form>
-        <div class="float-child1">
-        <table style="margin-top: 50px;" id="quizTable">
-            <thead>
-                <tr>
-                    <td>Quiz Name</td>
-                    <td>Quiz Type</td>
-                    <td>High Score</td>
-                </tr>
-            </thead>
-            <tbody>
-                {% for i in range(count) %}
-    <tr>
-        <td><a href="{{ url_for('auth.serverQuiz', quizId=i+1) }}">{{ quiz_names[i] }}</a></td>
-        <td>{{ quiz_types[i] }}</td>
-        {% set highscore_found = false %}
-        {% for value in high_scores %}
-            {% if quiz_ids[i] == value[1] %}
-                <td>{{ value[2] }}/{{ value[3] }} | {{ value[4] }}s</td>
-                {% set highscore_found = true %}
-            {% endif %}
-        {% endfor %}
-        {% if not highscore_found %}
-            <td>No Highscore</td>
-        {% endif %}
-    </tr>
-{% endfor %}
-
-                                
-            </tbody>
-        </table>
-    </div>
-    <div class="float-child2">
-        <table style="margin-top: 50px;">
-            <thead>
-                <tr>
-                    <td>All Flags</td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        <a href="{{ url_for('auth.allFlags') }}">By Names</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <a href="{{ url_for('auth.allFlagsByContinent') }}">By Continents</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<script>
-    function searchQuiz() {
-        var input = document.getElementById("quizType").value.toLowerCase();
-        var table = document.getElementById("quizTable");
-        var rows = table.getElementsByTagName("tr");
-
-        for (var i = 1; i < rows.length; i++) {
-            var quizType = rows[i].getElementsByTagName("td")[1].innerText.toLowerCase();
-
-            if (quizType.includes(input)) {
-                rows[i].style.display = "";
-            } else {
-                rows[i].style.display = "none";
+    <!-- Kopfzeile mit den Stildefinitionen -->
+    <head>
+        <style>
+            /* Allgemeine Stildefinitionen */
+            body {
+                font-family: 'lato', sans-serif;
             }
-        }
-    }
-</script>
 
-</body>
+            a {
+                text-decoration: none;
+                color: black;
+            }
+
+            /* Stildefinitionen für die Sidebar */
+            .sidenav {
+                width: 250px;
+                z-index: 1;
+                bottom: 0;
+                left: 0;
+                background-color: transparent;
+                overflow-x: hidden;
+                padding-top: 20px;
+                margin-bottom: 50px;
+                height: 75%;
+                position: fixed; 
+            }
+
+            .sidenav a {
+                margin-left: 30px;
+                margin-top: 0px;
+                text-decoration: none;
+                font-size: 17px;
+                color: #818181;
+                display: block;
+            }
+
+            .sidenav a:hover {
+                color: black;
+            }
+
+            /* Stildefinitionen für den Hauptinhalt */
+            .main {
+                margin-left: 140px; 
+                padding: 0px 10px;
+            }
+
+            /* Stildefinitionen für die Tabelle */
+            .responsive-table li {
+                border-radius: 3px;
+                padding: 25px 30px;
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 25px;
+            }
+
+            .responsive-table .table-header {
+                background-color: #95A5A6;
+                font-size: 14px;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+            }
+
+            .responsive-table .table-row {
+                background-color: #ffffff;
+                box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.1);
+            }
+
+            .responsive-table .col {
+                display: flex;
+                padding: 10px 0;
+            }
+
+            .responsive-table .col:before {
+                color: #6C7A89;
+                padding-right: 10px;
+                content: attr(data-label);
+                flex-basis: 50%;
+                text-align: right;
+            }
+
+            @media screen and (max-height: 450px) {
+                .sidenav {padding-top: 15px;}
+                .sidenav a {font-size: 18px;}
+            }
+        </style>
+    </head>
+    
+    <!-- Hauptteil der Seite -->
+    <body>
+        <!-- Sidebar mit Filter- und Suchoptionen -->
+        <div class="sidenav">
+            <p style="font-size: 20px; margin-left: 6px"> Get all Flags orderd by:</p>
+            <a href="{{ url_for('auth.allFlags') }}">Names</a>
+            <a href="{{ url_for('auth.allFlagsByContinent') }}">By Continents</a>
+
+            <p style="font-size: 20px; margin-top: 10px; margin-left: 6px">Enter Quizname:</p>
+            <input type="text" id="quizType" name="quizType" placeholder="Enter Quiz Name" style="margin-left: 10px">
+
+            <p style="font-size: 20px; margin-top: 10px; margin-left: 6px">Filter by Type:</p>
+            <a href="#" onclick="filterQuizzes('all')">All</a>
+            <a href="#" onclick="filterQuizzes('mapquiz')">Map</a>
+            <a href="#" onclick="filterQuizzes('flagquiz')">Flag</a>
+            <a href="#" onclick="filterQuizzes('tablequiz')">Table</a>
+            <a href="#" onclick="filterQuizzes('neighboringcountries')">Neighbours</a>
+        </div>
+
+        <!-- Container für die Tabelle mit Quizinformationen -->
+        <div class="main">
+            <ul class="responsive-table" style="margin-top: 30px">
+                <!-- Tabellenkopf mit Spaltennamen -->
+                <li class="table-header">
+                    <div class="col col-4">Name</div>
+                    <div class="col col-3">Type</div>
+                    <div class="col col-5">Highscore</div>
+                </li>
+                
+                <!-- Schleife über die Anzahl der Quizzes -->
+                {% for i in range(count) %}
+                    {% set highscore_found = false %}
+                    <!-- Tabellenzeile für jedes Quiz -->
+                    <li class="table-row">
+                        <!-- Name des Quiz mit Link zur Detailseite -->
+                        <div class="col col-3"><a href="{{ url_for('auth.serverQuiz', quizId=i+1) }}">{{ quiz_names[i] }}</a></div>
+                        
+                        <!-- Typ des Quiz -->
+                        <div class="col col-4 quiz-type">{{ quiz_types[i] }}</div>
+                        
+                        <!-- Schleife über die Highscores -->
+                        {% for value in high_scores %}
+                            {% if quiz_ids[i] == value[1] %}
+                                <!-- Anzeigen des Highscores, falls vorhanden -->
+                                <div class="col col-4">{{ value[2] }}/{{ value[3] }} | {{ value[4] }}s</div>
+                            {% else %}
+                                <!-- Anzeigen, dass kein Highscore gefunden wurde -->
+                                <div class="col col-4">no Highscore</div>
+                            {% endif %}
+                        {% endfor %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Skript für die Filterung von Quizzes -->
+        <script>
+            document.getElementById("quizType").addEventListener("keydown", function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    searchQuiz();
+                } 
+            });
+
+            function searchQuiz() {
+                var input = document.getElementById("quizType").value.toLowerCase();
+                var table = document.querySelector(".responsive-table");
+                var rows = table.querySelectorAll(".table-row");
+
+                for (var i = 0; i < rows.length; i++) {
+                    var quizName = rows[i].querySelector(".col-3").innerText.toLowerCase();
+
+                    if (quizName.includes(input)) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+
+            function filterQuizzes(category) {
+                var table = document.querySelector(".responsive-table");
+                var rows = table.querySelectorAll(".table-row");
+            
+                for (var i = 0; i < rows.length; i++) {
+                    var quizName = rows[i].querySelector(".col-4").innerText.toLowerCase();
+            
+                    if (category === "all" || quizName.includes(category)) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        </script>
+    </body>
 {% endblock %}

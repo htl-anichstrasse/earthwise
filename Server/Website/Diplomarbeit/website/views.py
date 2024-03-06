@@ -7,38 +7,33 @@ import requests
 
 views = Blueprint('views', __name__)
 
+server_url = 'http://83.219.181.152:1234/'
 
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-    
-    external_server_url = 'http://83.219.162.2:1234/getquizoverview'
-    #external_server_url = 'http://192.168.0.195:1234/getquizoverview'
+    external_server_url = server_url + 'getquizoverview'
 
     try:
-            # Senden Sie eine GET-Anfrage an den externen Server
           response = requests.get(external_server_url)
-
-            # Überprüfen Sie, ob die Anfrage erfolgreich war (Statuscode 200)
           if response.status_code == 200:
-                # Verarbeiten Sie die Daten, z.B. konvertieren Sie sie in JSON
-              data = response.json()
+                data = response.json()
+                last_5_entries = data["quiz_data"][-5:]
+                names = [item[1] for item in last_5_entries]
+                types = [item[2] for item in last_5_entries]
 
-                # Hier können Sie die Daten verwenden, z.B. an die Vorlage übergeben
-              return render_template('home.html', data=data, user=current_user)
+                return render_template('home.html', last_5_entries=last_5_entries, names=names, 
+                                       types=types, user=current_user)
+
           else:
-                # Wenn die Anfrage nicht erfolgreich war, geben Sie eine Fehlermeldung zurück
                 return f"Error: {response.status_code}"
     except Exception as e:
-            # Behandeln Sie Ausnahmen, z.B. Verbindungsprobleme
             return f"An error occurred: {str(e)}"
+         
 
 
 
-    #return render_template("home.html", user=current_user, user_email = current_user.email, 
-     #                      user_name = current_user.first_name)
-
-
+  
 
 
 

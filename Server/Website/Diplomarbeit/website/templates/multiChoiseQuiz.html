@@ -5,6 +5,7 @@
 {% block content %}
 
 <style>
+    /* Stil für den Container der Bilder */
     .image-container {
         padding-left: 400px;
         display: grid;
@@ -14,75 +15,98 @@
         margin-bottom: 20px;
     }
 
-    .multiChoiceButton {
-        padding: 10px;
-        font-size: 16px;
-        background-color: #7f8c8d; /* Grau */
-        color: white;
-        border: none;
-        border-radius: 4px;
+    /* Stil für die Buttons */
+    .button-81 {
+        width: 370px;
+        margin-top: 10px;
+        background-color: #fff;
+        border: 0 solid #e2e8f0;
+        border-radius: 1.5rem;
+        box-sizing: border-box;
+        color: #0d172a;
         cursor: pointer;
-        margin: 5px;
-        width: 40%; /* Gleichbreite Buttons */
+        display: inline-block;
+        font-family: "Basier circle",-apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+        font-size: 1.1rem;
+        font-weight: 600;
+        line-height: 1;
+        padding: 1rem 1.6rem;
+        text-align: center;
+        text-decoration: none #0d172a solid;
+        text-decoration-thickness: auto;
+        transition: all .1s cubic-bezier(.4, 0, .2, 1);
+        box-shadow: 0px 1px 2px rgba(166, 175, 195, 0.25);
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
     }
 
+    /* Responsives Design für die Buttons */
+    @media (min-width: 768px) {
+        .button-81 {
+            font-size: 1.125rem;
+            padding: 1rem 2rem;
+        }
+    }
+
+    /* Stil für ausgewählte Antwort-Buttons */
     .selected {
-        background-color: #2ecc71; /* Grün für ausgewählten Button */
-    }
-    .wrong {
-        background-color:  #ff0000; /* Grün für ausgewählten Button */
+        background-color: #2ecc71;
     }
 
-    .refreshButton {
-        padding: 10px;
-        font-size: 16px;
-        background-color: #3498db; /* Blau für Refresh-Button */
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
+    /* Stil für falsche Antwort-Buttons */
+    .wrong {
+        background-color: #ff0000;
     }
 </style>
 
+<!-- Definition der Länder für das Quiz -->
 {% set laender  = [land1, land2, land3, land4] %}
-<h1 style="text-align: center"> {{quiz_name}} </h1>
-<h3 style="text-align: center">{{discription}}</h3>
 
+<!-- Überschriften und Anzeige für die Anzahl der Quiz-Fragen -->
+<h2 style="text-align: center; margin-top: 20px"> {{quiz_name}} </h2>
+<h4 style="text-align: center">{{discription}}</h4>
+<p style="text-align: center; font-size: 21px">{{session["quiz_count"]}}/5</p>
+
+<!-- Container für das Bild des korrekten Landes -->
 <div class="image-container">
-    <div style="padding-top: 30px;">
+    <div style="padding-top: 0px;">
         <img src="{{ url_for('static', filename= correctLand ) }}" width="300" height="180" style="border: 1px solid grey;">
     </div>
 </div>
 
+<!-- Buttons für die Auswahl der Antwort -->
 <div style="margin-bottom: 30px; text-align: center;"> 
     {% for i in laender %}
         {% set filename = i.split("/")[-1] %}
         {% set filename_without_extension = filename.split(".")[0] %}
         {% set filename_without_extension = filename_without_extension.replace('_', ' ')%}
-        <button class="multiChoiceButton" onclick="checkAnswer('{{ filename_without_extension }}', this)">{{ filename_without_extension }}</button>
+        <button class="button-81" onclick="checkAnswer('{{ filename_without_extension }}', this)">{{ filename_without_extension }}</button>
     {% endfor %}
 </div>
 
-<!-- Hinzugefügtes HTML-Element zur Anzeige der Anzahl der richtigen Antworten -->
+<!-- Anzeige der Anzahl der richtigen Antworten -->
 <div id="correctAnswersCount" style="text-align: center; font-size: 18px;"></div>
 
-
-
+<!-- JavaScript-Code für die Quiz-Funktionalitäten -->
 <script>
+    // Funktion zur Überprüfung der ausgewählten Antwort
     function checkAnswer(selectedAnswer, button) {
-        // Überprüfe, ob der Button bereits ausgewählt wurde
+        // Überprüfen, ob der Button bereits ausgewählt oder als falsch markiert ist
         if (button.classList.contains('selected') || button.classList.contains('wrong')) {
             return;
         }
-    
+
+        // Abrufen der korrekten Antwort aus der Server-Seite
         var correctAnswer = "{{ correctLand }}";
         var correctAnswerFilename = correctAnswer.split('/').pop();
         var correctAnswerWithoutExtension = correctAnswerFilename.split(".")[0].replace('_', ' ');
-    
+
+        // Senden der ausgewählten Antwort an den Server zur Überprüfung
         fetch(`/check_answer/${selectedAnswer}`, { method: 'POST', body: new URLSearchParams({ correct_answer: correctAnswerWithoutExtension }), headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
             .then(response => response.json())
             .then(data => {
-                
+                // Markieren des Buttons als ausgewählt oder falsch und Aktualisieren der Seite nach einer Verzögerung
                 if (data.is_correct) {
                     button.classList.add('selected');
                     setTimeout(refreshPage, 3000);
@@ -91,22 +115,19 @@
                     button.classList.add('wrong');
                     setTimeout(refreshPage, 3000);
                 }
-    
-                // Deaktiviere alle Buttons
-                var buttons = document.querySelectorAll('.multiChoiceButton');
+
+                // Deaktivieren aller Buttons nach Auswahl
+                var buttons = document.querySelectorAll('.button-81');
                 buttons.forEach(btn => btn.disabled = true);
-    
-                // Anzeigen der Anzahl der richtigen Antworten statt eines Popups
+
+                // Anzeigen der Anzahl der richtigen Antworten
                 var correctAnswersCountElement = document.getElementById('correctAnswersCount');
                 correctAnswersCountElement.innerHTML = `Anzahl der richtigen Antworten: ${data.correct_answers_count}`;
             })
             .catch(error => console.error('Error:', error));
     }
-    
-    
-    
 
-    // Funktion zum Neu laden der Seite
+    // Funktion zum Aktualisieren der Seite
     function refreshPage() {
         location.reload();
     }
