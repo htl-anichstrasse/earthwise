@@ -13,32 +13,40 @@ class DatabaseHelper {
     return _database!;
   }
 
+// Defines an asynchronous function to initialize the database.
   Future<Database> initDatabase() async {
+    // Retrieves the default database path for the application.
     final dbPath = await getDatabasesPath();
 
-    // Lösche die bestehende Datenbank und erstelle sie neu
+    // Deletes the existing 'Earthwise.db' database to reset data, if needed.
     await deleteDatabase('${dbPath}/Earthwise.db');
 
+    // Opens the database, creating it if it doesn't exist.
     return openDatabase(
+      // Sets the path and name for the database.
       join(dbPath, 'Earthwise.db'),
+      // Defines the function to create the database structure when the database is first created.
       onCreate: (db, version) async {
+        // Executes SQL to create the 'benutzer' table with specified columns.
         await db.execute(
           'CREATE TABLE benutzer('
-          'mail TEXT PRIMARY KEY,'
-          'password TEXT,'
-          'username TEXT,'
-          'score DOUBLE'
+          'mail TEXT PRIMARY KEY,' // Defines 'mail' as a text field and primary key.
+          'password TEXT,' // Defines 'password' as a text field.
+          'username TEXT,' // Defines 'username' as a text field.
+          'score DOUBLE' // Defines 'score' as a double field.
           ')',
         );
 
+        // Executes SQL to create the 'quiz' table with specified columns.
         await db.execute(
           'CREATE TABLE quiz('
-          'quizid INTEGER PRIMARY KEY,'
-          'percent INT,'
-          'time INTEGER'
+          'quizid INTEGER PRIMARY KEY,' // Defines 'quizid' as an integer primary key.
+          'percent INT,' // Defines 'percent' as an integer field.
+          'time INTEGER' // Defines 'time' as an integer field.
           ')',
         );
       },
+      // Sets the version of the database to 1. This is used for future schema migrations.
       version: 1,
     );
   }
@@ -130,14 +138,18 @@ class DatabaseHelper {
     );
   }
 
+// Defines an asynchronous function to update the user's level
   Future<int> updateUserLevel(String mail, int newLevel) async {
+    // Awaits to get a reference to the database
     final db = await database;
 
+    // Performs the update operation on the 'benutzer' table
     return await db.update(
-      'benutzer',
-      {'score': newLevel},
-      where: 'mail = ?',
-      whereArgs: [mail],
+      'benutzer', // The name of the table where the update will be performed
+      {'score': newLevel}, // The new value for the 'score' column
+      where:
+          'mail = ?', // Specifies the condition to find the right user based on email
+      whereArgs: [mail], // Provides the email argument for the where condition
     );
   }
 }

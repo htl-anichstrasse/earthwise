@@ -43,12 +43,11 @@ class _ReverseQuestionState extends State<ReverseQuestion> {
 
     return Column(
       children: [
-        SizedBox(height: 20),
         Expanded(
           child: Center(
             child: Text(
               spellings[widget.country.toUpperCase()]![0],
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 40,
                 fontWeight: FontWeight.bold,

@@ -4,7 +4,7 @@ import 'package:maestro/Models/user.dart';
 import 'package:maestro/Server/constants.dart';
 import 'package:maestro/Server/db.dart';
 
-final String address = ApiConstants.global;
+final String address = ApiConstants.url;
 
 Future<String?> loginUser(String email, String password) async {
   try {
@@ -120,20 +120,29 @@ Future<void> setUserLevel() async {
   }
 }
 
+// Defines an asynchronous function to fetch data from an API.
 Future<String> getData(String path) async {
-  print("$address$path");
+  // Stores the base URL from API constants.
+  String address = ApiConstants.url;
+
   try {
+    // Attempts to send a GET request to the constructed URL and sets a timeout of 5 seconds.
     final response = await http
         .get(Uri.parse('$address$path'))
         .timeout(const Duration(seconds: 5), onTimeout: () {
+      // Throws an exception if the request times out.
       throw Exception();
     });
 
+    // Checks if the HTTP status code is 200 (OK), indicating a successful response.
     if (response.statusCode == 200) {
+      // Returns the response body if the status code is 200.
       return response.body;
     }
   } on Exception {
+    // Catches any exceptions and returns an empty string as a fallback.
     return "";
   }
+  // Returns an empty string if the condition for statusCode == 200 is not met.
   return "";
 }
