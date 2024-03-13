@@ -1,88 +1,103 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content%}
 <style>
+    /* Container2 styling */
     .container2 {
         max-width: 1000px;
         margin-left: auto;
         margin-right: auto;
         padding-left: 10px;
         padding-right: 10px;
-      }
-      
-      h3 {
+    }
+    
+    /* Heading 3 styling */
+    h3 {
         font-size: 26px;
         margin: 20px 0;
         text-align: center;
+
+        /* Small text styling */
         small {
-          font-size: 0.5em;
+            font-size: 0.5em;
         }
-      }
-      
-      .responsive-table {
-        li {
-          border-radius: 3px;
-          padding: 25px 30px;
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 25px;
-        }
+    }
+
+    /* Responsive table styling */
+    .responsive-table li {
+        border-radius: 3px;
+        padding: 25px 30px;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 25px;
+    }
+
+    /* Table header styling */
+    .table-header {
+        background-color: #95A5A6;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    /* Table row styling */
+    .table-row {
+        background-color: #ffffff;
+        box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);
+    }
+
+    /* Column styling */
+    .col-1 {
+        flex-basis: 10%;
+    }
+
+    .col-2 {
+        flex-basis: 40%;
+    }
+
+    .col-3 {
+        flex-basis: 25%;
+    }
+
+    .col-4 {
+        flex-basis: 25%;
+    }
+
+    /* Media query for small screens */
+    @media all and (max-width: 767px) {
         .table-header {
-          background-color: #95A5A6;
-          font-size: 14px;
-          text-transform: uppercase;
-          letter-spacing: 0.03em;
+            display: none;
         }
         .table-row {
-          background-color: #ffffff;
-          box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);
+            /* Adjust styles for small screens */
         }
-        .col-1 {
-          flex-basis: 10%;
-        }
-        .col-2 {
-          flex-basis: 40%;
-        }
-        .col-3 {
-          flex-basis: 25%;
-        }
-        .col-4 {
-          flex-basis: 25%;
-        }
-        
-        @media all and (max-width: 767px) {
-          .table-header {
-            display: none;
-          }
-          .table-row{
-            
-          }
-          li {
+        li {
             display: block;
-          }
-          .col {
-            
+        }
+        .col {
             flex-basis: 100%;
-            
-          }
-          .col {
+        }
+        .col {
             display: flex;
             padding: 10px 0;
             &:before {
-              color: #6C7A89;
-              padding-right: 10px;
-              content: attr(data-label);
-              flex-basis: 50%;
-              text-align: right;
+                color: #6C7A89;
+                padding-right: 10px;
+                content: attr(data-label);
+                flex-basis: 50%;
+                text-align: right;
             }
-          }
         }
-      }
+    }
 
-      h2 {
+    /* Heading 2 styling */
+    h2 {
         text-align: center;
         color: #007bff;
         margin-top: 20px;
     }
 
+    /* Container1 styling */
     .container1 {
         max-width: 800px;
         margin: 0 auto;
@@ -90,6 +105,7 @@
         margin-top: 20px;
     }
 
+    /* Paragraph styling */
     p {
         line-height: 1.6;
         margin-bottom: 15px;
@@ -97,31 +113,34 @@
         font-family: 'Roboto', sans-serif;
         font-weight: bold;
     }
-    body{
+
+    /* Body styling */
+    body {
         background-image: url('/static/premium_photo-1681488098851-e3913f3b1908.avif');
         background-size: cover;  
         background-position: center bottom;
         background-repeat: no-repeat;
     }
 
+    /* Seven class styling */
     .seven h1 {
-            text-align: center;
-            font-size:30px; font-weight:300; color:#222;
-            text-transform: uppercase;
-            margin-top: 35px;
-            font-weight: bold;
-            
-        }
-    .container3{
+        text-align: center;
+        font-size: 30px;
+        font-weight: 300;
+        color: #222;
+        text-transform: uppercase;
+        margin-top: 35px;
+        font-weight: bold;
+    }
+
+    /* Container3 styling */
+    .container3 {
         background-color: rgba(255, 255, 255, 0.4);
         padding: 15px;
         border-radius: 20px;
         margin-top: 20px;
         margin-bottom: 20px;
-
     }
-        
-        
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <div class="container3">
@@ -129,7 +148,7 @@
         <h1>Earthwise</h1>
     </div>
     <div class="container1">
-
+        <!-- Paragraphs providing information about Earthwise -->
         <p>
             Earthwise is a project that aims to bring geographical knowledge closer to people around the 
             world. In our globalizing world, we increasingly hear about events occurring worldwide. However, 
@@ -149,23 +168,23 @@
         </p>
     </div>
 
-
     <div class="container2">
-        <h3>Latest revieled Quizzes</h3>
+        <h3>Latest revealed Quizzes</h3>
+        <!-- List of latest quizzes in a responsive table -->
         <ul class="responsive-table">
-        <li class="table-header">
-            <div class="col col-1">Number</div>
-            <div class="col col-4">Quiz Name</div>
-            <div class="col col-3">Type</div>
-        </li>
-        {% for i in range(5) %}
-            <li class="table-row">
-                <div class="col col-1">{{ i+1 }}</div>
-                <div class="col col-4">{{ names[i] }}</div>
-                <div class="col col-3">{{ types[i] }}</div>
+            <li class="table-header">
+                <div class="col col-1">Number</div>
+                <div class="col col-4">Quiz Name</div>
+                <div class="col col-3">Type</div>
             </li>
-        {% endfor %}
-
+            <!-- Loop to display the latest quizzes -->
+            {% for i in range(5) %}
+                <li class="table-row">
+                    <div class="col col-1">{{ i+1 }}</div>
+                    <div class="col col-4">{{ names[i] }}</div>
+                    <div class="col col-3">{{ types[i] }}</div>
+                </li>
+            {% endfor %}
         </ul>
     </div>
 </div>

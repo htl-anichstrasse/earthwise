@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Learning Results{% endblock %}
 {% block content %}
-    <!-- Stildefinitionen für den Button -->
+    <!-- Styles for the button -->
     <style>
         .button-81 {
             background-color: #fff;
@@ -40,36 +40,36 @@
         }
     </style>
 
-    <!-- Skript für die Darstellung des Diagramms -->
+    <!-- Script to include the chart logic -->
     <head>
         <script src="https://d3js.org/d3.v7.min.js"></script>
     </head>
 
     <body>
-        <!-- Überschrift mit erreichten Punkten -->
-        <h2 style="text-align: center; margin-top: 30px">Erreichte Punktzahl: {{ correct_answers_count }}/{{sum}}</h2>
+        <!-- Heading with the achieved points -->
+        <h2 style="text-align: center; margin-top: 15px">Erreichte Punktzahl: {{ correct_answers_count }}/{{sum}}</h2>
 
-        <!-- Container für das Diagramm -->
-        <div id="chart-container" style="text-align: center; margin-top: 20px;"></div>
+        <!-- Container for the chart -->
+        <div id="chart-container" style="text-align: center; margin-top: 10px;"></div>
 
-        <!-- Button zum Erneut Versuchen -->
-        <button type="button" class="button-81" onclick="tryAgain()">Try again</button>
+        <!-- Button for trying again -->
+        <button type="button" class="button-81" onclick="tryAgain()" style="margin-bottom: 25px; margin-top: 5px">Try again</button>
 
-        <!-- Skript zum Einbinden der Diagramm-Logik -->
+        <!-- Script to redirect to try again -->
         <script src="script.js"></script>
 
-        <!-- Skript für die Diagrammgenerierung -->
+        <!-- Script for chart generation -->
         <script>
             function tryAgain() {
                 window.location.href = "{{ url_for('auth.reset_points', referrer = referrer) }}";
             }
 
             document.addEventListener('DOMContentLoaded', function () {
-                // Auswertung der erreichten Punkte und Restpunkte
+                // Evaluation of achieved points and remaining points
                 points = {{correct_answers_count}}
                 rest = {{sum}} - {{correct_answers_count}}
 
-                // Daten und Farben für das Diagramm
+                // Data and colors for the chart
                 if (points == 0){
                     var data = [rest];
                     var colors = ['red'];
@@ -78,12 +78,12 @@
                     var colors = ['red', 'green'];
                 }
 
-                // Dimensionen des Diagramms
+                // Dimensions of the chart
                 var width = 350;
                 var height = 350;
                 var radius = Math.min(width, height) / 2;
 
-                // SVG-Element für das Diagramm erstellen
+                // Create SVG element for the chart
                 var svg = d3.select("#chart-container")
                     .append("svg")
                     .attr("width", width)
@@ -91,14 +91,14 @@
                     .append("g")
                     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-                // Farbpalette für das Diagramm
+                // Color palette for the chart
                 var color = d3.scaleOrdinal().range(colors);
 
-                // Definition von Pie- und Arc-Funktionen
+                // Definition of Pie and Arc functions
                 var pie = d3.pie();
                 var arc = d3.arc().innerRadius(radius - 80).outerRadius(radius);
 
-                // Daten den Bögen zuweisen und sie zum SVG hinzufügen
+                // Assign data to arcs and add them to SVG
                 var arcs = svg.selectAll("arc")
                     .data(pie(data))
                     .enter()
@@ -109,9 +109,11 @@
                     .attr("d", arc)
                     .attr("fill", function (d, i) {
                         return color(i);
-                    });
+                    })
+                    .attr("stroke", "black")  // Set the stroke color to black
+                    .attr("stroke-width", 1); // Set the stroke width
 
-                // Texte zu den Bögen hinzufügen
+                // Add text to the arcs
                 arcs.append("text")
                     .attr("transform", function (d) {
                         return "translate(" + arc.centroid(d) + ")";
@@ -123,4 +125,4 @@
             });
         </script>
     </body>
-{%endblock%}
+{% endblock %}

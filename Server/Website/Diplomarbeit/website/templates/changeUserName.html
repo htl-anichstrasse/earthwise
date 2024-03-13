@@ -2,7 +2,7 @@
 {% block title %}Change Username{% endblock %}
 {% block content %}
 <style>
-  /* Stildefinitionen für das Icon, das das Passwort verdeckt/zeigt */
+  /* Style definitions for the icon that shows/hides the password */
   .field-icon {
     float: right;
     margin-left: -25px;
@@ -13,17 +13,26 @@
     margin-bottom: 3px;
     cursor: pointer;
   }
+
+  form {
+    max-width: 800px;
+    margin: 90px auto;
+    background-color: rgba(255, 255, 255, 0.8); /* RGBA for transparency */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Optional box shadow for a subtle lift */
+  }
 </style>
 
-<!-- Formular zur Änderung des Benutzernamens -->
+<!-- Form for changing the username -->
 <form method="POST">
     <h3 align="center">Change User</h3>
 
-    <!-- Eingabefeld für den Benutzernamen -->
+    <!-- Input field for the username -->
     <div class="form-group">
       <label for="firstName">Username</label>
       <div style="font-size: 14px" id="info_text"></div>
-      <!-- Benutzername-Eingabefeld mit onBlur-Ereignis zum Anzeigen des vorherigen Benutzernamens -->
+      <!-- Username input field with onBlur event to display the previous username -->
       <input
         type="text"
         class="form-control"
@@ -35,7 +44,7 @@
       />
     </div>
 
-    <!-- Eingabefeld für das neue Passwort -->
+    <!-- Input field for the new password -->
     <div class="form-group">
       <label for="password">Password</label>
       <input
@@ -45,22 +54,22 @@
         name="password"
         placeholder="New Password"
       />
-      <!-- Schaltfläche zum Ein- und Ausblenden des Passworts -->
+      <!-- Button to toggle password visibility -->
       <span class="fa fa-fw fa-eye field-icon toggle-password1" onclick="togglePasswordVisibility()"></span>
     </div>
     <br />
 
-    <!-- Schaltfläche zum Ändern des Benutzernamens -->
+    <!-- Button to change the username -->
     <button type="submit" class="btn btn-primary">Change</button>  
 </form>
 
 <script>
-  // Funktion zum Anzeigen des vorherigen Benutzernamens
+  // Function to display the previous username
   function show_text() {
     document.getElementById("info_text").innerText = "The previous Username has been: {{user_name}}";
   }    
 
-  // Funktion zum Ein- und Ausblenden des Passworts
+  // Function to toggle password visibility
   function togglePasswordVisibility() {
     const passwordInput = document.getElementById('password'); 
     const icon = document.querySelector('.toggle-password');

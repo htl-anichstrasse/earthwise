@@ -2,7 +2,7 @@
 {% block title %}Sign Up{% endblock %}
 {% block content %}
 <style>
-  /* Styling für das Auge-Symbol, um Passwort-Sichtbarkeit zu ändern */
+  /* Styling for the eye symbol to toggle password visibility */
   .field-icon {
     float: right;
     margin-left: -25px;
@@ -13,12 +13,22 @@
     margin-bottom: 3px;
     cursor: pointer;
   }
+
+  form {
+    max-width: 800px;
+    margin: 10px auto;
+    background-color: rgba(255, 255, 255, 0.8); /* RGBA for transparency */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Optional box shadow for a subtle lift */
+  }
 </style>
 
+<!-- Sign-up form -->
 <form method="POST">
   <h3 align="center">Sign Up</h3>
 
-  <!-- Eingabefeld für E-Mail -->
+  <!-- Email input field -->
   <div class="form-group">
     <label for="email">Email Address</label>
     <input
@@ -30,7 +40,7 @@
     />
   </div>
 
-  <!-- Eingabefeld für Benutzernamen -->
+  <!-- Username input field -->
   <div class="form-group">
     <label for="firstName">Username</label>
     <input
@@ -42,7 +52,7 @@
     />
   </div>
 
-  <!-- Eingabefeld für Passwort 1 -->
+  <!-- Password input field 1 -->
   <div class="form-group">
     <label for="password1">Password</label>
     <input
@@ -52,11 +62,11 @@
       name="password1"
       placeholder="Enter password"
     />
-    <!-- Auge-Symbol zum Umschalten der Passwort-Sichtbarkeit -->
+    <!-- Eye icon to toggle password visibility -->
     <span class="fa fa-fw fa-eye field-icon toggle-password1" onclick="togglePasswordVisibility1()"></span>
   </div>
 
-  <!-- Eingabefeld für Passwort 2 (Bestätigung) -->
+  <!-- Password input field 2 (confirmation) -->
   <div class="form-group">
     <label for="password2">Password (Confirm)</label>
     <input
@@ -66,17 +76,17 @@
       name="password2"
       placeholder="Confirm password"
     />
-    <!-- Auge-Symbol zum Umschalten der Passwort-Sichtbarkeit -->
+    <!-- Eye icon to toggle password visibility -->
     <span class="fa fa-fw fa-eye field-icon toggle-password2" onclick="togglePasswordVisibility2()"></span>
   </div>
 
   <br />
 
-  <!-- Submit-Button -->
-  <button type="submit" class="btn btn-primary">Submit</button>
+  <!-- Submit button -->
+  <button type="submit" class="btn btn-primary">Sign Up</button>
 </form>
 
-<!-- JavaScript-Funktionen zum Umschalten der Passwort-Sichtbarkeit -->
+<!-- JavaScript functions for toggling password visibility -->
 <script>
 
   function togglePasswordVisibility1() {

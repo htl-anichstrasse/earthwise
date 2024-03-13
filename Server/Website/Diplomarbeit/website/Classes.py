@@ -8,7 +8,6 @@ class quiz(object):
         self.discription = discription
         self.quiz_type = quiz_type
         self.select_statement = select_statement
-    #TODO def methode(self): 
     
 # CLASS FOR COUNTRY
 
@@ -32,7 +31,6 @@ class country(object):
         self.borders = borders
 
 # CLASS FOR USER
-
 class user(object): 
     def __init__(self, email, username, password): 
         self.email = email

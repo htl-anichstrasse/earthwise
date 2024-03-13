@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Flag-Overview{% endblock %}
 {% block content%}
-    <!-- Kopfzeile mit den Stildefinitionen -->
+    <!-- Header section with style definitions -->
     <head>
         <style>
-            /* Allgemeine Stildefinitionen */
+            /* General style definitions */
             body {
                 font-family: 'lato', sans-serif;
             }
@@ -14,7 +14,7 @@
                 color: black;
             }
 
-            /* Stildefinitionen für die Sidebar */
+            /* Style definitions for the sidebar */
             .sidenav {
                 width: 250px;
                 z-index: 1;
@@ -26,6 +26,7 @@
                 margin-bottom: 50px;
                 height: 75%;
                 position: fixed; 
+                color: white;
             }
 
             .sidenav a {
@@ -33,7 +34,7 @@
                 margin-top: 0px;
                 text-decoration: none;
                 font-size: 17px;
-                color: #818181;
+                color: #D8D8D8;
                 display: block;
             }
 
@@ -41,13 +42,13 @@
                 color: black;
             }
 
-            /* Stildefinitionen für den Hauptinhalt */
+            /* Style definitions for the main content */
             .main {
                 margin-left: 140px; 
                 padding: 0px 10px;
             }
 
-            /* Stildefinitionen für die Tabelle */
+            /* Style definitions for the table */
             .responsive-table li {
                 border-radius: 3px;
                 padding: 25px 30px;
@@ -85,19 +86,34 @@
                 .sidenav {padding-top: 15px;}
                 .sidenav a {font-size: 18px;}
             }
+
+            input {
+                border-radius: 4px;
+                background-color: #f2f2f2;
+                border: 1px solid black;
+                padding: 4px;
+                transition: background-color 0.3s ease, border-color 0.3s ease;
+            }
+            
+            input:focus {
+                outline: none;
+                border-color: #66afe9;
+                background-color: #fff;
+                box-shadow: 0 0 5px rgba(102, 175, 233, 0.6);
+            }
         </style>
     </head>
     
-    <!-- Hauptteil der Seite -->
+    <!-- Main part of the page -->
     <body>
-        <!-- Sidebar mit Filter- und Suchoptionen -->
+        <!-- Sidebar with filter and search options -->
         <div class="sidenav">
-            <p style="font-size: 20px; margin-left: 6px"> Get all Flags orderd by:</p>
+            <p style="font-size: 20px; margin-left: 6px"> Get all Flags ordered by:</p>
             <a href="{{ url_for('auth.allFlags') }}">Names</a>
             <a href="{{ url_for('auth.allFlagsByContinent') }}">By Continents</a>
 
-            <p style="font-size: 20px; margin-top: 10px; margin-left: 6px">Enter Quizname:</p>
-            <input type="text" id="quizType" name="quizType" placeholder="Enter Quiz Name" style="margin-left: 10px">
+            <p style="font-size: 20px; margin-top: 10px; margin-left: 6px">Enter Quiz name:</p>
+            <input type="text" id="quizType" name="quizType" placeholder="Quiz Name" style="margin-left: 10px">
 
             <p style="font-size: 20px; margin-top: 10px; margin-left: 6px">Filter by Type:</p>
             <a href="#" onclick="filterQuizzes('all')">All</a>
@@ -107,43 +123,38 @@
             <a href="#" onclick="filterQuizzes('neighboringcountries')">Neighbours</a>
         </div>
 
-        <!-- Container für die Tabelle mit Quizinformationen -->
+        <!-- Container for the table with quiz information -->
         <div class="main">
             <ul class="responsive-table" style="margin-top: 30px">
-                <!-- Tabellenkopf mit Spaltennamen -->
+                <!-- Table header with column names -->
                 <li class="table-header">
                     <div class="col col-4">Name</div>
-                    <div class="col col-3">Type</div>
-                    <div class="col col-5">Highscore</div>
+                    <div class="col col-4">Highscore</div>
+                    <div class="col col-4">Type</div>
                 </li>
                 
-                <!-- Schleife über die Anzahl der Quizzes -->
+                <!-- Loop over the number of quizzes -->
                 {% for i in range(count) %}
-                    {% set highscore_found = false %}
-                    <!-- Tabellenzeile für jedes Quiz -->
+                    <!-- Table row for each quiz -->
                     <li class="table-row">
-                        <!-- Name des Quiz mit Link zur Detailseite -->
-                        <div class="col col-3"><a href="{{ url_for('auth.serverQuiz', quizId=i+1) }}">{{ quiz_names[i] }}</a></div>
+                        <!-- Name of the quiz with a link to the detail page -->
+                        <div class="col col-4"><a href="{{ url_for('auth.serverQuiz', quizId=i+1) }}">{{ quiz_names[i] }}</a></div>
                         
-                        <!-- Typ des Quiz -->
-                        <div class="col col-4 quiz-type">{{ quiz_types[i] }}</div>
-                        
-                        <!-- Schleife über die Highscores -->
+                        <!-- Loop over the highscores -->
                         {% for value in high_scores %}
                             {% if quiz_ids[i] == value[1] %}
-                                <!-- Anzeigen des Highscores, falls vorhanden -->
-                                <div class="col col-4">{{ value[2] }}/{{ value[3] }} | {{ value[4] }}s</div>
-                            {% else %}
-                                <!-- Anzeigen, dass kein Highscore gefunden wurde -->
-                                <div class="col col-4">no Highscore</div>
+                                <!-- Display the highscore if available -->
+                                <div class="col col-2">{{ value[2] }}/{{ value[3] }} | {{ value[4] }}s</div>
                             {% endif %}
                         {% endfor %}
+                        <!-- Type of the quiz -->
+                        <div class="col col-3 quiz-type">{{ quiz_types[i] }}</div>                        
                     </li>
                 {% endfor %}
             </ul>
         </div>
 
-        <!-- Skript für die Filterung von Quizzes -->
+        <!-- Script for filtering quizzes -->
         <script>
             document.getElementById("quizType").addEventListener("keydown", function(event) {
                 if (event.key === 'Enter') {
@@ -158,7 +169,7 @@
                 var rows = table.querySelectorAll(".table-row");
 
                 for (var i = 0; i < rows.length; i++) {
-                    var quizName = rows[i].querySelector(".col-3").innerText.toLowerCase();
+                    var quizName = rows[i].querySelector(".col-4").innerText.toLowerCase();
 
                     if (quizName.includes(input)) {
                         rows[i].style.display = "";
@@ -173,7 +184,7 @@
                 var rows = table.querySelectorAll(".table-row");
             
                 for (var i = 0; i < rows.length; i++) {
-                    var quizName = rows[i].querySelector(".col-4").innerText.toLowerCase();
+                    var quizName = rows[i].querySelector(".col-3").innerText.toLowerCase();
             
                     if (category === "all" || quizName.includes(category)) {
                         rows[i].style.display = "";

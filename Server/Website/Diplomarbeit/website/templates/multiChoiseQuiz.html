@@ -5,7 +5,7 @@
 {% block content %}
 
 <style>
-    /* Stil für den Container der Bilder */
+    /* Style for the image container */
     .image-container {
         padding-left: 400px;
         display: grid;
@@ -15,7 +15,7 @@
         margin-bottom: 20px;
     }
 
-    /* Stil für die Buttons */
+    /* Style for the buttons */
     .button-81 {
         width: 370px;
         margin-top: 10px;
@@ -41,7 +41,7 @@
         touch-action: manipulation;
     }
 
-    /* Responsives Design für die Buttons */
+    /* Responsive design for the buttons */
     @media (min-width: 768px) {
         .button-81 {
             font-size: 1.125rem;
@@ -49,34 +49,37 @@
         }
     }
 
-    /* Stil für ausgewählte Antwort-Buttons */
+    /* Style for selected answer buttons */
     .selected {
         background-color: #2ecc71;
     }
 
-    /* Stil für falsche Antwort-Buttons */
+    /* Style for wrong answer buttons */
     .wrong {
         background-color: #ff0000;
     }
 </style>
 
-<!-- Definition der Länder für das Quiz -->
+<!-- Definition of countries for the quiz -->
 {% set laender  = [land1, land2, land3, land4] %}
 
-<!-- Überschriften und Anzeige für die Anzahl der Quiz-Fragen -->
-<h2 style="text-align: center; margin-top: 20px"> {{quiz_name}} </h2>
+<!-- Headings and display for the number of quiz questions -->
+<h2 style="text-align: center; margin-top: 15px"> {{quiz_name}} </h2>
 <h4 style="text-align: center">{{discription}}</h4>
 <p style="text-align: center; font-size: 21px">{{session["quiz_count"]}}/5</p>
 
-<!-- Container für das Bild des korrekten Landes -->
+<!-- Container for the image of the correct country -->
 <div class="image-container">
     <div style="padding-top: 0px;">
         <img src="{{ url_for('static', filename= correctLand ) }}" width="300" height="180" style="border: 1px solid grey;">
     </div>
 </div>
 
-<!-- Buttons für die Auswahl der Antwort -->
-<div style="margin-bottom: 30px; text-align: center;"> 
+<!-- Display the number of correct answers -->
+<div id="correctAnswersCount" style="text-align: center; font-size: 18px; margin-bottom: 10px"></div>
+
+<!-- Buttons for selecting the answer -->
+<div style="margin-bottom: 53px; text-align: center;"> 
     {% for i in laender %}
         {% set filename = i.split("/")[-1] %}
         {% set filename_without_extension = filename.split(".")[0] %}
@@ -85,28 +88,26 @@
     {% endfor %}
 </div>
 
-<!-- Anzeige der Anzahl der richtigen Antworten -->
-<div id="correctAnswersCount" style="text-align: center; font-size: 18px;"></div>
 
-<!-- JavaScript-Code für die Quiz-Funktionalitäten -->
+<!-- JavaScript code for quiz functionalities -->
 <script>
-    // Funktion zur Überprüfung der ausgewählten Antwort
+    // Function to check the selected answer
     function checkAnswer(selectedAnswer, button) {
-        // Überprüfen, ob der Button bereits ausgewählt oder als falsch markiert ist
+        // Check if the button is already selected or marked as wrong
         if (button.classList.contains('selected') || button.classList.contains('wrong')) {
             return;
         }
 
-        // Abrufen der korrekten Antwort aus der Server-Seite
+        // Get the correct answer from the server-side
         var correctAnswer = "{{ correctLand }}";
         var correctAnswerFilename = correctAnswer.split('/').pop();
         var correctAnswerWithoutExtension = correctAnswerFilename.split(".")[0].replace('_', ' ');
 
-        // Senden der ausgewählten Antwort an den Server zur Überprüfung
+        // Send the selected answer to the server for verification
         fetch(`/check_answer/${selectedAnswer}`, { method: 'POST', body: new URLSearchParams({ correct_answer: correctAnswerWithoutExtension }), headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
             .then(response => response.json())
             .then(data => {
-                // Markieren des Buttons als ausgewählt oder falsch und Aktualisieren der Seite nach einer Verzögerung
+                // Mark the button as selected or wrong and refresh the page after a delay
                 if (data.is_correct) {
                     button.classList.add('selected');
                     setTimeout(refreshPage, 3000);
@@ -116,18 +117,18 @@
                     setTimeout(refreshPage, 3000);
                 }
 
-                // Deaktivieren aller Buttons nach Auswahl
+                // Disable all buttons after selection
                 var buttons = document.querySelectorAll('.button-81');
                 buttons.forEach(btn => btn.disabled = true);
 
-                // Anzeigen der Anzahl der richtigen Antworten
+                // Display the number of correct answers
                 var correctAnswersCountElement = document.getElementById('correctAnswersCount');
-                correctAnswersCountElement.innerHTML = `Anzahl der richtigen Antworten: ${data.correct_answers_count}`;
+                correctAnswersCountElement.innerHTML = `Number of correct answers: ${data.correct_answers_count}`;
             })
             .catch(error => console.error('Error:', error));
     }
 
-    // Funktion zum Aktualisieren der Seite
+    // Function to refresh the page
     function refreshPage() {
         location.reload();
     }

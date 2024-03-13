@@ -2,7 +2,7 @@
 {% block title %}50/50 Quiz{% endblock %}
 {% block content %}
 
-<!-- Stile für die Schaltflächen und den Container -->
+<!-- Styles for buttons and container -->
 <style>
     /* Container für die Schaltflächen */
     .button-container {
@@ -21,43 +21,60 @@
     }
 </style>
 
-<!-- Überschrift für das Quiz -->
+<!-- Styles for buttons and container -->
+<style>
+    /* Container for buttons */
+    .button-container {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+    }
+
+    /* Style for buttons */
+    .flag-button {
+        background: none;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+    }
+</style>
+
+<!-- Quiz heading -->
 <h2 style="text-align: center">{{ quiz_name }}</h2>
 
-<!-- Fragestellung und aktuelle Punktzahl -->
+<!-- Question and current points display -->
 <h4 style="text-align: center" id="questionText">Which Flag is: {{ random_county_name }}</h4>
 <h4 style="text-align: center">{{ points }}</h4>
 
-<!-- Container für die Schaltflächen -->
+<!-- Container for buttons -->
 <div class="button-container">
-    <!-- Schaltfläche 1 mit Bild und Click-Event -->
+    <!-- Button 1 with image and click event -->
     <button id="button1" class="flag-button" onclick="checkInput('{{correctLandName}}')">
-        <img src="{{ url_for('static', filename=correctLand) }}" width="450" height="250" alt="Button 1">
+        <img src="{{ url_for('static', filename=correctLand) }}" width="450" height="250">
     </button>
-    <!-- Schaltfläche 2 mit Bild und Click-Event -->
+    <!-- Button 2 with image and click event -->
     <button id="button2" class="flag-button" onclick="checkInput('{{incorrectLandName}}')">
-        <img src="{{ url_for('static', filename=incorrectLand) }}" width="450" height="250" alt="Button 2">
+        <img src="{{ url_for('static', filename=incorrectLand) }}" width="450" height="250">
     </button>
 </div>
 
-<!-- Anzeige der aktuellen Quiz-Frage -->
-<p style="text-align: center; font-size: 21px">{{session["quiz_count"]}}/5</p>
+<!-- Display for the current quiz question -->
+<p style="text-align: center; font-size: 21px; margin-bottom: 97px;">{{session["quiz_count"]}}/5</p>
 
-<!-- JavaScript-Code für die Quiz-Logik -->
+<!-- JavaScript code for quiz logic -->
 <script>
-    // Funktion zum Überprüfen der ausgewählten Antwort
+    // Function to check the selected answer
     function checkInput(buttonPressed) {
         var correctLandName = "{{ random_county_name }}";
         var questionText = document.getElementById('questionText');
 
-        // Deaktivieren Sie die Schaltflächen, um Mehrfachklicks zu verhindern
+        // Deactivading Elements, to avoid Multi-Select
         document.getElementById('button1').disabled = true;
         document.getElementById('button2').disabled = true;
 
         selectedAnswer = buttonPressed.toLowerCase();
         correct_answer = correctLandName.toLowerCase();
 
-        // Senden Sie die ausgewählte Antwort an den Server zur Überprüfung
         fetch(`/check_answer/${selectedAnswer}`, { 
             method: 'POST', 
             body: new URLSearchParams({ correct_answer: correct_answer }), 
@@ -65,10 +82,10 @@
         })
         .then(response => response.json())
         .then(data => {
-            // Verarbeiten Sie die Server-Antwort
+            // Handling Serverresponse
             if (data.is_correct) {
                 questionText.innerText = "That's correct!";
-                questionText.style.color ="green";
+                questionText.style.color ="#298A08";
 
                 setTimeout(refreshPage, 3000);
             } 
@@ -82,7 +99,6 @@
         .catch(error => console.error('Error:', error));
     }
 
-    // Funktion zum Aktualisieren der Seite
     function refreshPage() {
         location.reload();
     }

@@ -2,55 +2,56 @@
 {% block title %}Server-Quiz{% endblock %}
 {% block content %}
 
-<!-- Stile für die Seite -->
+<!-- Styles for the page -->
 <style>
-        .quizForm {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 10px;
-            justify-content: center;
-        }
+    /* Styling for the quiz form */
+    .quizForm {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 10px;
+        justify-content: center;
+    }
 
-        .flag-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
+    /* Styling for flag containers */
+    .flag-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
 
-        .flag-container img {
-            width: 250px;
-            height: 150px;
-            border: 1px solid black;
-            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
-        }
+    /* Styling for flag images */
+    .flag-container img {
+        width: 250px;
+        height: 150px;
+        border: 1px solid black;
+        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+    }
 
-        #timer {
-            text-align: center;
-            font-size: 20px;
-            margin-top: 20px;
-        }
+    /* Styling for the timer display */
+    #timer {
+        text-align: center;
+        font-size: 20px;
+        margin-top: 20px;
+    }
 
-        input {
-            width: 250px;
-            color: rgb(36, 35, 42);
-            font-size: 16px;
-            line-height: 20px;
-            min-height: 28px;
-            border-radius: 2px;
-            padding: 8px 16px;
-            border: 2px solid transparent;
-            box-shadow: rgb(0 0 0 / 12%) 0px 1px 3px, rgb(0 0 0 / 24%) 0px 1px 2px;
-            background: rgb(251, 251, 251);
-            transition: all 0.1s ease 0s;
-            :focus{
-                border: 2px solid rgb(124, 138, 255);
-            }
-        }
-     
-        
+    /* Styling for input fields */
+    input {
+        width: 250px;
+        color: rgb(36, 35, 42);
+        font-size: 16px;
+        line-height: 20px;
+        min-height: 28px;
+        border-radius: 2px;
+        padding: 8px 16px;
+        border: 2px solid transparent;
+        box-shadow: rgb(0 0 0 / 12%) 0px 1px 3px, rgb(0 0 0 / 24%) 0px 1px 2px;
+        background: rgb(251, 251, 251);
+        transition: all 0.1s ease 0s;
+    }
 
-        .button-81 {
+    /* Styling for the submit button */
+    .button-81 {
         background-color: #fff;
         border: 0 solid #e2e8f0;
         border-radius: 1.5rem;
@@ -65,187 +66,202 @@
         padding: 1rem 1.6rem;
         text-align: center;
         text-decoration: none #0d172a solid;
-        text-decoration-thickness: auto;
         transition: all .1s cubic-bezier(.4, 0, .2, 1);
         box-shadow: 0px 1px 2px rgba(166, 175, 195, 0.25);
         user-select: none;
         -webkit-user-select: none;
         touch-action: manipulation;
-        }
+    }
 
-        .button-81:hover {
+    /* Hover effect for the button */
+    .button-81:hover {
         background-color: #1e293b;
         color: #fff;
-        }
+    }
 
-        @media (min-width: 768px) {
+    @media (min-width: 768px) {
         .button-81 {
             font-size: 1.125rem;
             padding: 1rem 2rem;
         }
-        }
+    }
 
-        .button-81:disabled {
-            background-color: #d3d3d3;
-            color: #a0aec0;
-            cursor: not-allowed; 
-        }
-        
-        .button-81:hover:disabled {
-            background-color: #d3d3d3; 
-        }
+    /* Styling for disabled buttons */
+    .button-81:disabled {
+        background-color: #d3d3d3;
+        color: #a0aec0;
+        cursor: not-allowed; 
+    }
 
+    /* Hover effect for disabled buttons */
+    .button-81:hover:disabled {
+        background-color: #d3d3d3; 
+    }
 </style>
-<!-- HTML-Formular für das Quiz -->
+
+<!-- HTML form for the quiz -->
 <form method="post">
+    <!-- Quiz title and description -->
     <h2 style="text-align: center; margin-top: 30px;">{{ quiz_name }}</h2>
     <h4 style="text-align: center; padding-bottom: 30px;">{{ description }}</h4>
 
-    <!-- Buttons für Quiz-Steuerung -->
+    <!-- Buttons for quiz control -->
     <button class="button-81" type="button" id="startButton" onclick="startQuiz()">Start</button>
     <button class="button-81" type="button" id="stopButton" onclick="stopQuiz()" disabled>Stop</button>
     <button class="button-81" type="button" id="showAndHide" onclick="showAndHideAnswers()">Show Answers</button>
     <button class="button-81" type="button" style="margin-left: 630px" onclick="back()">X</button>
 
-    <!-- Anzeige des Timers und Punktestands -->
+    <!-- Display for timer and point count -->
     <div id="timer"></div>
     <div id="point_count"></div>
 
-    <!-- Formularfelder für Flaggen -->
+    <!-- Form fields for flags -->
     <div class="quizForm">
         {% for i in country_data %}
             {% set path = '/flags/'+i+'.png' %}
             <div class="flag-container">
-                <!-- Anzeige von Flaggenbildern -->
+                <!-- Display flag images -->
                 <img src="{{ url_for('static', filename = path) }}" alt="{{ i }}">
-                <!-- Eingabefeld für Benutzerantwort -->
+                <!-- User answer input field -->
                 <span><input type="text" name="countryInput" id="input{{ i }}" disabled></span>
             </div>
         {% endfor %}
     </div>
 </form>
 
-<!-- JavaScript-Code für die Quiz-Logik -->
-    <script>
-        var inputs = document.getElementsByName('countryInput');
-        var sAndHBotton = document.getElementById('showAndHide');
-        var sButton = document.getElementById('startButton');
-        var stopButton = document.getElementById('stopButton');  
-        var timer;
-        var seconds = 0;
-        var points = 0;
-        var correct_answers = {{ country_data | tojson }};
+<!-- JavaScript code for quiz logic -->
+<script>
+    // Variable declarations
+    var inputs = document.getElementsByName('countryInput');
+    var sAndHBotton = document.getElementById('showAndHide');
+    var sButton = document.getElementById('startButton');
+    var stopButton = document.getElementById('stopButton');  
+    var timer;
+    var seconds = 0;
+    var points = 0;
+    var correct_answers = {{ country_data | tojson }};
 
-        function startQuiz() { 
-            seconds = 0;
-            hideAnswers();
-            for (var i = 0; i < inputs.length; i++) {
-                inputs[i].removeAttribute('disabled');
-                inputs[i].style.backgroundColor = ''; 
-            }
-
-            sAndHBotton.setAttribute('disabled', 'disabled');
-            sButton.setAttribute('disabled', 'disabled');
-            stopButton.removeAttribute('disabled');  
-
-            startTimer();
+    // Function to start the quiz
+    function startQuiz() { 
+        seconds = 0;
+        document.getElementById('point_count').innerText = "";
+        document.getElementById('timer').innerText = "";
+        hideAnswers();
+        for (var i = 0; i < inputs.length; i++) {
+            inputs[i].removeAttribute('disabled');
+            inputs[i].style.backgroundColor = ''; 
         }
 
-        function startTimer() {
-            timer = setInterval(function () {
-                seconds++;
-                document.getElementById('timer').innerText = seconds + ' seconds';
-            }, 1000);
+        sAndHBotton.setAttribute('disabled', 'disabled');
+        sButton.setAttribute('disabled', 'disabled');
+        stopButton.removeAttribute('disabled');  
+
+        startTimer();
+    }
+
+    // Function to start the timer
+    function startTimer() {
+        timer = setInterval(function () {
+            seconds++;
+            document.getElementById('timer').innerText = seconds + ' seconds';
+        }, 1000);
+    }
+
+    // Function to stop the quiz
+    function stopQuiz() {
+        points = 0;
+        clearInterval(timer);
+        document.getElementById('timer').innerText = 'Stopped at ' + seconds + ' seconds';
+        for (var i = 0; i < inputs.length; i++) {
+            inputs[i].setAttribute('disabled', 'disabled');
         }
-
-        function stopQuiz() {
-            points = 0;
-            clearInterval(timer);
-            document.getElementById('timer').innerText = 'Stopped at ' + seconds + ' seconds';
-            for (var i = 0; i < inputs.length; i++) {
-                inputs[i].setAttribute('disabled', 'disabled');
-            }
-            checkAnswers(seconds);
-            
-            sAndHBotton.removeAttribute('disabled');
-            sButton.removeAttribute('disabled');
-            stopButton.setAttribute('disabled', 'disabled');  
-        }
-
-        function checkAnswers(seconds) {
-            var max_points = 0;
-            for (var i = 0; i < inputs.length; i++) {
-                var userAnswer = inputs[i].value.toLowerCase();
-                var correctAnswer = correct_answers[i].toLowerCase();
-                max_points += 1;
-
-                if (userAnswer !== correctAnswer) {
-                    inputs[i].style.backgroundColor = 'red';
-                } else {
-                    inputs[i].style.backgroundColor = ''; 
-                    points += 1
-                }
-            }
-            document.getElementById('point_count').innerText = points + ' out of possible ' + max_points + ' points';
-            sendScore(seconds, points, max_points);
-        }
-
-        function showAndHideAnswers() {
-            var showAndHide = document.getElementById('showAndHide');
+        checkAnswers(seconds);
         
-            if (showAndHide.innerHTML === 'Show Answers') {
-                showAnswers();
+        sAndHBotton.removeAttribute('disabled');
+        sButton.removeAttribute('disabled');
+        stopButton.setAttribute('disabled', 'disabled');  
+    }
+
+    // Function to check user answers
+    function checkAnswers(seconds) {
+        var max_points = 0;
+        for (var i = 0; i < inputs.length; i++) {
+            var userAnswer = inputs[i].value.toLowerCase();
+            var correctAnswer = correct_answers[i].toLowerCase();
+            max_points += 1;
+
+            if (userAnswer !== correctAnswer) {
+                inputs[i].style.backgroundColor = 'red';
             } else {
-                hideAnswers();
+                inputs[i].style.backgroundColor = ''; 
+                points += 1;
             }
         }
+        document.getElementById('point_count').innerText = points + ' out of possible ' + max_points + ' points';
+        sendScore(seconds, points, max_points);
+    }
 
-        function showAnswers() {
-            for (var i = 0; i < inputs.length; i++) {
-                inputs[i].value = correct_answers[i];
-            }
-            document.getElementById('showAndHide').innerHTML = 'Hide Answers';
+    // Function to show/hide answers
+    function showAndHideAnswers() {
+        var showAndHide = document.getElementById('showAndHide');
+    
+        if (showAndHide.innerHTML === 'Show Answers') {
+            showAnswers();
+        } else {
+            hideAnswers();
         }
+    }
 
-        function hideAnswers() {
-            for (var i = 0; i < inputs.length; i++) {
-                inputs[i].value = '';
-            }
-            document.getElementById('showAndHide').innerHTML = 'Show Answers';
+    // Function to show answers
+    function showAnswers() {
+        for (var i = 0; i < inputs.length; i++) {
+            inputs[i].value = correct_answers[i];
         }
+        document.getElementById('showAndHide').innerHTML = 'Hide Answers';
+    }
 
-        function sendScore(seconds, points, max_points) {
-            var quizId = '{{ quizId }}';
-            var score = points;
-            var achievableScore = max_points;
-            var needed_time = seconds;
+    // Function to hide answers
+    function hideAnswers() {
+        for (var i = 0; i < inputs.length; i++) {
+            inputs[i].value = '';
+        }
+        document.getElementById('showAndHide').innerHTML = 'Show Answers';
+    }
 
-            var url = '{{ url_for("auth.set_score") }}';
+    // Function to send the quiz score
+    function sendScore(seconds, points, max_points) {
+        var quizId = '{{ quizId }}';
+        var score = points;
+        var achievableScore = max_points;
+        var needed_time = seconds;
 
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", url, true);
-            xhr.setRequestHeader("Content-Type", "application/json");
+        var url = '{{ url_for("auth.set_score") }}';
 
-            var data = JSON.stringify({
-                quiz_id: quizId,
-                score: score,
-                achievable_score: achievableScore,
-                needed_time: needed_time
-            });
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
 
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4) {
-                    if (xhr.status == 200) {
-                        console.log(xhr.responseText);
-                    }
+        var data = JSON.stringify({
+            quiz_id: quizId,
+            score: score,
+            achievable_score: achievableScore,
+            needed_time: needed_time
+        });
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    console.log(xhr.responseText);
                 }
-            };
+            }
+        };
 
-            xhr.send(data);
-        }
+        xhr.send(data);
+    }
 
-        function back() {
-            window.location.href = "{{ url_for('auth.flagOverview') }}";
-        }
-    </script>>
+    // Function to navigate back
+    function back() {
+        window.location.href = "{{ url_for('auth.serverQuizzesOverview') }}";
+    }
+</script>
 {% endblock %}
