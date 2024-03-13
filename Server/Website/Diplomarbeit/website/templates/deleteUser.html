@@ -4,7 +4,7 @@
 
 {% block content %}
 <style>
-  /* Stildefinitionen für das Icon, das das Passwort verdeckt/zeigt */
+  /* Style definitions for the icon that shows/hides the password */
   .field-icon {
     float: right;
     margin-left: -25px;
@@ -15,12 +15,22 @@
     margin-bottom: 3px;
     cursor: pointer;
   }
+
+  form {
+    max-width: 800px;
+    margin: 40px auto;
+    background-color: rgba(255, 255, 255, 0.8); /* RGBA for transparency */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Optional box shadow for a subtle lift */
+  }
 </style>
-<!-- Formular zur Änderung des Benutzernamens -->
+
+<!-- Form for deleting the user -->
 <form method="POST">
   <h3 align="center">Delete User</h3>
 
-  <!-- Eingabefeld für den Benutzernamen -->
+  <!-- Input field for the username -->
   <div class="form-group">
     <label for="firstName">Username</label>
     <div style="font-size: 14px" id="info_text"></div>
@@ -33,7 +43,7 @@
     />
   </div>
 
-  <!-- Eingabefeld für die E-Mail-Adresse -->
+  <!-- Input field for the email address -->
   <div class="form-group">
       <label for="password2">Email</label>
       <input
@@ -44,7 +54,7 @@
       />
   </div>
 
-  <!-- Eingabefeld für das Passwort -->
+  <!-- Input field for the password -->
   <div class="form-group">
     <label for="password">Password</label>
     <input
@@ -54,22 +64,22 @@
       name="password1"
       placeholder="Password"
     />
-    <!-- Schaltfläche zum Ein- und Ausblenden des Passworts -->
+    <!-- Button to toggle visibility of the password -->
     <span class="fa fa-fw fa-eye field-icon toggle-password1" onclick="togglePasswordVisibility()"></span>
   </div>
   <br />
 
-  <!-- Schaltfläche zum Löschen des Benutzers -->
+  <!-- Button to delete the user -->
   <button type="submit" class="btn btn-primary">Delete</button>  
 </form>
 
 <script>
-// Funktion zum Anzeigen des vorherigen Benutzernamens
+// Function to show the previous username
 function show_text() {
   document.getElementById("info_text").innerText = "The previous Username has been: {{user_name}}";
 }    
 
-// Funktion zum Ein- und Ausblenden des Passworts
+// Function to toggle password visibility
 function togglePasswordVisibility() {
   const passwordInput = document.getElementById('password1'); 
   const icon = document.querySelector('.toggle-password1');

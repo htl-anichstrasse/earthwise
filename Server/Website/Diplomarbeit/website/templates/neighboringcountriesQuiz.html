@@ -2,7 +2,7 @@
 {% block title %}Server-Quiz{% endblock %}
 {% block content %}
 <style>
-    /* Stil für die Buttons */
+    /* Style for the buttons */
     .button-81 {
         background-color: #fff;
         border: 0 solid #e2e8f0;
@@ -26,13 +26,13 @@
         touch-action: manipulation;
     }
 
-    /* Hover-Effekt für die Buttons */
+    /* Hover effect for the buttons */
     .button-81:hover {
         background-color: #1e293b;
         color: #fff;
     }
 
-    /* Responsives Design für die Buttons */
+    /* Responsive design for the buttons */
     @media (min-width: 768px) {
         .button-81 {
             font-size: 1.125rem;
@@ -40,151 +40,168 @@
         }
     }
 
-    /* Stil für deaktivierte Buttons */
+    /* Style for disabled buttons */
     .button-81:disabled {
         background-color: #d3d3d3;
         color: #a0aec0;
         cursor: not-allowed; 
     }
 
-    /* Hover-Effekt für deaktivierte Buttons */
+    /* Hover effect for disabled buttons */
     .button-81:hover:disabled {
         background-color: #d3d3d3; 
     }
 
-    /* Stil für die Tabelle */
+    /* Style for the table */
     table {
-        width: 100%;
+        width: 70%;
         border-collapse: collapse;
         margin-top: 20px;
+        margin-left: 15px;
         background-color: white; 
+        box-shadow: rgb(0 0 0 / 12%) 0px 1px 3px, rgb(0 0 0 / 24%) 0px 1px 2px;
     }
 
-    /* Stil für Tabellenzellen */
+    /* Style for table cells */
     th, td {
         border: 1px solid #ddd;
         padding: 10px;
-        text-align: left;
+        text-align: center;
     }
 
-    /* Stil für Tabellenüberschriften */
+    /* Style for table headers */
     th {
         background-color: #f2f2f2;
         height: 35px;
     }
 
-    /* Stil für Texteingabefelder */
-    input[type="text"] {
-        width: 100%;
-        padding: 8px;
-        box-sizing: border-box;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
+    /* Style for text input fields */
+    input {
+        width: 450px;
+        color: rgb(36, 35, 42);
+        font-size: 16px;
+        line-height: 20px;
+        min-height: 28px;
         border-radius: 4px;
+        padding: 8px 16px;
+        border: 2px solid transparent;
+        box-shadow: rgb(0 0 0 / 12%) 0px 1px 3px, rgb(0 0 0 / 24%) 0px 1px 2px;
+        background: rgb(251, 251, 251);
+        transition: all 0.1s ease 0s;
+        margin-top: 15px;
+        margin-left: 15px;
     }
 
-    /* Stil für den Fokus von Texteingabefeldern */
+    /* Style for the focus of text input fields */
     input[type="text"]:focus {
         border-color: #007bff; 
         outline: none;
     }
 </style>
+<form id="countryForm" onsubmit="return false;">
 
-<!-- Das eigentliche Formular für das Quiz -->
-<form method="post">
-
-    <!-- Überschriften und Buttons für das Quiz -->
+    <!-- Quiz title and description -->
     <h2 style="text-align: center; margin-top: 30px;">{{ quiz_name }}</h2>
     <h4 style="text-align: center; padding-bottom: 30px;">{{ description }}</h4>
+
+    <!-- Buttons for quiz control -->
     <button class="button-81" type="button" id="startButton" onclick="startQuiz()">Start</button>
     <button class="button-81" type="button" id="stopButton" onclick="stopQuiz()" disabled>Stop</button>
     <button class="button-81" type="button" id="showAndHide" onclick="showAndHideAnswers()">Show Answers</button>
-    <button class="button-81" type="button" style="margin-left: 500px" onclick="back()">X</button>
+    <button class="button-81" type="button" style="margin-left: 630px" onclick="back()">X</button>
 
-    <!-- Anzeige für den Timer und Punktestand -->
+    <!-- Display for timer and point count -->
     <div id="timer"></div>
     <div id="point_count"></div>
+    <div id="false_input"></div>
 
-    <!-- Tabelle für die Quiz-Fragen und Antworten -->
-    <table id="myTable" border="1">
+    <!-- Input field -->
+    <input type="text" id="inputId" onkeydown="handleKeyDown(event)" placeholder="Enter Country Name" disabled>
+
+    <!-- Table to display entered countries -->
+    <table id="countryTable" style="margin-bottom: 180px;">
         <thead>
             <tr>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th> </th>
+                <th>Countries</th>
             </tr>
         </thead>
         <tbody id="tableBody">
         </tbody>
     </table>
-
 </form>
 
-<!-- JavaScript-Code für die Quiz-Funktionalitäten -->
+
 <script>
-    // Variablen für verschiedene HTML-Elemente und Quiz-Daten
-    var answerInputs = document.querySelectorAll('input[type="text"]');
-    var sAndHBotton = document.getElementById('showAndHide'); 
-    var sButton = document.getElementById('startButton');  
+    // Variable declarations
+    var input = document.getElementById('inputId');
+    var sAndHBotton = document.getElementById('showAndHide');
+    var sButton = document.getElementById('startButton');
     var stopButton = document.getElementById('stopButton');  
+    var timer;
+    var seconds = 0;
     var points = 0;
+    var collected_points = 0;
+    var correct_answers = {{ country_data | tojson }};
 
-    var dataList = {{country_data | tojson}};
-    var newList = [];
-    for (var x = 0; x<dataList.length; x++) {
-        var value = dataList[x];
-        newList.push(value);
-    }
 
-    // Funktion zum Hinzufügen von Zeilen zur Tabelle basierend auf den Quiz-Daten
-    function addRowsToTable(dataList) {
-        var tableBody = document.getElementById("tableBody");
-        var numColumns = 4;
-        var numRows = Math.ceil(dataList.length / numColumns);
-        var answerInputs = [];  
-        var correctAnswers = [];  
+    // Country list from the server
+    var fullNames = {{ country_data | tojson}};
+    var countryTable = document.getElementById('countryTable');
+    var tableBody = document.getElementById('tableBody');
 
-        for (var i = 0; i < numRows; i++) {
-            var row = document.createElement("tr");
+    // Function to add country to the table
+    function addCountryToTable() {
+        var countryInput = document.getElementById('inputId');
+        var enteredCountry = countryInput.value.trim();
 
-            for (var j = 0; j < numColumns; j++) {
-                var dataIndex = i * numColumns + j;
-
-                if (dataIndex < dataList.length) {
-                    var data = dataList[dataIndex];
-                    var cell = document.createElement("td");
-
-                    var input = document.createElement("input");
-                    input.type = "text";
-                    input.setAttribute("data-correct-answer", data);
-                    input.setAttribute("disabled", "disabled");
-                    
-                    answerInputs.push(input);
-                    correctAnswers.push(data);
-
-                    cell.appendChild(input);
-                    row.appendChild(cell);
-                }
+        if (fullNames.includes(enteredCountry)) {
+            // Check if the country is already in the table
+            if (!isCountryInTable(enteredCountry)) {
+                var row = tableBody.insertRow();
+                var cell = row.insertCell(0);
+                cell.innerHTML = enteredCountry;
+                collected_points += 1;
             }
 
-            tableBody.appendChild(row);
-        }
+            // Clear the input field
+            countryInput.value = '';
+        }else{
+            document.getElementById('false_input').innerText = 'Incorrect input!';
+            document.getElementById('false_input').style.color = 'red';
 
-        return { answerInputs, correctAnswers };
+            // Hide the message after 3 seconds
+            setTimeout(function () {
+                document.getElementById('false_input').innerText = '';
+            }, 2300);
+
+            countryInput.value = '';
+        }
+        
     }
 
-    // Initialisierung der Quiz-Daten und Hinzufügen von Zeilen zur Tabelle
-    var { answerInputs, correctAnswers } = addRowsToTable(newList);
+    // Function to check if the country is already in the table
+    function isCountryInTable(country) {
+        var rows = tableBody.getElementsByTagName('tr');
 
-    // Funktion zum Starten des Quiz
+        for (var i = 0; i < rows.length; i++) {
+            var cell = rows[i].getElementsByTagName('td')[0];
+            if (cell.innerHTML === country) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Function to start the quiz
     function startQuiz() { 
         seconds = 0;
+        document.getElementById('point_count').innerText = "";
+        document.getElementById('timer').innerText = "";
         hideAnswers();
-        for (var i = 0; i < answerInputs.length; i++) {
-            answerInputs[i].removeAttribute('disabled');
-            answerInputs[i].style.backgroundColor = ''; 
-        }
+
+        input.removeAttribute('disabled');
+        input.style.backgroundColor = ''; 
 
         sAndHBotton.setAttribute('disabled', 'disabled');
         sButton.setAttribute('disabled', 'disabled');
@@ -193,22 +210,21 @@
         startTimer();
     }
 
-    // Funktion zum Starten des Timers
+    // Function to start the timer
     function startTimer() {
         timer = setInterval(function () {
             seconds++;
-            document.getElementById('timer').innerText = seconds + ' seconds';
+            displayRunningTime(seconds);
         }, 1000);
     }
 
-    // Funktion zum Stoppen des Quiz
+    // Function to stop the quiz
     function stopQuiz() {
         points = 0;
         clearInterval(timer);
-        document.getElementById('timer').innerText = 'Stopped at ' + seconds + ' seconds';
-        for (var i = 0; i < answerInputs.length; i++) {
-            answerInputs[i].setAttribute('disabled', 'disabled');
-        }
+        displayStoppedTime(seconds);
+
+        input.setAttribute('disabled', 'disabled');
         checkAnswers(seconds);
         
         sAndHBotton.removeAttribute('disabled');
@@ -216,26 +232,16 @@
         stopButton.setAttribute('disabled', 'disabled');  
     }
 
-    // Funktion zum Überprüfen der Antworten
+    // Function to check user answers
     function checkAnswers(seconds) {
-        var max_points = 0;
-        for (var i = 0; i < answerInputs.length; i++) {
-            var userAnswer = answerInputs[i].value.toLowerCase();
-            var correctAnswer = answerInputs[i].getAttribute("data-correct-answer").toLowerCase();
-            max_points += 1;
-    
-            if (userAnswer !== correctAnswer) {
-                answerInputs[i].style.backgroundColor = 'red';
-            } else {
-                answerInputs[i].style.backgroundColor = ''; 
-                points += 1;
-            }
-        }
+        var max_points = correct_answers.length; 
+        points = collected_points;
+
         document.getElementById('point_count').innerText = points + ' out of possible ' + max_points + ' points';
         sendScore(seconds, points, max_points);
+        collected_points = 0;
     }
-    
-    // Funktion zum Anzeigen oder Ausblenden der Antworten
+
     function showAndHideAnswers() {
         var showAndHide = document.getElementById('showAndHide');
     
@@ -246,25 +252,22 @@
         }
     }
 
-    // Funktion zum Anzeigen der Antworten
     function showAnswers() {
-        for (var i = 0; i < answerInputs.length; i++) {
-            answerInputs[i].value = correctAnswers[i];
-            answerInputs[i].style.backgroundColor = '#FF6961';
+        for (var i = 0; i < fullNames.length; i++) {
+        var row = tableBody.insertRow();
+        var cell = row.insertCell(0);
+        cell.innerHTML = fullNames[i];
         }
         document.getElementById('showAndHide').innerHTML = 'Hide Answers';
     }
-    
-    // Funktion zum Ausblenden der Antworten
+
     function hideAnswers() {
-        for (var i = 0; i < answerInputs.length; i++) {
-            answerInputs[i].value = '';
-            answerInputs[i].style.backgroundColor = 'white';
-        }
+        tableBody.innerHTML = "";
         document.getElementById('showAndHide').innerHTML = 'Show Answers';
     }
 
-    // Funktion zum Senden der Punktzahl an den Server
+
+    // Function to send the quiz score
     function sendScore(seconds, points, max_points) {
         var quizId = '{{ quizId }}';
         var score = points;
@@ -295,9 +298,36 @@
         xhr.send(data);
     }
 
-    // Funktion zum Zurückkehren zur vorherigen Seite
+    function handleKeyDown(event) {
+        if (event.key === "Enter") {
+            console.log("hallo");
+            addCountryToTable()
+        }
+    }
+
+    // Function to navigate back
     function back() {
-        window.location.href = "{{ url_for('auth.flagOverview') }}";
+        window.location.href = "{{ url_for('auth.serverQuizzesOverview') }}";
+    }
+
+    // Function to display stopped time in minutes and seconds
+    function displayStoppedTime(totalSeconds) {
+        var formattedTime = formatTime(totalSeconds);
+        document.getElementById('timer').innerText = 'Stopped at ' + formattedTime;
+    }
+
+    function displayRunningTime(totalSeconds) {
+        var formattedTime = formatTime(totalSeconds);
+        document.getElementById('timer').innerText = formattedTime;
+    }
+
+    // Function to format seconds into minutes and seconds
+    function formatTime(totalSeconds) {
+        var minutes = Math.floor(totalSeconds / 60);
+        var seconds = totalSeconds % 60;
+
+        return minutes + ' minutes and ' + seconds + ' seconds';
     }
 </script>
-{% endblock %}
+
+{%endblock%}

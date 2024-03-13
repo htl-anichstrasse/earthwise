@@ -2,8 +2,8 @@
 {% block title %}Server-Quiz{% endblock %}
 {% block content %}
 
-<!-- Stile für die Seite -->
-    <style>
+<!-- Styles for the page -->
+<style>
         #timer {
             text-align: center;
             font-size: 20px;
@@ -87,37 +87,38 @@
             }
     
     </style>
-    <!-- Formular für das Quiz -->
-    <form method="post">
-        <h2 style="text-align: center; margin-top: 30px;">{{ quiz_name }}</h2>
-        <h4 style="text-align: center; padding-bottom: 30px;">{{ description }}</h4>
+    <!-- Form for the quiz -->
+<form method="post">
+    <h2 style="text-align: center; margin-top: 30px;">{{ quiz_name }}</h2>
+    <h4 style="text-align: center; padding-bottom: 30px;">{{ description }}</h4>
 
-        <!-- Schaltflächen für Quiz-Steuerung -->
-        <button class="button-81" type="button" id="startButton" onclick="startQuiz()">Start</button>
-        <button class="button-81" type="button" id="stopButton" onclick="stopQuiz()" disabled>Stop</button>
-        <button class="button-81" type="button" id="showAndHide" onclick="showAndHideAnswers()">Show Answers</button>
-        <button class="button-81" type="button" style="margin-left: 630px" onclick="back()">X</button>
+    <!-- Buttons for quiz control -->
+    <button class="button-81" type="button" id="startButton" onclick="startQuiz()">Start</button>
+    <button class="button-81" type="button" id="stopButton" onclick="stopQuiz()" disabled>Stop</button>
+    <button class="button-81" type="button" id="showAndHide" onclick="showAndHideAnswers()">Show Answers</button>
+    <button class="button-81" type="button" style="margin-left: 630px" onclick="back()">X</button>
 
-        <!-- Anzeige für Timer und Punktestand -->
-        <div id="timer"></div>
-        <div id="point_count"></div>
+    <!-- Display for timer and point count -->
+    <div id="timer"></div>
+    <div id="point_count"></div>
 
-        <!-- Tabelle für Fragen und Antworten -->
-        <table id="myTable" border="1">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-            </tbody>
-        </table>
-    </form>
+    <!-- Table for questions and answers -->
+    <table id="myTable" border="1">
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <!-- Table body content will be dynamically added with JavaScript -->
+        </tbody>
+    </table>
+</form>
 
-    <!-- JavaScript-Code für die Quiz-Logik -->
+<!-- JavaScript code for quiz logic -->
     <script>
         var answerInputs = document.querySelectorAll('input[type="text"]');
         var sAndHBotton = document.getElementById('showAndHide');
@@ -199,6 +200,8 @@
 
         function startQuiz() {
             seconds = 0;
+            document.getElementById('point_count').innerText = "";
+            document.getElementById('timer').innerText = "";
             hideAnswers();
             for (var i = 0; i < answerInputs.length; i++) {
                 answerInputs[i].removeAttribute('disabled');
@@ -307,7 +310,7 @@
         }
 
         function back() {
-            window.location.href = "{{ url_for('auth.flagOverview') }}";
+            window.location.href = "{{ url_for('auth.serverQuizzesOverview') }}";
         }
     </script>
 {% endblock %}

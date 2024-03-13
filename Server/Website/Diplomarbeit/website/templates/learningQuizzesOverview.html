@@ -1,7 +1,9 @@
-{% extends "base.html" %} {% block title %}Flag-Overview{% endblock %} {% block content%}
+{% extends "base.html" %}
+{% block title %}Flag-Overview{% endblock %}
+{% block content%}
 
 <head>
-    <!-- Stildefinitionen für die Tabelle -->
+    <!-- Styles for the table -->
     <style>
         body {
             font-family: 'lato', sans-serif;
@@ -99,16 +101,16 @@
 
 <body>
     <div class="container">
-        <!-- Erstellung einer responsiven Tabelle für die Übersicht -->
+        <!-- Creating a responsive table for the overview -->
         <ul class="responsive-table" style="margin-top: 25px">
-            <!-- Header-Zeile der Tabelle -->
+            <!-- Table header row -->
             <li class="table-header">
                 <div class="col col-2">Link</div>
                 <div class="col col-2">Difficulty</div>
                 <div class="col col-3">Description</div>
             </li>
 
-            <!-- Zeilen der Tabelle mit Informationen zu den Quiz-Links -->
+            <!-- Table rows with information about quiz links -->
             <li class="table-row">
                 <div class="col col-2"><a href="{{ url_for('auth.reset_points', referrer = 'flagNameQuiz') }}">Flagname Quiz</a></div>
                 <div class="col col-2">Hard</div>
@@ -131,5 +133,5 @@
             </li>
         </ul>
     </div>
-    <body>
-        {% endblock %}
+</body>
+{% endblock %}

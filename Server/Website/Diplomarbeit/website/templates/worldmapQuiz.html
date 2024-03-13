@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Map Quiz{% endblock %}
 {% block content %}
+
 <head>
-    <!-- Metadaten für die Darstellung der Seite -->
-    <meta charset="latin1">
-    <title>World Map</title>
-    <!-- Stile für die Eingabefelder und Schaltflächen -->
+<!-- Metadata for page display -->
+<meta charset="UTF-8">
+<title>World Map</title>
+
+<!-- Styles for input fields and buttons -->
     <style>
         /* Stil für Eingabefelder */
         input {
@@ -77,40 +79,41 @@
 </head>
 <body>
     <div style="text-align: center">
-        <!-- Überschriften für Quiz -->
-        <h2 style="margin-top: 30px">{{quiz_name}}</h2>
-        <h4>{{description}}</h4>
-
-        <!-- Liste der Länderantworten (versteckt) -->
-        <p id="answer_list" style="display: none">{{county_names}}</p>
-
-        <!-- Formular für das Quiz -->
+        <!-- Headings for Quiz -->
+        <h2 style="margin-top: 30px">{{ quiz_name }}</h2>
+        <h4>{{ description }}</h4>
+    
+        <!-- List of Country Answers (hidden) -->
+        <p id="answer_list" style="display: none">{{ county_names }}</p>
+    
+        <!-- Form for the Quiz -->
         <form method="post">
-            <!-- Eingabefeld für Ländername -->
+            <!-- Input field for the country name -->
             <label for="country" style="font-size: 20px">Enter a country:</label>
-            <input type="text" id="country" name="country" style="margin-bottom: 30px; margin-top: 20px; text-alighn: center" required disabled>
+            <input type="text" id="country" name="country" style="margin-bottom: 30px; margin-top: 20px; text-align: center" required disabled>
             <br/>
-
-            <!-- Schaltflächen für Quiz-Steuerung -->
+    
+            <!-- Buttons for Quiz Control -->
             <button class="button-81" type="button" id="startButton" onclick="startQuiz()">Start</button>
             <button class="button-81" type="button" id="stopButton" onclick="stopQuiz()" disabled>Stop</button>
             <button class="button-81" type="submit" id="submitButton" disabled>Submit</button>
             <button class="button-81" type="button" id="reset-button" onclick="resetMap()">Reset</button>
             <button class="button-81" type="button" id="showAndHide" onclick="showAndHideAnswers()">Show Answers</button>
-            <button class="button-81" type="button" onclick="back()" style="margin-left: 100px;margin-bottom: 15px">X</button>
-
-
+            <button class="button-81" type="button" onclick="back()" style="margin-left: 100px; margin-bottom: 15px">X</button>
+    
+            <!-- Display Timer and Point Count -->
             <div id="timer"></div>
             <div id="point_count"></div>
         </form>
     </div>
+    
 
-    <!-- Nachrichten-Ausgabe (falls vorhanden) -->
+    <!-- Message Output -->
     {% if message %}
         <p>{{ message }}</p>
     {% endif %}
 
-    <!-- Container für SVG-Datei (Weltkarte) -->
+    <!-- Container fpr SVG -->
     <div id="svg-container" />
 
     <script>
@@ -120,7 +123,7 @@
             var maxPoints = 0;
             var quizStarted = false;
 
-            /* ... Logik für Quiz-Start ... */
+            /* ... Logic fpr Quiz-Start ... */
             function startQuiz() {
                 if (!quizStarted) {
                     seconds = 0;
@@ -143,7 +146,7 @@
                 }
             }
 
-            /* ... Logik für Quiz-Stop ... */
+            /* ... Logic for Quiz-Stop ... */
             function stopQuiz() {
                 if (quizStarted) {
                     quizStarted = false;
@@ -167,7 +170,7 @@
                 }
             }
 
-            /* ... Logik für Überprüfung der Antworten ... */
+            /* ... Logic for checking the Answers ... */
             function checkAnswers(seconds) {
               
                 maxPoints = {{max_points}};
@@ -176,7 +179,7 @@
 
             }
 
-            /* ... Logik für Punkteübermittlung ... */
+            /* ... Logic for sending Points ... */
             function sendScore(seconds, points, max_points) {
                 var quizId = '{{ quizId }}';
                 var score = points;
@@ -207,7 +210,7 @@
                 xhr.send(data);
             }
             
-            /* ... Logik für Anzeige/Verstecken der Antworten ... */
+            /* ... Logic for Showing/Hiding the Answers ... */
             function showAndHideAnswers() {
                 var selectedCountriesElement = document.getElementById('answer_list');
                 var showAndHideButton = document.getElementById('showAndHide');
@@ -233,7 +236,7 @@
                 document.getElementById('svg-container').innerHTML = data;
             });
 
-            /* ... Logik für Zurücksetzen der Karte ... */
+            /* ... Logic for Refreshing the Map ... */
             function resetMap() {
                 fetch('/reset', { method: 'POST' })
                     .then(response => response.json())
@@ -247,7 +250,7 @@
             }
 
             function back() {
-                window.location.href = "{{ url_for('auth.flagOverview') }}";
+                window.location.href = "{{ url_for('auth.serverQuizzesOverview') }}";
             }
     </script>
 </body>

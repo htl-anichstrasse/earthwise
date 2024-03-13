@@ -1,26 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- Metadaten und Stylesheets -->
+    <!-- Metadata and style sheets -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous" />
 
-    <!-- Titel der Webseite -->
+    <!-- Titel of the Webseite -->
     <title>{% block title %}Home{% endblock %}</title>
 
-    <!-- Styles für die Seite -->
+    <!-- Styles for the Seite -->
     <style>
         * {
             box-sizing: border-box;
         }
         body {
-            background-color: #EFFBFB; 
-            transition: background-color 0.5s ease; 
+            background: linear-gradient(to bottom right, #0066cc, #58FAF4);
+            transition: background-color 0.5s ease;
             margin: 0;
             padding: 0;
+            height: 100%;
         }
+        
+        
         
         .column {
             float: left;
@@ -103,33 +106,33 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-success">
     <div class="container-fluid">
         <div class="collapse navbar-collapse justify-content-start">
-            <!-- Logo/Bild in der Navbar -->
-            <a class="navbar-brand mt-2 mt-lg-0" href="home">
+            <!-- Logo/Bild inside the Navbar -->
+            <a class="navbar-brand mt-2 mt-lg-0" href="homepage">
                 <img
                     src="{{ url_for('auth.show_pic') }}" 
                     width="60px" 
-                    height="40px"
-                    style="border-radius: 5px;"
+                    height="50px"
+                    style="border-radius: 7px; margin-left: 20px;"
                 />
             </a>
 
-            <!-- Navigationslinks -->
+            <!-- Navigationlinks -->
             <ul class="navbar-nav" style="margin-left: 25%">
-                <!-- Deaktivierung des Links, wenn der Benutzer nicht eingeloggt ist -->
+                <!-- Deaktivation of the Link, if the User isn't logged in -->
                 {% if user.is_authenticated == false %}
                     <li class="nav-item">
                         <a class="nav-item nav-link" href="" style="color: white">Different Quizzes</a>
                     </li>
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-item nav-link" href="/flagOverview" style="color: white">Different Quizzes</a>
+                        <a class="nav-item nav-link" href="/serverQuizzesOverview" style="color: white">Different Quizzes</a>
                     </li>
                 {% endif %}
                 <li class="nav-item" style="margin-left: 50px">
-                    <a class="nav-item nav-link" href="/learnPage" style="color: white">Learnpages</a>
+                    <a class="nav-item nav-link" href="/learningQuizzesOverview" style="color: white">Learnpages</a>
                 </li>
                 {% if user.is_authenticated == false %}
-                <!-- Deaktivierung des Links, wenn der Benutzer nicht eingeloggt ist -->
+                <!-- Deaktivation of the Links, if the User isn't logged in -->
                     <li class="nav-item" style="margin-left: 50px">
                         <a class="nav-item nav-link" id="randomQuizLink" href="" style="color: white" onclick="">Random Quiz</a>
                     </li>
@@ -141,59 +144,60 @@
             </ul>
         </div>
 
-        <!-- Benutzerinformationen in der Navbar -->
-        <div class="d-flex align-items-center" style="list-style: none;">
-            {% if user.is_authenticated == false %}
-                <!-- Anzeige von Login- und Registrierungslinks, nur wenn der Benutzer angemeldet ist -->
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-item nav-link" href="/login" style="color: white">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-item nav-link" href="/sign-up" style="color: white">Sign-Up</a>
-                    </li>
-                </ul>
-            {% else %}
-                <!-- Dropdown-Menü für angemeldete Benutzer -->
-                <div class="dropdown" style="padding-left: 30px;">
-                    <a
-                        data-mdb-dropdown-init
-                        class="dropdown-toggle d-flex align-items-center hidden-arrow"
-                        href="#"
-                        id="navbarDropdownMenuAvatar"
-                        role="button"
-                        aria-expanded="false"
-                    >
-                        <!-- Profilbild des Benutzers in der Navbar -->
-                        <img
-                            src="{{ url_for('auth.profile_picture') }}"
-                            class="rounded-circle"
-                            height="35"
-                        />
-                    </a>
-                    <!-- Dropdown-Menüoptionen für angemeldete Benutzer -->
-                    <ul
-                        class="dropdown-menu dropdown-menu-end"
-                        aria-labelledby="navbarDropdownMenuAvatar"
-                    >
-                        <li>
-                            <a class="dropdown-item" href="/profileSite" style="color: black">My profile</a>
-                        </li>
-                        <li>
-                            <a class="nav-item nav-link" href="/logout" style="color: black">Logout</a>
-                        </li>
-                    </ul>
-                </div>
-            {% endif %}
+        <!-- User information inside the Navbar -->
+<div class="d-flex align-items-center" style="list-style: none;">
+    
+    {% if user.is_authenticated == false %}
+        <!-- Display login and registration links only if the user is not authenticated -->
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-item nav-link" href="/login" style="color: white">Login</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-item nav-link" href="/sign-up" style="color: white">Sign-Up</a>
+            </li>
+        </ul>
+    {% else %}
+        <!-- Dropdown menu for authenticated users -->
+        <div class="dropdown" style="padding-left: 30px;">
+            <a
+                data-mdb-dropdown-init
+                class="dropdown-toggle d-flex align-items-center hidden-arrow"
+                href="#"
+                id="navbarDropdownMenuAvatar"
+                role="button"
+                aria-expanded="false"
+            >
+                <!-- User profile picture in the Navbar -->
+                <img
+                    src="{{ url_for('auth.profile_picture') }}"
+                    class="rounded-circle"
+                    height="35"
+                />
+            </a>
+            <!-- Dropdown menu options for authenticated users -->
+            <ul
+                class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="navbarDropdownMenuAvatar"
+            >
+                <li>
+                    <a class="dropdown-item" href="/profileSite" style="color: black">My profile</a>
+                </li>
+                <li>
+                    <a class="nav-item nav-link" href="/logout" style="color: black">Logout</a>
+                </li>
+            </ul>
         </div>
-    </div>
+    {% endif %}
+</div>
+</div>
 </nav>
 
 <body>
-    <!-- Flashed Messages für Benachrichtigungen -->
+    <!-- Flashed Messages for notifications -->
     {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %}
         {% for category, message in messages %} {% if category == 'error' %}
-            <!-- Fehlermeldung -->
+            <!-- Error message -->
             <div class="alert alert-danger alter-dismissable fade show" role="alert">
                 {{ message }}
                 <button type="button" class="close" data-dismiss="alert">
@@ -201,7 +205,7 @@
                 </button>
             </div>
         {% else %}
-            <!-- Erfolgsmeldung -->
+            <!-- Success message -->
             <div class="alert alert-success alter-dismissable fade show" role="alert">
                 {{ message }}
                 <button type="button" class="close" data-dismiss="alert">
@@ -210,26 +214,26 @@
             </div>
         {% endif %} {% endfor %} {% endif %} {% endwith %}
 
-    <!-- Hauptinhalt der Seite -->
+    <!-- Main content of the page -->
     <div class="container">{% block content %} {% endblock %}</div>
 
-    <!-- JavaScript- und Bootstrap-Skripte -->
+    <!-- JavaScript and Bootstrap scripts -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     
-    <!-- Eigene JavaScript-Funktionen -->
+    <!-- Custom JavaScript functions -->
     <script>
         $(document).ready(function() {
             $('.dropdown-toggle').dropdown();
         });
 
-        // Funktion zum Generieren einer zufälligen Quiz-URL
+        // Function to generate a random quiz URL
         function random_URL_Click() {
             var quizId = Math.floor(Math.random() * 178) + 1;
             var url = '/serverQuiz/' + quizId;
             document.getElementById('randomQuizLink').href = url;
         }
     </script>
-  </body>
+</body>
 </html>
