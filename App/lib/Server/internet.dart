@@ -1,8 +1,12 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 
+// Defines an asynchronous function to check for an internet connection.
 Future<bool> hasInternetConnection() async {
+  // Checks the current connectivity status (mobile, wifi, none, etc.).
   var result = await Connectivity().checkConnectivity();
+
+  // Returns true if the connectivity result is either mobile data or wifi.
   return result == ConnectivityResult.mobile ||
       result == ConnectivityResult.wifi;
 }

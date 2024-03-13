@@ -72,7 +72,10 @@ class CustomRouter {
       case registrationRoute:
         return MaterialPageRoute(builder: (_) => const RegistrationPage());
       case worldMapRoute:
+        // Extracts Continent data from navigation arguments.
         var data = settings.arguments as Continent;
+
+        // Creates a route to WorldMapQuizPage with the provided Continent data.
         return MaterialPageRoute(
             builder: (_) => WorldMapQuizPage(continent: data));
       case testRoute:

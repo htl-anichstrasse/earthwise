@@ -488,7 +488,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   String hashPassword(String password) {
+    // Encodes the password string into UTF-8 bytes.
     var bytes = utf8.encode(password);
+    // Computes the SHA-256 hash of the password bytes and converts it to a string.
     return sha256.convert(bytes).toString();
   }
 

@@ -139,23 +139,31 @@ class QuizManager {
   }
 }
 
-Future<void> saveData(String address, String path) async {
-  print(path);
+Future<bool> saveData(String address, String path) async {
   try {
+    // Fetches data from the given address.
     String data = await getData(address);
+
+    // Checks if the fetched data is not empty.
     if (data.isNotEmpty) {
+      // Gets the application's documents directory.
       final directory = await getApplicationDocumentsDirectory();
+
+      // Creates a file in the directory with the specified path.
       final file = File('${directory.path}/$path');
+
+      // Writes the fetched data to the file.
       await file.writeAsString(data);
 
-      print('Daten wurden erfolgreich gespeichert.');
+      // Returns true if data was successfully saved.
+      return true;
     } else {
-      print(data);
-      print("Error");
-      Exception();
+      // Returns false if the fetched data is empty.
+      return false;
     }
   } catch (e) {
-    print('Es gab einen Fehler beim Speichern der Daten: $e');
+    // Returns false if any error occurs during the process.
+    return false;
   }
 }
 
@@ -220,17 +228,25 @@ List<String> getAllQuizTitles() {
 }
 
 String? checkAnswer(String answer, List questionData) {
+  // Retrieves all possible spellings for comparison.
   Map<String, List<String>> spellings = getAllSpellings();
+
+  // Iterates over each question data key.
   for (String key in questionData) {
+    // Finds the list of valid spellings for the current key.
     List<String>? spellingList = spellings[key.toUpperCase()];
+
+    // If valid spellings exist, checks the answer against each.
     if (spellingList != null) {
       for (String s in spellingList) {
+        // If a matching spelling is found, returns the key.
         if (answer.toLowerCase() == s.toLowerCase()) {
           return key;
         }
       }
     }
   }
+  // Returns null if no matching spelling is found.
   return null;
 }
 

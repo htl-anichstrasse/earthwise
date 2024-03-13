@@ -1,7 +1,7 @@
 class ApiConstants {
   static String baseUrl = 'http://83.219.182.87:1234';
   static String local = 'http://192.168.0.195:1234';
-  static String global = 'http://185.106.189.152:1234';
+  static String url = 'http://185.106.189.152:1234';
 
   static String getUsers = '/getUsers';
   static String getAllQuizData = '/getallquizdata';
