@@ -115,6 +115,8 @@ def sign_up():
         first_name = request.form.get('firstName')
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
+        
+        specialSymbols = ['$', '@', '#', '%', '_']
 
         # Checking if the email already exists in the database
         user = User.query.filter_by(email=email).first()
@@ -129,6 +131,12 @@ def sign_up():
             flash('Passwords don\'t match.', category='error')
         elif len(password1) < 7: 
             flash('Password must be at least 7 characters.', category='error')
+        elif not any(char.isupper() for char in password1):
+            flash('Password must contain at least 1 uppercase Letter!', category='error')
+        elif not any(char.isdigit() for char in password1):
+            flash('Password must contain at least 1 uppercase Letter!', category='error')
+        elif not any(char in specialSymbols for char in password1):
+            flash('Password should have at least one of these symbols:  $,@,#,%,_ !', category ='error')
         else:
             # Hashing the password using SHA-256
             password = hashlib.sha256(password1.encode()).hexdigest()
@@ -206,12 +214,20 @@ def changeUserPassword():
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
         password3 = request.form.get('password3')
+        
+        specialSymbols = ['$', '@', '#', '%', '_']
 
         # Validating the new passwords
         if password2 != password3:
             flash('Passwords don\'t match.', category='error')
         elif len(password1) < 7: 
             flash('Password must be at least 7 characters.', category='error')
+        elif not any(char.isupper() for char in password1):
+            flash('Password must contain at least 1 uppercase Letter!', category='error')
+        elif not any(char.isdigit() for char in password1):
+            flash('Password must contain at least 1 uppercase Letter!', category='error')
+        elif not any(char in specialSymbols for char in password1):
+            flash('Password should have at least one of these symbols:  $,@,#,%,_ !', category ='error')
         else:
             # Hashing the new password before sending to the server
             password2 = hashlib.sha256(password2.encode()).hexdigest()
@@ -588,6 +604,7 @@ def handle_map_quiz(country_data, quiz_name, description, quizId):
 
 # Function to handle and render the table quiz page.
 def handle_table_quiz(quiz_name, description, country_data, quizId):
+    
     return render_template('tableQuiz.html', quiz_name=quiz_name, description=description, country_data=country_data, 
                            user=current_user, quizId=quizId, server_url=server_url)
 

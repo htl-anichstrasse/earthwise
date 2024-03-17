@@ -135,6 +135,7 @@
             JSON.parse(newList.push(value));
         }
 
+
         function transformData(inputData) {
             var result = [];
         
@@ -178,7 +179,7 @@
                         input.setAttribute("disabled", "disabled");
         
                         answerInputs.push(input);
-                        correctAnswers.push(data);
+                        correctAnswers.push(data[2].replace(/['\[\]]/g, ''));
         
                         cell.appendChild(input);
                     } else {

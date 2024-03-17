@@ -110,12 +110,11 @@
     <button class="button-81" type="button" id="showAndHide" onclick="showAndHideAnswers()">Show Answers</button>
     <button class="button-81" type="button" style="margin-left: 630px" onclick="back()">X</button>
 
-    <!-- Display for timer and point count -->
+    <!-- Display for timer, point count and notifications -->
     <div id="timer"></div>
     <div id="point_count"></div>
     <div id="false_input"></div>
 
-    <!-- Input field -->
     <input type="text" id="inputId" onkeydown="handleKeyDown(event)" placeholder="Enter Country Name" disabled>
 
     <!-- Table to display entered countries -->
@@ -300,7 +299,6 @@
 
     function handleKeyDown(event) {
         if (event.key === "Enter") {
-            console.log("hallo");
             addCountryToTable()
         }
     }
@@ -321,7 +319,6 @@
         document.getElementById('timer').innerText = formattedTime;
     }
 
-    // Function to format seconds into minutes and seconds
     function formatTime(totalSeconds) {
         var minutes = Math.floor(totalSeconds / 60);
         var seconds = totalSeconds % 60;
