@@ -145,6 +145,7 @@
 
     // Country list from the server
     var fullNames = {{ country_data | tojson}};
+    fullNames = fullNames.map(element => element.toLowerCase());
     var countryTable = document.getElementById('countryTable');
     var tableBody = document.getElementById('tableBody');
 
@@ -152,12 +153,15 @@
     function addCountryToTable() {
         var countryInput = document.getElementById('inputId');
         var enteredCountry = countryInput.value.trim();
+        enteredCountry = enteredCountry.toLowerCase();
 
         if (fullNames.includes(enteredCountry)) {
             // Check if the country is already in the table
             if (!isCountryInTable(enteredCountry)) {
                 var row = tableBody.insertRow();
                 var cell = row.insertCell(0);
+                //Capitalize the first letter
+                enteredCountry = enteredCountry.charAt(0).toUpperCase() + enteredCountry.slice(1);;
                 cell.innerHTML = enteredCountry;
                 collected_points += 1;
             }

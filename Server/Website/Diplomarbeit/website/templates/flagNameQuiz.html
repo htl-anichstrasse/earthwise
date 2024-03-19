@@ -95,7 +95,7 @@
 {% set laender = [land1, land2, land3, land4] %}
 <h2 style="text-align: center; margin-top: 20px">{{ quiz_name }}</h2>
 <h4 style="text-align: center">{{ discription }}</h4>
-<p style="color: grey; text-align: center;"> Please fill out all fields!</p>
+<p style="color: #585858; text-align: center;"> Please fill out all fields!</p>
 
 <!-- Container for displaying images -->
 <div class="image-container">
@@ -125,7 +125,7 @@
 </div>
 
 <!-- Container for button and count -->
-<div class="input-container" style="margin-bottom: 120px; margin-top: 7px">
+<div class="input-container" style="margin-bottom: 20%; margin-top: 7px">
     <button class="button-81" onclick="buttonClick()" style="width: 120px">check</button> 
     <span style="margin-left: 97%; font-size: 21px;">{{session["quiz_count"]}}/5</span>
 </div>

@@ -136,6 +136,7 @@
         }
 
 
+        // transform the Serverdata to a usable format
         function transformData(inputData) {
             var result = [];
         
@@ -154,6 +155,8 @@
             return result;
         }
 
+        // add correct answers to the table
+        // this method has 2 outputs
         function addRowsToTable(dataList) {
             var tableBody = document.getElementById("tableBody");
             var numColumns = 4;
@@ -171,7 +174,7 @@
                     var data = dataList[dataIndex];
                     var cell = document.createElement("td");
         
-                    if (j === 1 || j === 3) {
+                    if ((j === 1 || j === 3) && data && Array.isArray(data) && data.length > 0) {
                         var input = document.createElement("input");
                         input.type = "text";
                         input.className = "answerInput";
@@ -183,7 +186,11 @@
         
                         cell.appendChild(input);
                     } else {
-                        cell.textContent = data[0];
+                        if (data && Array.isArray(data) && data.length > 0) {
+                            cell.textContent = data[0];
+                        } else {
+                            cell.textContent = ''; // oder eine andere Standardnachricht
+                        }
                     }
         
                     row.appendChild(cell);
@@ -196,7 +203,6 @@
         }
         
         
-
         var { answerInputs, correctAnswers } = addRowsToTable(newList);
 
         function startQuiz() {
@@ -237,6 +243,7 @@
             stopButton.setAttribute('disabled', 'disabled');
         }
 
+        // method to count the reached points
         function checkAnswers(seconds) {
             var max_points = 0;
             for (var i = 0; i < answerInputs.length; i++) {
@@ -279,7 +286,7 @@
             document.getElementById('showAndHide').innerHTML = 'Show Answers';
         }
         
-
+        // send the reached score to the server
         function sendScore(seconds, points, max_points) {
             var quizId = '{{ quizId }}';
             var score = points;

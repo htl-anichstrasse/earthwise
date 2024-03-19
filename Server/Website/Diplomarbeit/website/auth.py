@@ -22,7 +22,7 @@ correct_answers_count = 0
 wrong_answer_count = 0
 
 # Die URL des Servers, zu dem die Anfragen gesendet werden sollen
-server_url = 'http://185.106.189.152:1234/'
+server_url = 'http://83.219.182.167:1234/'
 
 
 #-----------------------------------------------------------------------------------------------------

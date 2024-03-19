@@ -5,7 +5,7 @@ import requests
 
 views = Blueprint('views', __name__)
 
-server_url = 'http://185.106.189.152:1234/'
+server_url = 'http://83.219.182.167:1234/'
 
 @views.route('/', methods=['GET', 'POST'])
 @login_required
