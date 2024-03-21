@@ -25,7 +25,7 @@ The project is divided into four main components: a website, a mobile applicatio
 
 2. Navigate to the project directory:
    ```bash
-   cd Server/Website/Diplomarbeit/
+   cd Earthwise/
 
 3. Install Requirements
    ```bash
