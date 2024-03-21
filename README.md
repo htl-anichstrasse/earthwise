@@ -39,6 +39,9 @@ The project is divided into four main components: a website, a mobile applicatio
     
 Built with React, Python, MySQL
 
+## Documentation
+For more informations go to: [Documentation](https://htlanichstrasse-my.sharepoint.com/:b:/g/personal/stmallaun_office_htlinn_ac_at/EdLECjjNr3xPkVai2_4rceoBLw01ygVsIBBnSt38qaT7zg?e=GYtH3D)
+
 ## Contributing
 
 Contributions are welcome! Please follow the guidelines in CONTRIBUTING.md.
