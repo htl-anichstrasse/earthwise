@@ -22,4 +22,4 @@ The project is divided into four main components: a website, a mobile applicatio
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/geo-learn.git
+   git clone https://github.com/stefanmallaun/Diplomarbeit.git
