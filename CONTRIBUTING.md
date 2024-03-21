@@ -38,6 +38,6 @@ Please note that Earthwise has a Code of Conduct. By participating in this proje
 
 ## Questions or Need Help?
 
-If you have any questions or need assistance with contributing to Earthwise, feel free to reach out to us by opening an issue or contacting to one of the Maintances directly.
+If you have any questions or need assistance with contributing to Earthwise, feel free to reach out to us by opening an issue or contacting to one of the Maintainers directly.
 
 Thank you for contributing to Earthwise!
