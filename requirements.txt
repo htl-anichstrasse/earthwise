@@ -1,0 +1,3 @@
+Fastapi
+mysqlconnector
+json
