@@ -32,12 +32,11 @@ The project is divided into four main components: a website, a mobile applicatio
    pip install -r requirements.txt
 
 ### Maintainers
-   - Mallaun Stefan github: [stefanmallaun]https://github.com/stefanmallaun/
-   - Mark David github: [da91vid]https://github.com/da91vid
-   - Sepetavc Luca github: [LucaSepetavc]https://github.com/LucaSepetavc
-   - Simma Julian github: [SimmaJulian]https://github.com/SimmaJulian
+   - Mallaun Stefan github: [stefanmallaun](https://github.com/stefanmallaun/)
+   - Mark David github: [da91vid](https://github.com/da91vid)
+   - Sepetavc Luca github: [LucaSepetavc](https://github.com/LucaSepetavc)
+   - Simma Julian github: [SimmaJulian](https://github.com/SimmaJulian)
     
-
 Built with React, Python, MySQL
 
 ## Contributing
