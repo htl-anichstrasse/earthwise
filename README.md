@@ -37,7 +37,7 @@ The project is divided into four main components: a website, a mobile applicatio
    - Sepetavc Luca github: [LucaSepetavc](https://github.com/LucaSepetavc)
    - Simma Julian github: [SimmaJulian](https://github.com/SimmaJulian)
     
-Built with React, Python, MySQL
+Built with Flutter, Python, MySQL
 
 ## Documentation
 For more informations go to: [Documentation](https://htlanichstrasse-my.sharepoint.com/:b:/g/personal/stmallaun_office_htlinn_ac_at/EdLECjjNr3xPkVai2_4rceoBLw01ygVsIBBnSt38qaT7zg?e=GYtH3D)
