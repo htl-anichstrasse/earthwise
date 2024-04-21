@@ -50,7 +50,7 @@ Contributions are welcome! Please follow the guidelines in CONTRIBUTING.md.
 
 This project is licensed under the MIT License.
 
-# Project Name
+# Earthwise: Geographical Learning Platform
 
 <br/>
 <p align="center">
