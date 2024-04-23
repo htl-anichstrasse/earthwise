@@ -11,11 +11,11 @@
   <p align="center">
     Geographical Learning Platform
     <br/>
-    <a href="https://github.com/htl-anichstrasse/template/releases">Releases</a>
+    <a href="https://github.com/htl-anichstrasse/earthwise/releases">Releases</a>
     ·
-    <a href="https://github.com/htl-anichstrasse/template/issues">Report Bug</a>
+    <a href="https://github.com/htl-anichstrasse/earthwise/issues">Report Bug</a>
     ·
-    <a href="https://github.com/htl-anichstrasse/template/issues">Request Feature</a>
+    <a href="https://github.com/htl-anichstrasse/earthwise/issues">Request Feature</a>
   </p>
 </p>
 
