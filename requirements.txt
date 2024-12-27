@@ -18,7 +18,7 @@ fonttools==4.50.0
 greenlet==3.0.3
 idna==3.6
 itsdangerous==2.1.2
-Jinja2==3.1.4
+Jinja2==3.1.5
 kiwisolver==1.4.5
 MarkupSafe==2.1.5
 matplotlib==3.8.3
