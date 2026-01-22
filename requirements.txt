@@ -2,7 +2,7 @@ Fastapi
 mysqlconnector
 json
 ﻿blinker==1.7.0
-Brotli==1.1.0
+Brotli>=1.2.0
 certifi==2024.7.4
 charset-normalizer==3.3.2
 click==8.1.7
@@ -14,7 +14,7 @@ Flask-Compress==1.14
 Flask-Login==0.6.3
 Flask-Mail==0.9.1
 Flask-SQLAlchemy==3.1.1
-fonttools==4.50.0
+fonttools>=4.60.2
 greenlet==3.0.3
 idna==3.6
 itsdangerous==2.1.2
@@ -31,5 +31,5 @@ requests==2.32.0
 six==1.16.0
 SQLAlchemy==2.0.28
 typing_extensions==4.10.0
-urllib3==2.2.2
-Werkzeug==3.1.3
+urllib3>=2.6.3
+Werkzeug>=3.1.5
